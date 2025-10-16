@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 
 class LetterCard extends StatefulWidget {
   final ArabicLetterModel letter;
-  final VoidCallback onTap;
+  final VoidCallback onTap; // للنطق
+  final VoidCallback onCardTap; // للانتقال لصفحة الأشكال
 
-  const LetterCard({Key? key, required this.letter, required this.onTap})
-    : super(key: key);
+  const LetterCard({
+    super.key,
+    required this.letter,
+    required this.onTap,
+    required this.onCardTap,
+  });
 
   @override
   State<LetterCard> createState() => _LetterCardState();
@@ -42,7 +47,7 @@ class _LetterCardState extends State<LetterCard>
 
   void _handleTapUp(TapUpDetails details) {
     _controller.reverse();
-    widget.onTap();
+    widget.onCardTap(); // انتقل لصفحة الأشكال
   }
 
   void _handleTapCancel() {
@@ -69,33 +74,74 @@ class _LetterCardState extends State<LetterCard>
               ),
             ],
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
             children: [
-              // Letter
-              Text(
-                widget.letter.letter,
-                style: const TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF667eea),
-                ),
+              // محتوى البطاقة
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+
+                children: [
+                  // Letter
+                  Center(
+                    child: Text(
+                      widget.letter.letter,
+                      style: const TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF667eea),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Emoji
+                  Text(
+                    widget.letter.emoji,
+                    style: const TextStyle(fontSize: 70),
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Word
+                  Text(
+                    widget.letter.word,
+                    style: TextStyle(
+                      fontSize: 25,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
 
-              // Emoji
-              Text(widget.letter.emoji, style: const TextStyle(fontSize: 70)),
-              const SizedBox(height: 4),
-
-              // Word
-              Text(
-                widget.letter.word,
-                style: TextStyle(
-                  fontSize: 25,
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.bold,
+              // أيقونة السماعة في الزاوية
+              Positioned(
+                top: 8,
+                right: 8,
+                child: GestureDetector(
+                  onTap: () {
+                    widget.onTap(); // نطق الحرف
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF667eea),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.volume_up,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),

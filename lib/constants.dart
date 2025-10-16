@@ -32,7 +32,7 @@ const List<ArabicLetterModel> arabicLetters = [
 ];
 
 const List<String> letters = [
-  "أ",
+  "ا",
   "ب",
   "ت",
   "ث",

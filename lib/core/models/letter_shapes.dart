@@ -1,0 +1,287 @@
+/// نموذج لأشكال الحرف العربي
+class LetterShapes {
+  final String letter; // الحرف الأساسي
+  final String isolated; // منفصل
+  final String initial; // أول الكلمة
+  final String medial; // وسط الكلمة
+  final String final_; // آخر الكلمة
+  final String name; // اسم الحرف
+  final String example; // مثال على الحرف
+
+  const LetterShapes({
+    required this.letter,
+    required this.isolated,
+    required this.initial,
+    required this.medial,
+    required this.final_,
+    required this.name,
+    required this.example,
+  });
+}
+
+/// بيانات أشكال جميع الحروف العربية
+class ArabicLetterShapes {
+  static const List<LetterShapes> shapes = [
+    LetterShapes(
+      letter: 'ا',
+      isolated: 'ا',
+      initial: 'ا',
+      medial: 'ـا',
+      final_: 'ـا',
+      name: 'ألف',
+      example: 'أرنب',
+    ),
+    LetterShapes(
+      letter: 'ب',
+      isolated: 'ب',
+      initial: 'بـ',
+      medial: 'ـبـ',
+      final_: 'ـب',
+      name: 'باء',
+      example: 'بطة',
+    ),
+    LetterShapes(
+      letter: 'ت',
+      isolated: 'ت',
+      initial: 'تـ',
+      medial: 'ـتـ',
+      final_: 'ـت',
+      name: 'تاء',
+      example: 'تفاحة',
+    ),
+    LetterShapes(
+      letter: 'ث',
+      isolated: 'ث',
+      initial: 'ثـ',
+      medial: 'ـثـ',
+      final_: 'ـث',
+      name: 'ثاء',
+      example: 'ثعلب',
+    ),
+    LetterShapes(
+      letter: 'ج',
+      isolated: 'ج',
+      initial: 'جـ',
+      medial: 'ـجـ',
+      final_: 'ـج',
+      name: 'جيم',
+      example: 'جمل',
+    ),
+    LetterShapes(
+      letter: 'ح',
+      isolated: 'ح',
+      initial: 'حـ',
+      medial: 'ـحـ',
+      final_: 'ـح',
+      name: 'حاء',
+      example: 'حصان',
+    ),
+    LetterShapes(
+      letter: 'خ',
+      isolated: 'خ',
+      initial: 'خـ',
+      medial: 'ـخـ',
+      final_: 'ـخ',
+      name: 'خاء',
+      example: 'خروف',
+    ),
+    LetterShapes(
+      letter: 'د',
+      isolated: 'د',
+      initial: 'د',
+      medial: 'ـد',
+      final_: 'ـد',
+      name: 'دال',
+      example: 'دب',
+    ),
+    LetterShapes(
+      letter: 'ذ',
+      isolated: 'ذ',
+      initial: 'ذ',
+      medial: 'ـذ',
+      final_: 'ـذ',
+      name: 'ذال',
+      example: 'ذئب',
+    ),
+    LetterShapes(
+      letter: 'ر',
+      isolated: 'ر',
+      initial: 'ر',
+      medial: 'ـر',
+      final_: 'ـر',
+      name: 'راء',
+      example: 'رمان',
+    ),
+    LetterShapes(
+      letter: 'ز',
+      isolated: 'ز',
+      initial: 'ز',
+      medial: 'ـز',
+      final_: 'ـز',
+      name: 'زاي',
+      example: 'زرافة',
+    ),
+    LetterShapes(
+      letter: 'س',
+      isolated: 'س',
+      initial: 'سـ',
+      medial: 'ـسـ',
+      final_: 'ـس',
+      name: 'سين',
+      example: 'سمكة',
+    ),
+    LetterShapes(
+      letter: 'ش',
+      isolated: 'ش',
+      initial: 'شـ',
+      medial: 'ـشـ',
+      final_: 'ـش',
+      name: 'شين',
+      example: 'شمس',
+    ),
+    LetterShapes(
+      letter: 'ص',
+      isolated: 'ص',
+      initial: 'صـ',
+      medial: 'ـصـ',
+      final_: 'ـص',
+      name: 'صاد',
+      example: 'صقر',
+    ),
+    LetterShapes(
+      letter: 'ض',
+      isolated: 'ض',
+      initial: 'ضـ',
+      medial: 'ـضـ',
+      final_: 'ـض',
+      name: 'ضاد',
+      example: 'ضفدع',
+    ),
+    LetterShapes(
+      letter: 'ط',
+      isolated: 'ط',
+      initial: 'طـ',
+      medial: 'ـطـ',
+      final_: 'ـط',
+      name: 'طاء',
+      example: 'طائر',
+    ),
+    LetterShapes(
+      letter: 'ظ',
+      isolated: 'ظ',
+      initial: 'ظـ',
+      medial: 'ـظـ',
+      final_: 'ـظ',
+      name: 'ظاء',
+      example: 'ظبي',
+    ),
+    LetterShapes(
+      letter: 'ع',
+      isolated: 'ع',
+      initial: 'عـ',
+      medial: 'ـعـ',
+      final_: 'ـع',
+      name: 'عين',
+      example: 'عصفور',
+    ),
+    LetterShapes(
+      letter: 'غ',
+      isolated: 'غ',
+      initial: 'غـ',
+      medial: 'ـغـ',
+      final_: 'ـغ',
+      name: 'غين',
+      example: 'غزال',
+    ),
+    LetterShapes(
+      letter: 'ف',
+      isolated: 'ف',
+      initial: 'فـ',
+      medial: 'ـفـ',
+      final_: 'ـف',
+      name: 'فاء',
+      example: 'فيل',
+    ),
+    LetterShapes(
+      letter: 'ق',
+      isolated: 'ق',
+      initial: 'قـ',
+      medial: 'ـقـ',
+      final_: 'ـق',
+      name: 'قاف',
+      example: 'قطة',
+    ),
+    LetterShapes(
+      letter: 'ك',
+      isolated: 'ك',
+      initial: 'كـ',
+      medial: 'ـكـ',
+      final_: 'ـك',
+      name: 'كاف',
+      example: 'كلب',
+    ),
+    LetterShapes(
+      letter: 'ل',
+      isolated: 'ل',
+      initial: 'لـ',
+      medial: 'ـلـ',
+      final_: 'ـل',
+      name: 'لام',
+      example: 'ليمون',
+    ),
+    LetterShapes(
+      letter: 'م',
+      isolated: 'م',
+      initial: 'مـ',
+      medial: 'ـمـ',
+      final_: 'ـم',
+      name: 'ميم',
+      example: 'موز',
+    ),
+    LetterShapes(
+      letter: 'ن',
+      isolated: 'ن',
+      initial: 'نـ',
+      medial: 'ـنـ',
+      final_: 'ـن',
+      name: 'نون',
+      example: 'نحلة',
+    ),
+    LetterShapes(
+      letter: 'ه',
+      isolated: 'ه',
+      initial: 'هـ',
+      medial: 'ـهـ',
+      final_: 'ـه',
+      name: 'هاء',
+      example: 'هدهد',
+    ),
+    LetterShapes(
+      letter: 'و',
+      isolated: 'و',
+      initial: 'و',
+      medial: 'ـو',
+      final_: 'ـو',
+      name: 'واو',
+      example: 'وردة',
+    ),
+    LetterShapes(
+      letter: 'ي',
+      isolated: 'ي',
+      initial: 'يـ',
+      medial: 'ـيـ',
+      final_: 'ـي',
+      name: 'ياء',
+      example: 'يد',
+    ),
+  ];
+
+  /// الحصول على أشكال حرف معين
+  static LetterShapes? getShapes(String letter) {
+    try {
+      return shapes.firstWhere((s) => s.letter == letter);
+    } catch (e) {
+      return null;
+    }
+  }
+}
