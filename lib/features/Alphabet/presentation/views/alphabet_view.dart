@@ -52,42 +52,73 @@ class _AlphabetViewState extends State<AlphabetView> with SingleTickerProviderSt
           AboutView(),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        elevation: 0,
-        selectedIndex: _currentIndex,
-        backgroundColor: Colors.white.withOpacity(0.95),
-        indicatorColor: const Color(0xFF667eea).withOpacity(0.2),
-        height: 70,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        onDestinationSelected: (value) {
-          _onBottomNavTapped(value);
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.abc),
-            selectedIcon: Icon(
-              Icons.abc,
-              color: Color(0xFF667eea),
-            ),
-            label: 'الحروف',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF667eea),
+              Color(0xFF764ba2),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.fitness_center),
-            selectedIcon: Icon(
-              Icons.fitness_center,
-              color: Color(0xFF667eea),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF667eea).withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
             ),
-            label: 'تمارين',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.info_outline),
-            selectedIcon: Icon(
-              Icons.info,
-              color: Color(0xFF667eea),
+          ],
+        ),
+        child: NavigationBar(
+          elevation: 0,
+          selectedIndex: _currentIndex,
+          backgroundColor: Colors.transparent,
+          indicatorColor: Colors.white.withOpacity(0.3),
+          height: 70,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          onDestinationSelected: (value) {
+            _onBottomNavTapped(value);
+          },
+          destinations: [
+            NavigationDestination(
+              icon: Icon(
+                Icons.abc,
+                color: Colors.white.withOpacity(0.7),
+              ),
+              selectedIcon: const Icon(
+                Icons.abc,
+                color: Colors.white,
+                size: 28,
+              ),
+              label: 'الحروف',
             ),
-            label: 'عن التطبيق',
-          ),
-        ],
+            NavigationDestination(
+              icon: Icon(
+                Icons.fitness_center,
+                color: Colors.white.withOpacity(0.7),
+              ),
+              selectedIcon: const Icon(
+                Icons.fitness_center,
+                color: Colors.white,
+                size: 28,
+              ),
+              label: 'تمارين',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.info_outline,
+                color: Colors.white.withOpacity(0.7),
+              ),
+              selectedIcon: const Icon(
+                Icons.info,
+                color: Colors.white,
+                size: 28,
+              ),
+              label: 'عن التطبيق',
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -22,7 +22,23 @@ class ArabicLearningApp extends StatelessWidget {
         Locale('ar'), // Arabic
         Locale('en'), // English
       ],
-
+      theme: ThemeData(
+        navigationBarTheme: NavigationBarThemeData(
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              );
+            }
+            return TextStyle(
+              color: Colors.white.withOpacity(0.7),
+              fontSize: 12,
+            );
+          }),
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       routerConfig: AppRouter.routes,
     );

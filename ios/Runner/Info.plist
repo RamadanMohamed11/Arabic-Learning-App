@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>نحتاج الوصول لميزة التعرف على الكلام للتحقق من نطقك للكلمات العربية</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>نحتاج الوصول للميكروفون لتسجيل نطقك للكلمات العربية</string>
 </dict>
 </plist>

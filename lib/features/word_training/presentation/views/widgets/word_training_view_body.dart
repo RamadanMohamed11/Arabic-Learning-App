@@ -13,7 +13,7 @@ class WordTrainingViewBody extends StatefulWidget {
 class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
   final FlutterTts _flutterTts = FlutterTts();
   final PageController _pageController = PageController();
-  
+
   int _currentWordIndex = 0;
   String _userInput = '';
   String _feedbackMessage = '';
@@ -33,7 +33,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
     await _flutterTts.setSpeechRate(0.4);
     await _flutterTts.setVolume(1.0);
     await _flutterTts.setPitch(1.0);
-    
+
     _flutterTts.setCompletionHandler(() {
       setState(() {
         _isPlaying = false;
@@ -41,7 +41,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
       // Re-initialize after completion
       _initializeTts();
     });
-    
+
     _flutterTts.setErrorHandler((msg) {
       setState(() {
         _isPlaying = false;
@@ -62,7 +62,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
     setState(() {
       _isPlaying = true;
     });
-    
+
     try {
       // Stop any ongoing speech
       await _flutterTts.stop();
@@ -109,17 +109,18 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
 
     setState(() {
       _attemptCount++;
-      
+
       if (normalizedInput == normalizedTarget) {
         _correctCount++;
         _feedbackMessage = 'ممتاز! ✓\nالكلمة صحيحة';
         _feedbackColor = Colors.green;
       } else {
-        _feedbackMessage = 'حاول مرة أخرى\nكتبت: $_userInput\nالصحيح: ${currentWord.word}';
+        _feedbackMessage =
+            'حاول مرة أخرى\nكتبت: $_userInput\nالصحيح: ${currentWord.word}';
         _feedbackColor = Colors.red;
       }
     });
-    
+
     // Play success sound if correct
     if (normalizedInput == normalizedTarget) {
       try {
@@ -165,7 +166,8 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
   }
 
   void _previousWord() {
-    final prevIndex = (_currentWordIndex - 1 + trainingWords.length) % trainingWords.length;
+    final prevIndex =
+        (_currentWordIndex - 1 + trainingWords.length) % trainingWords.length;
     _pageController.animateToPage(
       prevIndex,
       duration: const Duration(milliseconds: 400),
@@ -208,9 +210,24 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStat(Icons.check_circle, 'صحيح', '$_correctCount', Colors.green),
-                      _buildStat(Icons.edit, 'محاولات', '$_attemptCount', Colors.blue),
-                      _buildStat(Icons.percent, 'دقة', '$accuracy%', Colors.orange),
+                      _buildStat(
+                        Icons.check_circle,
+                        'صحيح',
+                        '$_correctCount',
+                        Colors.green,
+                      ),
+                      _buildStat(
+                        Icons.edit,
+                        'محاولات',
+                        '$_attemptCount',
+                        Colors.blue,
+                      ),
+                      _buildStat(
+                        Icons.percent,
+                        'دقة',
+                        '$accuracy%',
+                        Colors.orange,
+                      ),
                     ],
                   ),
                 ),
@@ -220,7 +237,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
 
               // Word display with audio
               SizedBox(
-                height: 180,
+                height: 220,
                 child: PageView.builder(
                   controller: _pageController,
                   onPageChanged: _onPageChanged,
@@ -234,7 +251,10 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           gradient: LinearGradient(
-                            colors: [Colors.purple.shade400, Colors.purple.shade600],
+                            colors: [
+                              Colors.purple.shade400,
+                              Colors.purple.shade600,
+                            ],
                           ),
                         ),
                         child: Column(
@@ -259,24 +279,28 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                                 const SizedBox(width: 20),
                                 ElevatedButton.icon(
                                   onPressed: _isPlaying ? null : _playWord,
-                                  icon: Icon(_isPlaying ? Icons.volume_up : Icons.play_arrow),
-                                  label: Text(_isPlaying ? 'يتم التشغيل...' : 'استمع'),
+                                  icon: Icon(
+                                    _isPlaying
+                                        ? Icons.volume_up
+                                        : Icons.play_arrow,
+                                  ),
+                                  label: Text(
+                                    _isPlaying ? 'يتم التشغيل...' : 'استمع',
+                                  ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
                                     foregroundColor: Colors.purple,
-                                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
+                                    ),
+                                    textStyle: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              word.meaning,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.white70,
-                              ),
                             ),
                           ],
                         ),
@@ -295,7 +319,9 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                   IconButton(
                     onPressed: _previousWord,
                     icon: const Icon(Icons.arrow_back_ios),
-                    style: IconButton.styleFrom(backgroundColor: Colors.purple.shade100),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.purple.shade100,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -310,7 +336,9 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                   IconButton(
                     onPressed: _nextWord,
                     icon: const Icon(Icons.arrow_forward_ios),
-                    style: IconButton.styleFrom(backgroundColor: Colors.purple.shade100),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.purple.shade100,
+                    ),
                   ),
                 ],
               ),
@@ -340,7 +368,9 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                         style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
-                          color: _userInput.isEmpty ? Colors.grey.shade300 : Colors.purple.shade700,
+                          color: _userInput.isEmpty
+                              ? Colors.grey.shade300
+                              : Colors.purple.shade700,
                         ),
                         textDirection: TextDirection.rtl,
                       ),
@@ -392,12 +422,13 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                         const SizedBox(height: 12),
                         Expanded(
                           child: GridView.builder(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 7,
-                              childAspectRatio: 1,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                            ),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 7,
+                                  childAspectRatio: 1,
+                                  crossAxisSpacing: 8,
+                                  mainAxisSpacing: 8,
+                                ),
                             itemCount: arabicLetters.length,
                             itemBuilder: (context, index) {
                               final letter = arabicLetters[index].letter;
@@ -439,7 +470,10 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                       icon: const Icon(Icons.backspace, size: 20),
                       label: const Text(
                         'مسح حرف',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
@@ -455,7 +489,10 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                       icon: const Icon(Icons.clear_all, size: 20),
                       label: const Text(
                         'مسح الكل',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -471,7 +508,10 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                       icon: const Icon(Icons.check_circle, size: 20),
                       label: const Text(
                         'تحقق',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
@@ -495,10 +535,17 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
       children: [
         Icon(icon, color: color, size: 24),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+        ),
         Text(
           value,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
       ],
     );
