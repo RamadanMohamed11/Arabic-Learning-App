@@ -1,21 +1,8 @@
 import 'package:arabic_learning_app/core/utils/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
 
 void main() {
-  // Initialize Gemini API with correct vision model
-  Gemini.init(
-    apiKey: 'AIzaSyDIZEoUkTYqmGAhhxnvBPhrHr6tzWVW8zk',
-    enableDebugging: true,
-    generationConfig: GenerationConfig(
-      temperature: 0.4,
-      topK: 32,
-      topP: 1,
-      maxOutputTokens: 512,
-    ),
-  );
-
   runApp(const ArabicLearningApp());
 }
 

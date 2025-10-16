@@ -44,10 +44,8 @@ dependencies:
     sdk: flutter
   flutter_tts: ^4.2.3
   syncfusion_flutter_signaturepad: ^27.2.5
-  google_mlkit_text_recognition: ^0.13.0
   image: ^4.0.17
   path_provider: ^2.1.1
-  flutter_gemini: ^2.0.5
   flutter_svg: ^2.2.1
   path_parsing: ^1.0.1
   xml: ^6.5.0

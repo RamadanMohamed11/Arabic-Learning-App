@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/models/letter_shapes.dart';
+import 'package:arabic_learning_app/constants.dart';
 
 class LetterShapesView extends StatefulWidget {
   final String letter;
@@ -17,6 +18,7 @@ class LetterShapesView extends StatefulWidget {
 class _LetterShapesViewState extends State<LetterShapesView> {
   final FlutterTts _flutterTts = FlutterTts();
   LetterShapes? letterShapes;
+  String exampleWord = '';
   bool _isSpeaking = false;
 
   @override
@@ -24,6 +26,12 @@ class _LetterShapesViewState extends State<LetterShapesView> {
     super.initState();
     _initTts();
     letterShapes = ArabicLetterShapes.getShapes(widget.letter);
+    // Get the word with tashkeel from arabicLetters list
+    final letterData = arabicLetters.firstWhere(
+      (l) => l.letter == widget.letter,
+      orElse: () => arabicLetters[0],
+    );
+    exampleWord = letterData.word;
   }
 
   Future<void> _initTts() async {
@@ -291,7 +299,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
           ),
           const SizedBox(height: 16),
           GestureDetector(
-            onTap: () => _speak(letterShapes!.example),
+            onTap: () => _speak(exampleWord),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
@@ -314,7 +322,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
               child: Column(
                 children: [
                   Text(
-                    letterShapes!.example,
+                    exampleWord,
                     style: const TextStyle(
                       fontSize: 80,
                       fontWeight: FontWeight.bold,

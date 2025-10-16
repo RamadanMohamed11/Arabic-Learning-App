@@ -1,10 +1,8 @@
 import 'package:arabic_learning_app/constants.dart';
-import 'package:arabic_learning_app/core/utils/app_router.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/widgets/letter_card.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_shapes_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:go_router/go_router.dart';
 
 class AlphabetViewBody extends StatefulWidget {
   const AlphabetViewBody({super.key});
@@ -52,30 +50,44 @@ class _AlphabetViewBodyState extends State<AlphabetViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: const Text(
-                  'تعلم الحروف العربية',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '📚',
+                    style: TextStyle(fontSize: 28),
                   ),
-                ),
+                  SizedBox(width: 12),
+                  Text(
+                    'تعلم الحروف العربية',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Text(
+                    '📚',
+                    style: TextStyle(fontSize: 28),
+                  ),
+                ],
               ),
+            ),
 
               // Letters Grid
               Expanded(
@@ -114,65 +126,9 @@ class _AlphabetViewBodyState extends State<AlphabetViewBody> {
                     },
                   ),
                 ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton.extended(
-            onPressed: () {
-              context.push('${AppRouter.kLetterTracingView}?letter=ا');
-            },
-            backgroundColor: Colors.indigo,
-            heroTag: 'letter_tracing',
-            icon: const Icon(Icons.gesture, color: Colors.white),
-            label: const Text(
-              'تتبع الحروف',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton.extended(
-            onPressed: () {
-              context.push(AppRouter.kWordTrainingView);
-            },
-            backgroundColor: Colors.purple,
-            heroTag: 'word_training',
-            icon: const Icon(Icons.volume_up, color: Colors.white),
-            label: const Text(
-              'تدريب الكلمات',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton.extended(
-            onPressed: () {
-              context.push(AppRouter.kWritingPracticeView);
-            },
-            backgroundColor: Colors.teal,
-            heroTag: 'writing_practice',
-            icon: const Icon(Icons.edit, color: Colors.white),
-            label: const Text(
-              'تدريب الكتابة',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
