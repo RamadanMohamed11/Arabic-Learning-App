@@ -1,5 +1,6 @@
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/widgets/alphabet_view_body.dart';
 import 'package:arabic_learning_app/features/exercises/presentation/views/exercises_view.dart';
+import 'package:arabic_learning_app/features/about/presentation/views/about_view.dart';
 import 'package:flutter/material.dart';
 
 class AlphabetView extends StatefulWidget {
@@ -10,53 +11,82 @@ class AlphabetView extends StatefulWidget {
 }
 
 class _AlphabetViewState extends State<AlphabetView> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  int _currentIndex = 0;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _pageController.dispose();
     super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void _onBottomNavTapped(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF667eea),
-        elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          labelStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.abc, size: 28),
-              text: 'الحروف',
-            ),
-            Tab(
-              icon: Icon(Icons.fitness_center, size: 28),
-              text: 'تمارين',
-            ),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
         children: const [
           AlphabetViewBody(),
           ExercisesView(),
+          AboutView(),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        elevation: 0,
+        selectedIndex: _currentIndex,
+        backgroundColor: Colors.white.withOpacity(0.95),
+        indicatorColor: const Color(0xFF667eea).withOpacity(0.2),
+        height: 70,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        onDestinationSelected: (value) {
+          _onBottomNavTapped(value);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.abc),
+            selectedIcon: Icon(
+              Icons.abc,
+              color: Color(0xFF667eea),
+            ),
+            label: 'الحروف',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.fitness_center),
+            selectedIcon: Icon(
+              Icons.fitness_center,
+              color: Color(0xFF667eea),
+            ),
+            label: 'تمارين',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.info_outline),
+            selectedIcon: Icon(
+              Icons.info,
+              color: Color(0xFF667eea),
+            ),
+            label: 'عن التطبيق',
+          ),
         ],
       ),
     );

@@ -61,22 +61,26 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
     // إنشاء البطاقات
     for (final index in selectedLetters) {
       final letterData = arabicLetters[index];
-      
+
       // بطاقة الحرف
-      cards.add(MemoryCard(
-        id: '${letterData.letter}_letter',
-        content: letterData.letter,
-        isLetter: true,
-        letter: letterData.letter,
-      ));
+      cards.add(
+        MemoryCard(
+          id: '${letterData.letter}_letter',
+          content: letterData.letter,
+          isLetter: true,
+          letter: letterData.letter,
+        ),
+      );
 
       // بطاقة الصورة
-      cards.add(MemoryCard(
-        id: '${letterData.letter}_emoji',
-        content: letterData.emoji,
-        isLetter: false,
-        letter: letterData.letter,
-      ));
+      cards.add(
+        MemoryCard(
+          id: '${letterData.letter}_emoji',
+          content: letterData.emoji,
+          isLetter: false,
+          letter: letterData.letter,
+        ),
+      );
     }
 
     // خلط البطاقات
@@ -85,7 +89,10 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
   }
 
   void _onCardTap(MemoryCard card) {
-    if (isChecking || card.isFlipped || card.isMatched || flippedCards.length >= 2) {
+    if (isChecking ||
+        card.isFlipped ||
+        card.isMatched ||
+        flippedCards.length >= 2) {
       return;
     }
 
@@ -231,106 +238,109 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
           colors: [Colors.purple.shade50, Colors.pink.shade50],
         ),
       ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('🧠', style: TextStyle(fontSize: 28)),
-                      SizedBox(width: 12),
-                      Text(
-                        'لعبة الذاكرة',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF6A1B9A),
-                        ),
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(3),
+            child: Column(
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('🧠', style: TextStyle(fontSize: 28)),
+                    SizedBox(width: 12),
+                    Text(
+                      'لعبة الذاكرة',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF6A1B9A),
                       ),
-                      SizedBox(width: 12),
-                      Text('🧠', style: TextStyle(fontSize: 28)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildStatCard(
-                        Icons.swap_horiz,
-                        'المحاولات',
-                        '$moves',
-                        Colors.blue,
-                      ),
-                      _buildStatCard(
-                        Icons.check_circle,
-                        'الأزواج',
-                        '$matches / $totalPairs',
-                        Colors.green,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Game Grid
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.85,
-                  ),
-                  itemCount: cards.length,
-                  itemBuilder: (context, index) {
-                    return _buildCard(cards[index]);
-                  },
+                    ),
+                    SizedBox(width: 12),
+                    Text('🧠', style: TextStyle(fontSize: 28)),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 2),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildStatCard(
+                      Icons.swap_horiz,
+                      'المحاولات',
+                      '$moves',
+                      Colors.blue,
+                    ),
+                    _buildStatCard(
+                      Icons.check_circle,
+                      'الأزواج',
+                      '$matches / $totalPairs',
+                      Colors.green,
+                    ),
+                  ],
+                ),
+              ],
             ),
+          ),
 
-            // Reset Button
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    _initializeGame();
-                  });
+          // Game Grid
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 0.85,
+                ),
+                itemCount: cards.length,
+                itemBuilder: (context, index) {
+                  return _buildCard(cards[index]);
                 },
-                icon: const Icon(Icons.refresh, size: 24),
-                label: const Text(
-                  'لعبة جديدة',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+
+          // Reset Button
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _initializeGame();
+                });
+              },
+              icon: const Icon(Icons.refresh, size: 24),
+              label: const Text(
+                'لعبة جديدة',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6A1B9A),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6A1B9A),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildStatCard(IconData icon, String label, String value, Color color) {
+  Widget _buildStatCard(
+    IconData icon,
+    String label,
+    String value,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
@@ -375,8 +385,8 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
           color: card.isMatched
               ? Colors.green.shade100
               : card.isFlipped
-                  ? Colors.white
-                  : const Color(0xFF6A1B9A),
+              ? Colors.white
+              : const Color(0xFF6A1B9A),
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
@@ -397,14 +407,12 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
                   style: TextStyle(
                     fontSize: card.isLetter ? 50 : 60,
                     fontWeight: FontWeight.bold,
-                    color: card.isMatched ? Colors.green.shade700 : Colors.black87,
+                    color: card.isMatched
+                        ? Colors.green.shade700
+                        : Colors.black87,
                   ),
                 )
-              : const Icon(
-                  Icons.question_mark,
-                  size: 50,
-                  color: Colors.white,
-                ),
+              : const Icon(Icons.question_mark, size: 50, color: Colors.white),
         ),
       ),
     );
