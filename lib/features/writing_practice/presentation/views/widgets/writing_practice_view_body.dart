@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:arabic_learning_app/constants.dart';
+import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/automated_letter_trace_screen.dart';
+import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 
 class WritingPracticeViewBody extends StatefulWidget {
   const WritingPracticeViewBody({super.key});
@@ -13,13 +15,24 @@ class WritingPracticeViewBody extends StatefulWidget {
 class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
   final GlobalKey<SfSignaturePadState> _signaturePadKey = GlobalKey();
   final PageController _pageController = PageController();
+  UserProgressService? _progressService;
 
   int _currentLetterIndex = 0;
   bool _showHint = false;
+  List<int> _unlockedLetters = [0];
 
   @override
   void initState() {
     super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    _progressService = await UserProgressService.getInstance();
+    
+    setState(() {
+      _unlockedLetters = _progressService!.getUnlockedLetters();
+    });
   }
 
   @override
@@ -69,6 +82,68 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
     });
   }
 
+  void _startTracingPractice() async {
+    if (_progressService == null) return;
+    
+    final currentLetter = arabicLetters[_currentLetterIndex];
+    
+    // Check if letter is unlocked
+    final isUnlocked = _unlockedLetters.contains(_currentLetterIndex);
+    if (!isUnlocked) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('أكمل الحرف السابق أولاً!'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+    
+    const int tracingActivityIndex = 0; // Activity 0 = Tracing Exercise
+    
+    // Navigate to tracing screen
+    if (mounted) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AutomatedLetterTraceScreen(
+            svgAssetPath: 'assets/svg/${currentLetter.letter}.svg',
+            letterIndex: _currentLetterIndex,
+            onComplete: () async {
+              // Mark tracing activity as completed
+              await _progressService!.completeActivity(
+                _currentLetterIndex,
+                tracingActivityIndex,
+              );
+              
+              // Check if all activities for this letter are completed
+              // For now, we only have 1 activity (tracing), so complete the letter
+              await _progressService!.completeLetter(_currentLetterIndex);
+              
+              // Reload progress
+              await _loadProgress();
+              
+              // Show success message
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('أحسنت! لقد أكملت حرف ${currentLetter.letter}'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      );
+      
+      // Reload progress after returning from tracing screen
+      await _loadProgress();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -93,6 +168,10 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                   itemCount: arabicLetters.length,
                   itemBuilder: (context, index) {
                     final letter = arabicLetters[index];
+                    // Check if tracing activity (activity 0) is completed for this letter
+                    final isCompleted = _progressService?.isActivityCompleted(index, 0) ?? false;
+                    final isLocked = !_unlockedLetters.contains(index);
+                    
                     return Card(
                       elevation: 8,
                       child: Container(
@@ -100,49 +179,75 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           gradient: LinearGradient(
-                            colors: [
-                              Colors.teal.shade400,
-                              Colors.teal.shade600,
-                            ],
+                            colors: isLocked
+                                ? [Colors.grey.shade400, Colors.grey.shade600]
+                                : isCompleted
+                                    ? [Colors.green.shade400, Colors.green.shade600]
+                                    : [Colors.teal.shade400, Colors.teal.shade600],
                           ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        child: Stack(
                           children: [
-                            const Text(
-                              'اكتب الحرف',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  letter.letter,
-                                  style: const TextStyle(
-                                    fontSize: 60,
+                                const Text(
+                                  'اكتب الحرف',
+                                  style: TextStyle(
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      letter.letter,
+                                      style: const TextStyle(
+                                        fontSize: 60,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      letter.emoji,
+                                      style: const TextStyle(fontSize: 45),
+                                    ),
+                                  ],
+                                ),
                                 Text(
-                                  letter.emoji,
-                                  style: const TextStyle(fontSize: 45),
+                                  letter.word,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white70,
+                                  ),
                                 ),
                               ],
                             ),
-                            Text(
-                              letter.word,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.white70,
+                            // Lock or completion indicator
+                            if (isLocked)
+                              const Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Icon(
+                                  Icons.lock,
+                                  color: Colors.white70,
+                                  size: 24,
+                                ),
                               ),
-                            ),
+                            if (isCompleted && !isLocked)
+                              const Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Icon(
+                                  Icons.check_circle,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -185,6 +290,50 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
               ),
 
               const SizedBox(height: 8),
+
+              // Tracing Practice Button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Builder(
+                  builder: (context) {
+                    final isCompleted = _progressService?.isActivityCompleted(
+                      _currentLetterIndex,
+                      0, // Tracing activity
+                    ) ?? false;
+                    final isLocked = !_unlockedLetters.contains(_currentLetterIndex);
+                    
+                    return ElevatedButton.icon(
+                      onPressed: isLocked ? null : _startTracingPractice,
+                      icon: Icon(
+                        isCompleted ? Icons.check_circle : Icons.draw,
+                        size: 24,
+                      ),
+                      label: Text(
+                        isCompleted ? 'تم إكمال التمرين ✓' : 'تدريب تتبع الحرف',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isLocked
+                            ? Colors.grey
+                            : isCompleted
+                                ? Colors.green
+                                : Colors.deepPurple,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 12),
 
               // Signature pad with guidance overlay
               Expanded(

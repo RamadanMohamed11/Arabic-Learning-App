@@ -6,9 +6,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔥 DEV ONLY: Reset all data on app restart - Remove this line for production
-  final progressService = await UserProgressService.getInstance();
-  await progressService.resetAll();
+  // // 🔥 DEV ONLY: Reset all data on app restart - Remove this line for production
+  // final progressService = await UserProgressService.getInstance();
+  // await progressService.resetAll();
 
   runApp(const ArabicLearningApp());
 }

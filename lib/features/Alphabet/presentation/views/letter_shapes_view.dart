@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/models/letter_shapes.dart';
-import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/constants.dart';
+import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_exercises_view.dart';
 
 class LetterShapesView extends StatefulWidget {
   final String letter;
@@ -18,14 +18,12 @@ class _LetterShapesViewState extends State<LetterShapesView> {
   LetterShapes? letterShapes;
   String exampleWord = '';
   bool _isSpeaking = false;
-  UserProgressService? _progressService;
   int _letterIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _initTts();
-    _initProgress();
     letterShapes = ArabicLetterShapes.getShapes(widget.letter);
     // Get the word with tashkeel from arabicLetters list
     final letterData = arabicLetters.firstWhere(
@@ -36,10 +34,6 @@ class _LetterShapesViewState extends State<LetterShapesView> {
 
     // الحصول على رقم الحرف
     _letterIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
-  }
-
-  Future<void> _initProgress() async {
-    _progressService = await UserProgressService.getInstance();
   }
 
   Future<void> _initTts() async {
@@ -366,36 +360,24 @@ class _LetterShapesViewState extends State<LetterShapesView> {
     );
   }
 
-  /// زر إكمال الحرف
+  /// زر الانتقال للتمارين
   Widget _buildCompleteButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
-        onPressed: () async {
-          if (_progressService != null) {
-            await _progressService!.completeLetter(_letterIndex);
-
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    _letterIndex < 27
-                        ? 'أحسنت! تم فتح الحرف التالي 🎉'
-                        : 'مبروك! أكملت جميع الحروف 🎆',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-
-              // العودة للمستوى الأول
-              Navigator.pop(context);
-            }
-          }
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LetterExercisesView(
+                letter: widget.letter,
+                letterIndex: _letterIndex,
+              ),
+            ),
+          );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.deepPurple,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
@@ -406,10 +388,10 @@ class _LetterShapesViewState extends State<LetterShapesView> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Icon(Icons.check_circle, size: 28),
+            Icon(Icons.fitness_center, size: 28),
             SizedBox(width: 12),
             Text(
-              'أكملت الحرف ✅',
+              'ابدأ التمارين 💪',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
