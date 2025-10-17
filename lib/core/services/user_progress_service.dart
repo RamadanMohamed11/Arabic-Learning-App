@@ -1,0 +1,190 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
+class UserProgressService {
+  static const String _keyFirstTime = 'first_time';
+  static const String _keyPlacementTestScore = 'placement_test_score';
+  static const String _keyCurrentLevel = 'current_level';
+  static const String _keyLevel1Unlocked = 'level1_unlocked';
+  static const String _keyLevel2Unlocked = 'level2_unlocked';
+  static const String _keyLevel1Progress = 'level1_progress';
+  static const String _keyLevel2Progress = 'level2_progress';
+  static const String _keyLevel1Completed = 'level1_completed';
+  static const String _keyLevel2Completed = 'level2_completed';
+  static const String _keyUnlockedLetters = 'unlocked_letters';
+  static const String _keyCompletedActivities = 'completed_activities';
+
+  // Singleton pattern
+  static UserProgressService? _instance;
+  static SharedPreferences? _prefs;
+
+  UserProgressService._();
+
+  static Future<UserProgressService> getInstance() async {
+    if (_instance == null) {
+      _instance = UserProgressService._();
+      _prefs = await SharedPreferences.getInstance();
+    }
+    return _instance!;
+  }
+
+  Future<void> init() async {
+    _prefs ??= await SharedPreferences.getInstance();
+  }
+
+  SharedPreferences get prefs {
+    if (_prefs == null) {
+      throw Exception('UserProgressService not initialized. Call init() first.');
+    }
+    return _prefs!;
+  }
+
+  // التحقق من أول مرة
+  bool isFirstTime() {
+    return prefs.getBool(_keyFirstTime) ?? true;
+  }
+
+  Future<void> setFirstTime(bool value) async {
+    await prefs.setBool(_keyFirstTime, value);
+  }
+
+  // نتيجة اختبار تحديد المستوى
+  int getPlacementTestScore() {
+    return prefs.getInt(_keyPlacementTestScore) ?? 0;
+  }
+
+  Future<void> setPlacementTestScore(int score) async {
+    await prefs.setInt(_keyPlacementTestScore, score);
+  }
+
+  // المستوى الحالي
+  int getCurrentLevel() {
+    return prefs.getInt(_keyCurrentLevel) ?? 1;
+  }
+
+  Future<void> setCurrentLevel(int level) async {
+    await prefs.setInt(_keyCurrentLevel, level);
+  }
+
+  // فتح المستويات
+  bool isLevel1Unlocked() {
+    return prefs.getBool(_keyLevel1Unlocked) ?? true; // المستوى الأول مفتوح دائماً
+  }
+
+  bool isLevel2Unlocked() {
+    return prefs.getBool(_keyLevel2Unlocked) ?? false;
+  }
+
+  Future<void> unlockLevel2() async {
+    await prefs.setBool(_keyLevel2Unlocked, true);
+  }
+
+  // التقدم في المستويات (0-100)
+  double getLevel1Progress() {
+    return prefs.getDouble(_keyLevel1Progress) ?? 0.0;
+  }
+
+  Future<void> setLevel1Progress(double progress) async {
+    await prefs.setDouble(_keyLevel1Progress, progress);
+  }
+
+  double getLevel2Progress() {
+    return prefs.getDouble(_keyLevel2Progress) ?? 0.0;
+  }
+
+  Future<void> setLevel2Progress(double progress) async {
+    await prefs.setDouble(_keyLevel2Progress, progress);
+  }
+
+  // إكمال المستويات
+  bool isLevel1Completed() {
+    return prefs.getBool(_keyLevel1Completed) ?? false;
+  }
+
+  Future<void> setLevel1Completed(bool completed) async {
+    await prefs.setBool(_keyLevel1Completed, completed);
+  }
+
+  bool isLevel2Completed() {
+    return prefs.getBool(_keyLevel2Completed) ?? false;
+  }
+
+  Future<void> setLevel2Completed(bool completed) async {
+    await prefs.setBool(_keyLevel2Completed, completed);
+  }
+
+  // الحروف المفتوحة (قائمة من الأرقام)
+  List<int> getUnlockedLetters() {
+    final List<String>? letters = prefs.getStringList(_keyUnlockedLetters);
+    if (letters == null) {
+      return [0]; // أول حرف مفتوح افتراضياً
+    }
+    return letters.map((e) => int.parse(e)).toList();
+  }
+
+  Future<void> unlockLetter(int letterIndex) async {
+    final unlockedLetters = getUnlockedLetters();
+    if (!unlockedLetters.contains(letterIndex)) {
+      unlockedLetters.add(letterIndex);
+      await prefs.setStringList(
+        _keyUnlockedLetters,
+        unlockedLetters.map((e) => e.toString()).toList(),
+      );
+    }
+  }
+
+  // الأنشطة المكتملة (مفتاح: حرف_نشاط)
+  Set<String> getCompletedActivities() {
+    final List<String>? activities = prefs.getStringList(_keyCompletedActivities);
+    return activities?.toSet() ?? {};
+  }
+
+  Future<void> completeActivity(int letterIndex, int activityIndex) async {
+    final completedActivities = getCompletedActivities();
+    completedActivities.add('${letterIndex}_$activityIndex');
+    await prefs.setStringList(
+      _keyCompletedActivities,
+      completedActivities.toList(),
+    );
+  }
+
+  bool isActivityCompleted(int letterIndex, int activityIndex) {
+    final completedActivities = getCompletedActivities();
+    return completedActivities.contains('${letterIndex}_$activityIndex');
+  }
+
+  // إكمال حرف وفتح الحرف التالي
+  Future<void> completeLetter(int letterIndex) async {
+    // فتح الحرف التالي
+    if (letterIndex < 27) { // 28 حرف (0-27)
+      await unlockLetter(letterIndex + 1);
+    }
+    
+    // تحديث التقدم
+    final unlockedCount = getUnlockedLetters().length;
+    final progress = (unlockedCount / 28) * 100;
+    await setLevel1Progress(progress);
+    
+    // إذا تم إكمال جميع الحروف
+    if (unlockedCount >= 28) {
+      await setLevel1Completed(true);
+    }
+  }
+
+  // إعادة تعيين كل شيء
+  Future<void> resetAll() async {
+    await prefs.clear();
+  }
+
+  // إعادة تعيين مستوى معين
+  Future<void> resetLevel(int level) async {
+    if (level == 1) {
+      await prefs.setDouble(_keyLevel1Progress, 0.0);
+      await prefs.setBool(_keyLevel1Completed, false);
+      await prefs.setStringList(_keyUnlockedLetters, ['0']);
+      await prefs.setStringList(_keyCompletedActivities, []);
+    } else if (level == 2) {
+      await prefs.setDouble(_keyLevel2Progress, 0.0);
+      await prefs.setBool(_keyLevel2Completed, false);
+    }
+  }
+}

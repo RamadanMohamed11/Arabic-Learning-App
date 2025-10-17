@@ -1,8 +1,15 @@
 import 'package:arabic_learning_app/core/utils/app_router.dart';
+import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 🔥 DEV ONLY: Reset all data on app restart - Remove this line for production
+  final progressService = await UserProgressService.getInstance();
+  await progressService.resetAll();
+
   runApp(const ArabicLearningApp());
 }
 

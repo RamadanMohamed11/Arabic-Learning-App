@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/models/letter_shapes.dart';
+import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/constants.dart';
 
 class LetterShapesView extends StatefulWidget {
   final String letter;
 
-  const LetterShapesView({
-    super.key,
-    required this.letter,
-  });
+  const LetterShapesView({super.key, required this.letter});
 
   @override
   State<LetterShapesView> createState() => _LetterShapesViewState();
@@ -20,11 +18,14 @@ class _LetterShapesViewState extends State<LetterShapesView> {
   LetterShapes? letterShapes;
   String exampleWord = '';
   bool _isSpeaking = false;
+  UserProgressService? _progressService;
+  int _letterIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _initTts();
+    _initProgress();
     letterShapes = ArabicLetterShapes.getShapes(widget.letter);
     // Get the word with tashkeel from arabicLetters list
     final letterData = arabicLetters.firstWhere(
@@ -32,6 +33,13 @@ class _LetterShapesViewState extends State<LetterShapesView> {
       orElse: () => arabicLetters[0],
     );
     exampleWord = letterData.word;
+
+    // الحصول على رقم الحرف
+    _letterIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
+  }
+
+  Future<void> _initProgress() async {
+    _progressService = await UserProgressService.getInstance();
   }
 
   Future<void> _initTts() async {
@@ -72,10 +80,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
           backgroundColor: const Color(0xFF1A237E),
         ),
         body: const Center(
-          child: Text(
-            'الحرف غير متوفر',
-            style: TextStyle(fontSize: 24),
-          ),
+          child: Text('الحرف غير متوفر', style: TextStyle(fontSize: 24)),
         ),
       );
     }
@@ -88,20 +93,15 @@ class _LetterShapesViewState extends State<LetterShapesView> {
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         backgroundColor: const Color(0xFF1A237E),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(
-              _isSpeaking ? Icons.volume_off : Icons.volume_up,
-              size: 28,
-            ),
-            onPressed: () => _speak(letterShapes!.name),
-            tooltip: 'نطق الحرف',
-          ),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -119,6 +119,11 @@ class _LetterShapesViewState extends State<LetterShapesView> {
             // مثال على الحرف
             _buildExampleSection(),
 
+            const SizedBox(height: 20),
+
+            // زر إكمال الحرف
+            _buildCompleteButton(),
+
             const SizedBox(height: 30),
           ],
         ),
@@ -133,34 +138,39 @@ class _LetterShapesViewState extends State<LetterShapesView> {
       padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            const Color(0xFF1A237E),
-            Colors.indigo.shade700,
-          ],
+          colors: [const Color(0xFF1A237E), Colors.indigo.shade700],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
       child: Column(
         children: [
-          Text(
-            letterShapes!.isolated,
-            style: const TextStyle(
-              fontSize: 120,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.2,
-            ),
+          // الحرف مع أيقونة السماعة
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                letterShapes!.isolated,
+                style: const TextStyle(
+                  fontSize: 120,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(width: 16),
+              IconButton(
+                onPressed: () => _speak(letterShapes!.isolated),
+                icon: Icon(
+                  _isSpeaking ? Icons.volume_off : Icons.volume_up,
+                  color: Colors.white,
+                  size: 40,
+                ),
+                tooltip: 'استمع للحرف',
+              ),
+            ],
           ),
           const SizedBox(height: 10),
-          Text(
-            letterShapes!.name,
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w600,
-              color: Colors.white70,
-            ),
-          ),
         ],
       ),
     );
@@ -231,7 +241,12 @@ class _LetterShapesViewState extends State<LetterShapesView> {
   }
 
   /// بطاقة شكل الحرف
-  Widget _buildShapeCard(String title, String shape, Color color, IconData icon) {
+  Widget _buildShapeCard(
+    String title,
+    String shape,
+    Color color,
+    IconData icon,
+  ) {
     return GestureDetector(
       onTap: () => _speak(shape),
       child: Container(
@@ -271,11 +286,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
               ),
             ),
             const SizedBox(height: 8),
-            Icon(
-              Icons.volume_up,
-              color: color.withOpacity(0.5),
-              size: 20,
-            ),
+            Icon(Icons.volume_up, color: color.withOpacity(0.5), size: 20),
           ],
         ),
       ),
@@ -305,10 +316,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.amber.shade100,
-                    Colors.orange.shade100,
-                  ],
+                  colors: [Colors.amber.shade100, Colors.orange.shade100],
                 ),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
@@ -354,6 +362,58 @@ class _LetterShapesViewState extends State<LetterShapesView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// زر إكمال الحرف
+  Widget _buildCompleteButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ElevatedButton(
+        onPressed: () async {
+          if (_progressService != null) {
+            await _progressService!.completeLetter(_letterIndex);
+
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    _letterIndex < 27
+                        ? 'أحسنت! تم فتح الحرف التالي 🎉'
+                        : 'مبروك! أكملت جميع الحروف 🎆',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+
+              // العودة للمستوى الأول
+              Navigator.pop(context);
+            }
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 5,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.check_circle, size: 28),
+            SizedBox(width: 12),
+            Text(
+              'أكملت الحرف ✅',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
   }
