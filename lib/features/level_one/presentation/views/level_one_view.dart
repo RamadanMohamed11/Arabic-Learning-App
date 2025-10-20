@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/features/Alphabet/data/models/arabic_letter_model.dart';
@@ -38,10 +39,10 @@ class _LevelOneViewState extends State<LevelOneView> {
   }
 
   Color _getProgressColor() {
-    if (_progress < 25) return Colors.red;
-    if (_progress < 50) return Colors.orange;
-    if (_progress < 75) return Colors.blue;
-    return Colors.green;
+    if (_progress < 25) return AppColors.error;
+    if (_progress < 50) return AppColors.warning;
+    if (_progress < 75) return AppColors.secondary;
+    return AppColors.success;
   }
 
   @override
@@ -56,8 +57,8 @@ class _LevelOneViewState extends State<LevelOneView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF43e97b).withOpacity(0.3),
-              Color(0xFF38f9d7).withOpacity(0.3),
+              AppColors.level1[0].withOpacity(0.3),
+              AppColors.level1[1].withOpacity(0.3),
             ],
           ),
         ),
@@ -68,12 +69,12 @@ class _LevelOneViewState extends State<LevelOneView> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF43e97b), Color(0xFF38f9d7)],
+                  gradient: const LinearGradient(
+                    colors: AppColors.level1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFF43e97b).withOpacity(0.3),
+                      color: AppColors.level1[0].withOpacity(0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 5),
                     ),
@@ -230,14 +231,14 @@ class _LevelOneViewState extends State<LevelOneView> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: isUnlocked
-                ? [Color(0xFF667eea), Color(0xFF764ba2)]
+                ? AppColors.primaryGradient
                 : [Colors.grey.shade300, Colors.grey.shade400],
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: isUnlocked
-                  ? Color(0xFF667eea).withOpacity(0.3)
+                  ? AppColors.shadowMedium
                   : Colors.grey.withOpacity(0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
@@ -289,12 +290,12 @@ class _LevelOneViewState extends State<LevelOneView> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
+          colors: AppColors.exercise2,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Color(0xFFf093fb).withOpacity(0.3),
+            color: AppColors.exercise2[0].withOpacity(0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

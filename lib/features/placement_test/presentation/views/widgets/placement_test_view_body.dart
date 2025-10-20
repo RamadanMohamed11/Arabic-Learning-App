@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:go_router/go_router.dart';
 
@@ -224,7 +225,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
 
   Future<void> _showResults() async {
     final percentage = (_score / _questions.length) * 100;
-    
+
     // حفظ النتيجة
     await _progressService!.setPlacementTestScore(_score);
     await _progressService!.setFirstTime(false);
@@ -234,19 +235,19 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
       // نجح في الاختبار - فتح المستوى الثاني وجميع حروف المستوى الأول
       await _progressService!.unlockLevel2();
       await _progressService!.setCurrentLevel(2);
-      
+
       // فتح جميع الحروف (28 حرف)
       for (int i = 0; i < 28; i++) {
         await _progressService!.unlockLetter(i);
       }
-      
+
       // تعيين تقدم 100% للمستوى الأول
       await _progressService!.setLevel1Progress(100.0);
       await _progressService!.setLevel1Completed(true);
     } else {
       // لم ينجح - فتح المستوى الأول فقط مع أول حرف
       await _progressService!.setCurrentLevel(1);
-      
+
       // التأكد من أن أول حرف فقط مفتوح (الألف)
       // سيتم فتح الحروف الأخرى تدريجياً عند إكمال كل حرف
     }
@@ -284,11 +285,11 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
 
   Widget _buildWelcomeScreen() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+          colors: AppColors.primaryGradient,
         ),
       ),
       child: SafeArea(
@@ -297,10 +298,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '🎯',
-                style: TextStyle(fontSize: 80),
-              ),
+              const Text('🎯', style: TextStyle(fontSize: 80)),
               const SizedBox(height: 24),
               const Text(
                 'اختبار تحديد المستوى',
@@ -314,10 +312,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
               const SizedBox(height: 16),
               const Text(
                 'سنقيم مستواك في اللغة العربية من خلال 10 أسئلة',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white70,
-                ),
+                style: TextStyle(fontSize: 18, color: Colors.white70),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
@@ -342,7 +337,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                 onPressed: _startTest,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  foregroundColor: Color(0xFF667eea),
+                  foregroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 48,
                     vertical: 16,
@@ -353,10 +348,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                 ),
                 child: const Text(
                   'ابدأ الاختبار',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -384,10 +376,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
             ),
             Text(
               description,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white70,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.white70),
             ),
           ],
         ),
@@ -404,7 +393,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.blue.shade50, Colors.purple.shade50],
+          colors: [AppColors.background, AppColors.lightMint],
         ),
       ),
       child: SafeArea(
@@ -430,7 +419,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                          color: AppColors.success,
                         ),
                       ),
                     ],
@@ -440,7 +429,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                     value: progress,
                     backgroundColor: Colors.grey.shade300,
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      Color(0xFF667eea),
+                      AppColors.primary,
                     ),
                     minHeight: 8,
                     borderRadius: BorderRadius.circular(4),
@@ -460,8 +449,8 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                       currentQuestion.type == 'writing'
                           ? '✍️'
                           : currentQuestion.type == 'pronunciation'
-                              ? '🗣️'
-                              : '👂',
+                          ? '🗣️'
+                          : '👂',
                       style: const TextStyle(fontSize: 60),
                     ),
                     const SizedBox(height: 24),
@@ -491,7 +480,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                     ElevatedButton(
                       onPressed: _canProceed() ? _checkAnswer : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF667eea),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         disabledBackgroundColor: Colors.grey.shade300,
                         disabledForegroundColor: Colors.grey.shade600,
@@ -529,7 +518,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           icon: const Icon(Icons.volume_up),
           label: const Text('استمع للصوت'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
+            backgroundColor: AppColors.secondary,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           ),
@@ -574,17 +563,14 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           ),
           child: Text(
             question.imagePath!,
-            style: const TextStyle(
-              fontSize: 64,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
         ),
         const SizedBox(height: 24),
         FloatingActionButton.extended(
           onPressed: _isListening ? _stopListening : _startListening,
-          backgroundColor: _isListening ? Colors.red : Colors.green,
+          backgroundColor: _isListening ? AppColors.error : AppColors.success,
           icon: Icon(_isListening ? Icons.mic : Icons.mic_off),
           label: Text(_isListening ? 'إيقاف' : 'ابدأ النطق'),
         ),
@@ -592,7 +578,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           const SizedBox(height: 16),
           Text(
             'سمعت: ${_answerController.text}',
-            style: const TextStyle(fontSize: 18, color: Colors.blue),
+            style: const TextStyle(fontSize: 18, color: AppColors.secondary),
           ),
         ],
       ],
@@ -619,10 +605,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
             ),
             child: Text(
               question.imagePath!,
-              style: const TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
           ),
@@ -651,13 +634,11 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? const Color(0xFF667eea)
-                      : Colors.white,
+                  color: isSelected ? AppColors.primary : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected
-                        ? const Color(0xFF667eea)
+                        ? AppColors.primary
                         : Colors.grey.shade300,
                     width: 2,
                   ),
@@ -694,7 +675,11 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                     ),
                     const Spacer(),
                     if (isSelected)
-                      const Icon(Icons.check_circle, color: Colors.white, size: 32),
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 32,
+                      ),
                   ],
                 ),
               ),
@@ -715,8 +700,8 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: passed
-              ? [Colors.green.shade400, Colors.teal.shade400]
-              : [Colors.orange.shade400, Colors.deepOrange.shade400],
+              ? AppColors.accentGradient
+              : [AppColors.warning, AppColors.secondary],
         ),
       ),
       child: SafeArea(
@@ -725,10 +710,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                passed ? '🎉' : '💪',
-                style: const TextStyle(fontSize: 100),
-              ),
+              Text(passed ? '🎉' : '💪', style: const TextStyle(fontSize: 100)),
               const SizedBox(height: 24),
               Text(
                 passed ? 'أحسنت!' : 'جيد!',
@@ -741,10 +723,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
               const SizedBox(height: 16),
               Text(
                 'حصلت على $_score من ${_questions.length}',
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                ),
+                style: const TextStyle(fontSize: 24, color: Colors.white),
               ),
               const SizedBox(height: 8),
               Text(
@@ -766,10 +745,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                   children: [
                     const Text(
                       'مستواك:',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white70,
-                      ),
+                      style: TextStyle(fontSize: 20, color: Colors.white70),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -799,7 +775,9 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                 onPressed: _goToLevels,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  foregroundColor: passed ? Colors.green : Colors.orange,
+                  foregroundColor: passed
+                      ? AppColors.success
+                      : AppColors.secondary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 48,
                     vertical: 16,
@@ -810,10 +788,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                 ),
                 child: const Text(
                   'ابدأ التعلم',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
             ],

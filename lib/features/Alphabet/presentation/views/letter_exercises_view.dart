@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/automated_letter_trace_screen.dart';
@@ -106,7 +107,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(Icons.celebration, color: Colors.amber, size: 32),
+            Icon(Icons.celebration, color: AppColors.warning, size: 32),
             SizedBox(width: 12),
             Text('أحسنت!'),
           ],
@@ -122,7 +123,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 20),
-            Icon(Icons.check_circle, color: Colors.green, size: 80),
+            Icon(Icons.check_circle, color: AppColors.success, size: 80),
           ],
         ),
         actions: [
@@ -149,7 +150,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           'تمارين حرف ${widget.letter}',
@@ -159,7 +160,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: AppColors.primary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -189,7 +190,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
                       title: 'تمرين تتبع الحرف',
                       description: 'تتبع شكل الحرف بإصبعك',
                       icon: Icons.draw,
-                      color: Colors.deepPurple,
+                      color: AppColors.accent,
                       isCompleted: _tracingCompleted,
                       onTap: _startTracingExercise,
                     ),
@@ -220,15 +221,15 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [const Color(0xFF1A237E), Colors.indigo.shade700],
+        gradient: const LinearGradient(
+          colors: AppColors.primaryGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.indigo.withOpacity(0.3),
+            color: AppColors.shadowMedium,
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -256,21 +257,21 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: AppColors.lightSlateBlue.withOpacity(0.2),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.shade200, width: 2),
+        border: Border.all(color: AppColors.secondary, width: 2),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.blue.shade700, size: 32),
+          Icon(Icons.info_outline, color: AppColors.primary, size: 32),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               'أكمل جميع التمارين لفتح الحرف التالي',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.blue.shade900,
+                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -302,7 +303,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
             ),
           ],
           border: Border.all(
-            color: isCompleted ? Colors.green : color,
+            color: isCompleted ? AppColors.success : color,
             width: 3,
           ),
         ),
@@ -313,13 +314,13 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: isCompleted
-                    ? Colors.green.shade100
+                    ? AppColors.success.withOpacity(0.1)
                     : color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 isCompleted ? Icons.check_circle : icon,
-                color: isCompleted ? Colors.green : color,
+                color: isCompleted ? AppColors.success : color,
                 size: 40,
               ),
             ),
@@ -336,7 +337,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: isCompleted ? Colors.green : color,
+                      color: isCompleted ? AppColors.success : color,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -368,8 +369,8 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.amber.shade100, Colors.orange.shade100],
+        gradient: const LinearGradient(
+          colors: AppColors.warmGradient,
         ),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -383,7 +384,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A237E),
+                  color: AppColors.primary,
                 ),
               ),
               Text(
@@ -391,7 +392,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A237E),
+                  color: AppColors.primary,
                 ),
               ),
             ],
@@ -404,7 +405,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
               minHeight: 12,
               backgroundColor: Colors.grey.shade300,
               valueColor: AlwaysStoppedAnimation<Color>(
-                progress == 1.0 ? Colors.green : Colors.orange,
+                progress == 1.0 ? AppColors.success : AppColors.secondary,
               ),
             ),
           ),
@@ -416,7 +417,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.orange.shade900,
+              color: AppColors.textSecondary,
             ),
           ),
         ],

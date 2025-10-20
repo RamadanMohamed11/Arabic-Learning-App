@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 
 class ActivityItem {
@@ -32,37 +33,37 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       title: 'تجميع الحروف',
       description: 'تعلم كيفية تكوين الكلمات من الحروف',
       icon: Icons.build,
-      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+      colors: AppColors.exercise1,
     ),
     ActivityItem(
       title: 'قراءة الكلمات',
       description: 'تدرب على قراءة الكلمات بطلاقة',
       icon: Icons.menu_book,
-      colors: [Color(0xFF4facfe), Color(0xFF00f2fe)],
+      colors: AppColors.exercise3,
     ),
     ActivityItem(
       title: 'كتابة الكلمات',
       description: 'اكتب الكلمات بشكل صحيح',
       icon: Icons.edit,
-      colors: [Color(0xFF43e97b), Color(0xFF38f9d7)],
+      colors: AppColors.exercise4,
     ),
     ActivityItem(
       title: 'تكوين الجمل',
       description: 'ابدأ في تكوين جمل بسيطة',
       icon: Icons.text_fields,
-      colors: [Color(0xFFfa709a), Color(0xFFfee140)],
+      colors: AppColors.exercise5,
     ),
     ActivityItem(
       title: 'قراءة الجمل',
       description: 'اقرأ الجمل بطلاقة وفهم',
       icon: Icons.record_voice_over,
-      colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
+      colors: AppColors.exercise2,
     ),
     ActivityItem(
       title: 'مراجعة شاملة',
       description: 'راجع كل ما تعلمته',
       icon: Icons.quiz,
-      colors: [Color(0xFF30cfd0), Color(0xFF330867)],
+      colors: AppColors.exercise6,
     ),
   ];
 
@@ -89,11 +90,11 @@ class _LevelTwoViewState extends State<LevelTwoView> {
   }
 
   Color _getProgressColor() {
-    if (_progress < 20) return Colors.red;
-    if (_progress < 40) return Colors.orange;
-    if (_progress < 60) return Colors.blue;
-    if (_progress < 80) return Colors.purple;
-    return Colors.green;
+    if (_progress < 20) return AppColors.error;
+    if (_progress < 40) return AppColors.warning;
+    if (_progress < 60) return AppColors.secondary;
+    if (_progress < 80) return AppColors.primary;
+    return AppColors.success;
   }
 
   @override
@@ -105,8 +106,8 @@ class _LevelTwoViewState extends State<LevelTwoView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFfa709a).withOpacity(0.3),
-              Color(0xFFfee140).withOpacity(0.3),
+              AppColors.level2[0].withOpacity(0.3),
+              AppColors.level2[1].withOpacity(0.3),
             ],
           ),
         ),
@@ -118,11 +119,11 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFfa709a), Color(0xFFfee140)],
+                    colors: AppColors.level2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFFfa709a).withOpacity(0.3),
+                      color: AppColors.level2[0].withOpacity(0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 5),
                     ),

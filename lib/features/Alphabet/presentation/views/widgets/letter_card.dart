@@ -1,3 +1,4 @@
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/Alphabet/data/models/arabic_letter_model.dart';
 import 'package:flutter/material.dart';
 
@@ -64,11 +65,11 @@ class _LetterCardState extends State<LetterCard>
         scale: _scaleAnimation,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: AppColors.shadowMedium,
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -88,7 +89,7 @@ class _LetterCardState extends State<LetterCard>
                       style: const TextStyle(
                         fontSize: 35,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF667eea),
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -125,11 +126,11 @@ class _LetterCardState extends State<LetterCard>
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF667eea),
+                      color: AppColors.secondary,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: AppColors.shadowMedium,
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),

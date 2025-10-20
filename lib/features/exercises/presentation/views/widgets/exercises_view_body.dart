@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/letter_tracing/presentation/views/simple_svg_letter_view.dart';
 import 'package:arabic_learning_app/features/word_training/presentation/views/widgets/word_training_view_body.dart';
 import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/writing_practice_view_body.dart';
@@ -30,42 +31,42 @@ class ExercisesViewBody extends StatelessWidget {
       title: 'تتبع الحروف',
       description: 'تعلم كتابة الحروف بالتتبع',
       icon: Icons.gesture,
-      gradientColors: [Color(0xFF667eea), Color(0xFF764ba2)],
+      gradientColors: AppColors.exercise1,
       page: SimpleSvgLetterView(letter: 'ا'),
     ),
     ExerciseItem(
       title: 'تدريب الكلمات',
       description: 'تعلم نطق الكلمات بشكل صحيح',
       icon: Icons.record_voice_over,
-      gradientColors: [Color(0xFFf093fb), Color(0xFFf5576c)],
+      gradientColors: AppColors.exercise2,
       page: WordTrainingViewBody(),
     ),
     ExerciseItem(
       title: 'تدريب الكتابة',
       description: 'تدرب على كتابة الحروف بحرية',
       icon: Icons.edit,
-      gradientColors: [Color(0xFF4facfe), Color(0xFF00f2fe)],
+      gradientColors: AppColors.exercise3,
       page: WritingPracticeViewBody(),
     ),
     ExerciseItem(
       title: 'لعبة الذاكرة',
       description: 'اختبر ذاكرتك مع الحروف',
       icon: Icons.psychology,
-      gradientColors: [Color(0xFF43e97b), Color(0xFF38f9d7)],
+      gradientColors: AppColors.exercise4,
       page: MemoryGameViewBody(),
     ),
     ExerciseItem(
       title: 'البحث عن الكلمات',
       description: 'ابحث عن الكلمات المخفية',
       icon: Icons.search,
-      gradientColors: [Color(0xFFfa709a), Color(0xFFfee140)],
+      gradientColors: AppColors.exercise5,
       page: WordSearchViewBody(),
     ),
     ExerciseItem(
       title: 'تمرين النطق',
       description: 'تدرب على نطق الكلمات',
       icon: Icons.mic,
-      gradientColors: [Color(0xFF30cfd0), Color(0xFF330867)],
+      gradientColors: AppColors.exercise6,
       page: PronunciationPracticeViewBody(),
     ),
   ];
@@ -73,11 +74,11 @@ class ExercisesViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+          colors: AppColors.primaryGradient,
         ),
       ),
       child: SafeArea(

@@ -1,4 +1,5 @@
 import 'package:arabic_learning_app/constants.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/widgets/letter_card.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_shapes_view.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class _AlphabetViewBodyState extends State<AlphabetViewBody> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+          colors: AppColors.primaryGradient,
         ),
       ),
       child: SafeArea(

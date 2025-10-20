@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 
 class AboutView extends StatelessWidget {
   const AboutView({super.key});
@@ -11,8 +12,8 @@ class AboutView extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF667eea).withOpacity(0.1),
-              const Color(0xFF764ba2).withOpacity(0.1),
+              AppColors.primaryGradient[0].withOpacity(0.1),
+              AppColors.primaryGradient[1].withOpacity(0.1),
             ],
           ),
         ),
@@ -37,14 +38,14 @@ class AboutView extends StatelessWidget {
                   ),
                   child: const Column(
                     children: [
-                      Icon(Icons.school, size: 80, color: Color(0xFF667eea)),
+                      Icon(Icons.school, size: 80, color: AppColors.primary),
                       SizedBox(height: 16),
                       Text(
                         'تطبيق تعلم الحروف العربية',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF667eea),
+                          color: AppColors.primary,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -81,7 +82,7 @@ class AboutView extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.people,
-                            color: Color(0xFF667eea),
+                            color: AppColors.primary,
                             size: 28,
                           ),
                           SizedBox(width: 8),
@@ -90,7 +91,7 @@ class AboutView extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF667eea),
+                              color: AppColors.primary,
                             ),
                           ),
                         ],
@@ -101,7 +102,7 @@ class AboutView extends StatelessWidget {
                       _buildTeamSection(
                         'قسم الرياضيات',
                         Icons.calculate,
-                        Colors.blue,
+                        AppColors.secondary,
                         ['أسماء فرغلي', 'منن هشام', 'مريم عاطف'],
                       ),
 
@@ -111,7 +112,7 @@ class AboutView extends StatelessWidget {
                       _buildTeamSection(
                         'قسم الكيمياء',
                         Icons.science,
-                        Colors.green,
+                        AppColors.accent,
                         ['أمنية أشرف', 'مي سيد', 'برسيس بهيج', 'حسين طارق'],
                       ),
 
@@ -121,7 +122,7 @@ class AboutView extends StatelessWidget {
                       _buildTeamSection(
                         'قسم الأحياء',
                         Icons.biotech,
-                        Colors.purple,
+                        AppColors.primary,
                         ['هبة شاكر', 'دينا صبري'],
                       ),
                     ],

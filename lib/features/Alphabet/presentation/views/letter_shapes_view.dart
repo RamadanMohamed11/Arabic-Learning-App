@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/models/letter_shapes.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_exercises_view.dart';
@@ -71,7 +72,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('أشكال الحرف'),
-          backgroundColor: const Color(0xFF1A237E),
+          backgroundColor: AppColors.primary,
         ),
         body: const Center(
           child: Text('الحرف غير متوفر', style: TextStyle(fontSize: 24)),
@@ -80,7 +81,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           'أشكال حرف ${letterShapes!.name}',
@@ -90,7 +91,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: AppColors.primary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -130,9 +131,9 @@ class _LetterShapesViewState extends State<LetterShapesView> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(30),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [const Color(0xFF1A237E), Colors.indigo.shade700],
+          colors: AppColors.primaryGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -179,10 +180,10 @@ class _LetterShapesViewState extends State<LetterShapesView> {
         children: [
           const Text(
             'أشكال الحرف:',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A237E),
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 16),
@@ -192,7 +193,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
                 child: _buildShapeCard(
                   'منفصل',
                   letterShapes!.isolated,
-                  Colors.blue,
+                  AppColors.primary,
                   Icons.fiber_manual_record,
                 ),
               ),
@@ -201,7 +202,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
                 child: _buildShapeCard(
                   'أول الكلمة',
                   letterShapes!.initial,
-                  Colors.green,
+                  AppColors.secondary,
                   Icons.arrow_forward,
                 ),
               ),
@@ -214,7 +215,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
                 child: _buildShapeCard(
                   'وسط الكلمة',
                   letterShapes!.medial,
-                  Colors.orange,
+                  AppColors.accent,
                   Icons.swap_horiz,
                 ),
               ),
@@ -223,7 +224,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
                 child: _buildShapeCard(
                   'آخر الكلمة',
                   letterShapes!.final_,
-                  Colors.purple,
+                  AppColors.darkSlateBlue,
                   Icons.arrow_back,
                 ),
               ),
@@ -296,10 +297,10 @@ class _LetterShapesViewState extends State<LetterShapesView> {
         children: [
           const Text(
             'مثال:',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A237E),
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 16),
@@ -309,13 +310,11 @@ class _LetterShapesViewState extends State<LetterShapesView> {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.amber.shade100, Colors.orange.shade100],
-                ),
+                color: AppColors.mintGreen,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.3),
+                    color: AppColors.shadowMedium,
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -328,25 +327,21 @@ class _LetterShapesViewState extends State<LetterShapesView> {
                     style: const TextStyle(
                       fontSize: 80,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A237E),
+                      color: AppColors.primary,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.volume_up,
-                        color: Colors.orange.shade700,
-                        size: 28,
-                      ),
+                      Icon(Icons.volume_up, color: Colors.black, size: 28),
                       const SizedBox(width: 8),
                       Text(
                         'اضغط للاستماع',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: Colors.orange.shade700,
+                          color: Colors.black,
                         ),
                       ),
                     ],
@@ -377,8 +372,8 @@ class _LetterShapesViewState extends State<LetterShapesView> {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.accent,
+          foregroundColor: AppColors.textOnAccent,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

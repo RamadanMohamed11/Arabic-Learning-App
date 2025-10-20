@@ -1,3 +1,4 @@
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/widgets/alphabet_view_body.dart';
 import 'package:arabic_learning_app/features/exercises/presentation/views/exercises_view.dart';
 import 'package:arabic_learning_app/features/about/presentation/views/about_view.dart';
@@ -57,14 +58,11 @@ class _AlphabetViewState extends State<AlphabetView> with SingleTickerProviderSt
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-            ],
+            colors: AppColors.primaryGradient,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF667eea).withOpacity(0.3),
+              color: AppColors.shadowMedium,
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),

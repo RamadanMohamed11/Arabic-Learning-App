@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/level_one/presentation/views/level_one_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/level_two_view.dart';
@@ -35,14 +36,11 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-            ],
+            colors: AppColors.primaryGradient,
           ),
         ),
         child: SafeArea(
@@ -94,7 +92,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                         icon: '📚',
                         progress: _level1Progress,
                         isLocked: false,
-                        colors: [Color(0xFF43e97b), Color(0xFF38f9d7)],
+                        colors: AppColors.level1,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -116,7 +114,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                         icon: '🌟',
                         progress: _level2Progress,
                         isLocked: !_level2Unlocked,
-                        colors: [Color(0xFFfa709a), Color(0xFFfee140)],
+                        colors: AppColors.level2,
                         onTap: _level2Unlocked
                             ? () {
                                 Navigator.push(
