@@ -4,6 +4,8 @@ import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/features/Alphabet/data/models/arabic_letter_model.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_shapes_view.dart';
+import 'package:go_router/go_router.dart';
+import 'package:arabic_learning_app/core/utils/app_router.dart';
 
 class LevelOneView extends StatefulWidget {
   const LevelOneView({super.key});
@@ -113,6 +115,34 @@ class _LevelOneViewState extends State<LevelOneView> {
                         Text(
                           _getProgressEmoji(),
                           style: const TextStyle(fontSize: 32),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: TextButton.icon(
+                            onPressed: () {
+                              context.push(AppRouter.kAboutView);
+                            },
+                            icon: const Icon(
+                              Icons.info_outline,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                            label: const Text(
+                              'حول',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              minimumSize: Size.zero,
+                            ),
+                          ),
                         ),
                       ],
                     ),

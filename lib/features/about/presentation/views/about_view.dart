@@ -6,14 +6,27 @@ class AboutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'حول التطبيق',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.primaryGradient[0].withOpacity(0.1),
-              AppColors.primaryGradient[1].withOpacity(0.1),
+              AppColors.primary.withOpacity(0.1),
+              AppColors.background,
             ],
           ),
         ),
@@ -165,7 +178,8 @@ class AboutView extends StatelessWidget {
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildTeamSection(

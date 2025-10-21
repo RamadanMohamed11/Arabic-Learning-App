@@ -4,6 +4,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:arabic_learning_app/core/utils/app_router.dart';
 
 class PlacementTestQuestion {
   final String type; // 'writing', 'pronunciation', 'listening'
@@ -42,6 +43,9 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   String _selectedOption = '';
   bool _testStarted = false;
   bool _showingResults = false;
+  bool _isPlayingAudio = false;
+  bool _ttsInitialized = false;
+  int _audioAttempts = 0;
 
   final List<PlacementTestQuestion> _questions = [
     // أسئلة الكتابة (3 أسئلة)
@@ -125,9 +129,78 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
 
   Future<void> _initServices() async {
     _progressService = await UserProgressService.getInstance();
-    await _flutterTts.setLanguage('ar-SA');
-    await _flutterTts.setSpeechRate(0.4);
-    await _speechToText.initialize();
+    await _initializeTTS();
+    
+    // تهيئة التعرف على الصوت
+    try {
+      await _speechToText.initialize();
+    } catch (e) {
+      print('Error initializing Speech to Text: $e');
+    }
+  }
+
+  Future<void> _initializeTTS() async {
+    try {
+      // إعادة تعيين حالة TTS
+      await _flutterTts.stop();
+      
+      // تجربة لغات مختلفة للعربية
+      List<String> arabicLanguages = ['ar-SA', 'ar', 'ar-EG', 'ar-AE'];
+      bool languageSet = false;
+      
+      for (String lang in arabicLanguages) {
+        try {
+          var result = await _flutterTts.setLanguage(lang);
+          if (result == 1) {
+            print('TTS language set successfully: $lang');
+            languageSet = true;
+            break;
+          }
+        } catch (e) {
+          print('Failed to set language $lang: $e');
+          continue;
+        }
+      }
+      
+      if (!languageSet) {
+        print('Warning: Could not set Arabic language, using default');
+      }
+      
+      // إعداد معاملات TTS
+      await _flutterTts.setSpeechRate(0.3); // أبطأ قليلاً للوضوح
+      await _flutterTts.setVolume(1.0);
+      await _flutterTts.setPitch(1.0);
+      
+      // إعداد callbacks للـ TTS
+      _flutterTts.setCompletionHandler(() {
+        print('TTS completed successfully');
+        if (mounted) {
+          setState(() {
+            _isPlayingAudio = false;
+          });
+        }
+      });
+      
+      _flutterTts.setErrorHandler((message) {
+        print('TTS error: $message');
+        if (mounted) {
+          setState(() {
+            _isPlayingAudio = false;
+          });
+        }
+      });
+      
+      _flutterTts.setStartHandler(() {
+        print('TTS started');
+      });
+      
+      _ttsInitialized = true;
+      print('TTS initialized successfully');
+      
+    } catch (e) {
+      print('Error initializing TTS: $e');
+      _ttsInitialized = false;
+    }
   }
 
   void _startTest() {
@@ -137,7 +210,100 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   }
 
   Future<void> _playAudio(String text) async {
-    await _flutterTts.speak(text);
+    print('Attempting to play audio: "$text"');
+    
+    // منع المحاولات المتعددة المتزامنة
+    if (_isPlayingAudio) {
+      print('Audio already playing, stopping previous');
+      await _flutterTts.stop();
+      await Future.delayed(const Duration(milliseconds: 200));
+    }
+    
+    _audioAttempts++;
+    print('Audio attempt #$_audioAttempts');
+    
+    setState(() {
+      _isPlayingAudio = true;
+    });
+    
+    try {
+      // التحقق من تهيئة TTS
+      if (!_ttsInitialized) {
+        print('TTS not initialized, reinitializing...');
+        await _initializeTTS();
+        if (!_ttsInitialized) {
+          throw Exception('Failed to initialize TTS');
+        }
+      }
+      
+      // إيقاف أي صوت قيد التشغيل والانتظار
+      await _flutterTts.stop();
+      await Future.delayed(const Duration(milliseconds: 300));
+      
+      // التحقق من توفر اللغات
+      var languages = await _flutterTts.getLanguages;
+      print('Available languages: $languages');
+      
+      // تشغيل الصوت مع إعادة المحاولة
+      int maxRetries = 3;
+      bool success = false;
+      
+      for (int i = 0; i < maxRetries && !success; i++) {
+        try {
+          print('TTS speak attempt ${i + 1}/$maxRetries');
+          
+          // تأكيد إعدادات TTS قبل كل محاولة
+          await _flutterTts.setVolume(1.0);
+          await _flutterTts.setSpeechRate(0.3);
+          
+          final result = await _flutterTts.speak(text);
+          print('TTS speak result: $result');
+          
+          if (result == 1) {
+            success = true;
+            print('Audio started successfully');
+            
+            // انتظار لمدة قصيرة للتأكد من بدء التشغيل
+            await Future.delayed(const Duration(milliseconds: 100));
+          } else {
+            print('TTS speak failed with result: $result');
+            if (i < maxRetries - 1) {
+              await Future.delayed(const Duration(milliseconds: 500));
+              // إعادة تهيئة TTS في حالة الفشل
+              await _initializeTTS();
+            }
+          }
+        } catch (e) {
+          print('TTS speak attempt ${i + 1} failed: $e');
+          if (i < maxRetries - 1) {
+            await Future.delayed(const Duration(milliseconds: 500));
+            await _initializeTTS();
+          }
+        }
+      }
+      
+      if (!success) {
+        throw Exception('Failed to play audio after $maxRetries attempts');
+      }
+      
+    } catch (e) {
+      print('Critical error playing audio: $e');
+      if (mounted) {
+        setState(() {
+          _isPlayingAudio = false;
+        });
+      }
+      
+      // إظهار رسالة خطأ للمستخدم
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('حدث خطأ في تشغيل الصوت. يرجى المحاولة مرة أخرى.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   void _startListening() async {
@@ -211,12 +377,17 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   }
 
   void _nextQuestion() {
+    // إيقاف أي صوت قيد التشغيل
+    _flutterTts.stop();
+    
     if (_currentQuestionIndex < _questions.length - 1) {
       setState(() {
         _currentQuestionIndex++;
         _answerController.clear();
         _selectedOption = '';
         _isListening = false;
+        _isPlayingAudio = false;
+        _audioAttempts = 0; // إعادة تعيين عداد المحاولات
       });
     } else {
       _showResults();
@@ -262,12 +433,39 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
     context.go('/levels_selection');
   }
 
+  // Test function to verify TTS is working
+  Future<void> _testTTS() async {
+    print('Testing TTS functionality...');
+    try {
+      var engines = await _flutterTts.getEngines;
+      print('Available TTS engines: $engines');
+      
+      var voices = await _flutterTts.getVoices;
+      print('Available voices: $voices');
+      
+      var languages = await _flutterTts.getLanguages;
+      print('Available languages: $languages');
+      
+      // Test with simple Arabic text
+      await _playAudio('مرحبا');
+    } catch (e) {
+      print('TTS test failed: $e');
+    }
+  }
+
   @override
   void dispose() {
     _answerController.dispose();
     _flutterTts.stop();
     _speechToText.stop();
     super.dispose();
+  }
+
+  @override
+  void deactivate() {
+    // إيقاف الصوت عند مغادرة الصفحة
+    _flutterTts.stop();
+    super.deactivate();
   }
 
   @override
@@ -350,6 +548,34 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                   'ابدأ الاختبار',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: _testTTS,
+                    child: const Text(
+                      'اختبار الصوت',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  TextButton.icon(
+                    onPressed: () {
+                      context.push(AppRouter.kAboutView);
+                    },
+                    icon: const Icon(
+                      Icons.info_outline,
+                      color: Colors.white70,
+                      size: 18,
+                    ),
+                    label: const Text(
+                      'حول التطبيق',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -513,15 +739,38 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   Widget _buildWritingQuestion(PlacementTestQuestion question) {
     return Column(
       children: [
-        ElevatedButton.icon(
-          onPressed: () => _playAudio(question.audioText!),
-          icon: const Icon(Icons.volume_up),
-          label: const Text('استمع للصوت'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.secondary,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          ),
+        Column(
+          children: [
+            ElevatedButton.icon(
+              onPressed: _isPlayingAudio
+                  ? null
+                  : () => _playAudio(question.audioText!),
+              icon: Icon(_isPlayingAudio ? Icons.volume_off : Icons.volume_up),
+              label: Text(_isPlayingAudio ? 'جاري التشغيل...' : 'استمع للصوت'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: Colors.grey,
+                disabledForegroundColor: Colors.white70,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+            ),
+            if (_audioAttempts > 0 && !_isPlayingAudio) ...[
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () async {
+                  await _initializeTTS();
+                  _audioAttempts = 0;
+                  setState(() {});
+                },
+                icon: const Icon(Icons.refresh, size: 16),
+                label: const Text('إعادة تهيئة الصوت', style: TextStyle(fontSize: 12)),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.grey[600],
+                ),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 24),
         TextField(
@@ -626,23 +875,27 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           final isSelected = _selectedOption == option;
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: InkWell(
-              onTap: () {
-                setState(() => _selectedOption = option);
-                _playAudio(option);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isSelected
-                        ? AppColors.primary
-                        : Colors.grey.shade300,
-                    width: 2,
+            child: Opacity(
+              opacity: _isPlayingAudio ? 0.5 : 1.0,
+              child: InkWell(
+                onTap: _isPlayingAudio
+                    ? null
+                    : () {
+                        setState(() => _selectedOption = option);
+                        _playAudio(option);
+                      },
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.primary : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.primary
+                          : Colors.grey.shade300,
+                      width: 2,
+                    ),
                   ),
-                ),
                 child: Row(
                   children: [
                     // رقم الخيار
@@ -681,6 +934,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                         size: 32,
                       ),
                   ],
+                ),
                 ),
               ),
             ),

@@ -4,6 +4,7 @@ import 'package:arabic_learning_app/features/word_training/presentation/views/wo
 import 'package:arabic_learning_app/features/letter_tracing/presentation/views/simple_svg_letter_view.dart';
 import 'package:arabic_learning_app/features/placement_test/presentation/views/placement_test_view.dart';
 import 'package:arabic_learning_app/features/levels/presentation/views/levels_selection_view.dart';
+import 'package:arabic_learning_app/features/about/presentation/views/about_view.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,6 +15,7 @@ abstract class AppRouter {
   static const String kWritingPracticeView = '/writing_practice_view';
   static const String kWordTrainingView = '/word_training_view';
   static const String kLetterTracingView = '/letter_tracing_view';
+  static const String kAboutView = '/about';
   
   static final GoRouter routes = GoRouter(
     initialLocation: kPlacementTestView,
@@ -59,6 +61,10 @@ abstract class AppRouter {
           final letter = state.uri.queryParameters['letter'] ?? 'ا';
           return SimpleSvgLetterView(letter: letter);
         },
+      ),
+      GoRoute(
+        path: kAboutView,
+        builder: (context, state) => const AboutView(),
       ),
     ],
   );

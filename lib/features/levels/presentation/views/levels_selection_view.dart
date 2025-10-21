@@ -3,6 +3,8 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/level_one/presentation/views/level_one_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/level_two_view.dart';
+import 'package:go_router/go_router.dart';
+import 'package:arabic_learning_app/core/utils/app_router.dart';
 
 class LevelsSelectionView extends StatefulWidget {
   const LevelsSelectionView({super.key});
@@ -35,6 +37,41 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(left: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextButton.icon(
+              onPressed: () {
+                context.push(AppRouter.kAboutView);
+              },
+              icon: const Icon(
+                Icons.info_outline,
+                color: Colors.white,
+                size: 20,
+              ),
+              label: const Text(
+                'حول التطبيق',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+            ),
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
