@@ -14,6 +14,8 @@ class UserProgressService {
   static const String _keyCompletedActivities = 'completed_activities';
   static const String _keyLevel1UnlockedLessons = 'level1_unlocked_lessons';
   static const String _keyLevel2UnlockedLessons = 'level2_unlocked_lessons';
+  static const String _keyUserName = 'user_name';
+  static const String _keyWelcomeScreenSeen = 'welcome_screen_seen';
 
   // Singleton pattern
   static UserProgressService? _instance;
@@ -47,6 +49,25 @@ class UserProgressService {
 
   Future<void> setFirstTime(bool value) async {
     await prefs.setBool(_keyFirstTime, value);
+  }
+
+  // شاشة الترحيب
+  bool hasSeenWelcomeScreen() {
+    return prefs.getBool(_keyWelcomeScreenSeen) ?? false;
+  }
+
+  Future<void> setWelcomeScreenSeen(bool value) async {
+    await prefs.setBool(_keyWelcomeScreenSeen, value);
+  }
+
+  // اسم المستخدم
+  String? getUserName() {
+    return prefs.getString(_keyUserName);
+  }
+
+  Future<void> saveUserName(String name) async {
+    await prefs.setString(_keyUserName, name);
+    await setWelcomeScreenSeen(true);
   }
 
   // نتيجة اختبار تحديد المستوى

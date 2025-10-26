@@ -4,6 +4,7 @@ import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/features/Alphabet/data/models/arabic_letter_model.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_shapes_view.dart';
+import 'package:arabic_learning_app/features/exercises/presentation/views/revision_test_selection_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
 
@@ -320,47 +321,68 @@ class _LevelOneViewState extends State<LevelOneView> {
   }
 
   Widget _buildReviewCard(int reviewIndex) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: AppColors.exercise2,
+    // تحديد ما إذا كان هذا الاختبار مفتوحاً (مفتوح إذا كان الدرس قد اكتمل)
+    final isUnlocked = _unlockedLessons.contains(reviewIndex);
+
+    return GestureDetector(
+      onTap: isUnlocked
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RevisionTestSelectionView(
+                    groupNumber: reviewIndex,
+                  ),
+                ),
+              );
+            }
+          : null,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isUnlocked
+                ? AppColors.exercise2
+                : [Colors.grey.shade300, Colors.grey.shade400],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: isUnlocked
+                  ? AppColors.exercise2[0].withOpacity(0.3)
+                  : Colors.grey.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.exercise2[0].withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.quiz,
-            size: 32,
-            color: Colors.white,
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'مراجعة',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isUnlocked ? Icons.quiz : Icons.lock,
+              size: 32,
               color: Colors.white,
             ),
-          ),
-          Text(
-            '${reviewIndex * 4 + 1}-${(reviewIndex + 1) * 4}',
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white70,
+            const SizedBox(height: 4),
+            const Text(
+              'مراجعة',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
-          ),
-        ],
+            Text(
+              '${reviewIndex * 4 + 1}-${(reviewIndex + 1) * 4}',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white70,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

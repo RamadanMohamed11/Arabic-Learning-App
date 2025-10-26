@@ -5,11 +5,13 @@ import 'package:arabic_learning_app/features/letter_tracing/presentation/views/s
 import 'package:arabic_learning_app/features/placement_test/presentation/views/placement_test_view.dart';
 import 'package:arabic_learning_app/features/levels/presentation/views/levels_selection_view.dart';
 import 'package:arabic_learning_app/features/about/presentation/views/about_view.dart';
+import 'package:arabic_learning_app/features/welcome/presentation/views/welcome_screen_view.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:go_router/go_router.dart';
 
 abstract class AppRouter {
-  static const String kPlacementTestView = '/';
+  static const String kWelcomeScreenView = '/';
+  static const String kPlacementTestView = '/placement_test';
   static const String kLevelsSelectionView = '/levels_selection';
   static const String kAlphabetView = '/alphabet_view';
   static const String kWritingPracticeView = '/writing_practice_view';
@@ -18,23 +20,32 @@ abstract class AppRouter {
   static const String kAboutView = '/about';
   
   static final GoRouter routes = GoRouter(
-    initialLocation: kPlacementTestView,
+    initialLocation: kWelcomeScreenView,
     redirect: (context, state) async {
       final progressService = await UserProgressService.getInstance();
       
-      // إذا كانت أول مرة، اذهب لاختبار تحديد المستوى
-      if (progressService.isFirstTime() && state.matchedLocation == kPlacementTestView) {
-        return null;
+      // إذا لم يشاهد شاشة الترحيب بعد، اذهب لها
+      if (!progressService.hasSeenWelcomeScreen() && state.matchedLocation != kWelcomeScreenView) {
+        return kWelcomeScreenView;
       }
       
-      // إذا لم تكن أول مرة وفي صفحة الاختبار، اذهب للمستويات
-      if (!progressService.isFirstTime() && state.matchedLocation == kPlacementTestView) {
+      // إذا شاهد شاشة الترحيب وفي أول مرة، اذهب لاختبار تحديد المستوى
+      if (progressService.hasSeenWelcomeScreen() && progressService.isFirstTime() && state.matchedLocation == kWelcomeScreenView) {
+        return kPlacementTestView;
+      }
+      
+      // إذا لم تكن أول مرة وفي صفحة الترحيب أو الاختبار، اذهب للمستويات
+      if (!progressService.isFirstTime() && (state.matchedLocation == kWelcomeScreenView || state.matchedLocation == kPlacementTestView)) {
         return kLevelsSelectionView;
       }
       
       return null;
     },
     routes: [
+      GoRoute(
+        path: kWelcomeScreenView,
+        builder: (context, state) => const WelcomeScreenView(),
+      ),
       GoRoute(
         path: kPlacementTestView,
         builder: (context, state) => const PlacementTestView(),
