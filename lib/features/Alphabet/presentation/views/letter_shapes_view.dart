@@ -4,6 +4,7 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/models/letter_shapes.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_exercises_view.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class LetterShapesView extends StatefulWidget {
   final String letter;
@@ -363,8 +364,8 @@ class _LetterShapesViewState extends State<LetterShapesView> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => LetterExercisesView(
+            AnimatedRoute.slideUp(
+              LetterExercisesView(
                 letter: widget.letter,
                 letterIndex: _letterIndex,
               ),

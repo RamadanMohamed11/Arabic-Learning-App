@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/features/letter_tracing/data/letter_paths.dart';
 import 'package:arabic_learning_app/features/letter_tracing/presentation/widgets/letter_trace_painter.dart';
 import 'package:arabic_learning_app/constants.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class LetterTracingView extends StatefulWidget {
   final String letter;
@@ -206,9 +207,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
     Navigator.pop(context); // أغلق الصفحة الحالية
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => LetterTracingView(letter: nextLetter),
-      ),
+      AnimatedRoute.fadeScale(LetterTracingView(letter: nextLetter)),
     );
   }
 
@@ -219,9 +218,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
       Navigator.pop(context); // أغلق الصفحة الحالية
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => LetterTracingView(letter: previousLetter),
-        ),
+        AnimatedRoute.fadeScale(LetterTracingView(letter: previousLetter)),
       );
     }
   }

@@ -4,6 +4,7 @@ import 'package:arabic_learning_app/features/Alphabet/presentation/views/widgets
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_shapes_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class AlphabetViewBody extends StatefulWidget {
   const AlphabetViewBody({super.key});
@@ -116,8 +117,8 @@ class _AlphabetViewBodyState extends State<AlphabetViewBody> {
                           // الانتقال لصفحة أشكال الحرف عند الضغط على البطاقة
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => LetterShapesView(
+                            AnimatedRoute.slideRight(
+                              LetterShapesView(
                                 letter: arabicLetters[index].letter,
                               ),
                             ),

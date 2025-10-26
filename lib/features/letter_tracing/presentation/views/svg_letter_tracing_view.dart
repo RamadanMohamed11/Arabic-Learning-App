@@ -3,6 +3,7 @@ import 'package:arabic_learning_app/features/letter_tracing/data/svg_letter_path
 import 'package:arabic_learning_app/features/letter_tracing/presentation/widgets/svg_letter_trace_painter.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class SvgLetterTracingView extends StatefulWidget {
   final String letter;
@@ -279,9 +280,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => SvgLetterTracingView(letter: nextLetter),
-      ),
+      AnimatedRoute.fadeScale(SvgLetterTracingView(letter: nextLetter)),
     );
   }
 
@@ -292,9 +291,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
       Navigator.pop(context);
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => SvgLetterTracingView(letter: previousLetter),
-        ),
+        AnimatedRoute.fadeScale(SvgLetterTracingView(letter: previousLetter)),
       );
     }
   }

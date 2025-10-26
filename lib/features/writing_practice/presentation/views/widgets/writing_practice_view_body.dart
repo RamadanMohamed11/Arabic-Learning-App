@@ -3,6 +3,7 @@ import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/automated_letter_trace_screen.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class WritingPracticeViewBody extends StatefulWidget {
   const WritingPracticeViewBody({super.key});
@@ -107,8 +108,8 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
     if (mounted) {
       await Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => AutomatedLetterTraceScreen(
+        AnimatedRoute.slideScale(
+          AutomatedLetterTraceScreen(
             svgAssetPath: 'assets/svg/${currentLetter.letter}.svg',
             letterIndex: _currentLetterIndex,
             onComplete: () async {

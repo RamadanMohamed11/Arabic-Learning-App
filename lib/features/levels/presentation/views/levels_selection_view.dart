@@ -5,6 +5,7 @@ import 'package:arabic_learning_app/features/level_one/presentation/views/level_
 import 'package:arabic_learning_app/features/level_two/presentation/views/level_two_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class LevelsSelectionView extends StatefulWidget {
   const LevelsSelectionView({super.key});
@@ -133,9 +134,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => const LevelOneView(),
-                            ),
+                            AnimatedRoute.slideScale(const LevelOneView()),
                           );
                         },
                       ),
@@ -156,9 +155,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                             ? () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const LevelTwoView(),
-                                  ),
+                                  AnimatedRoute.slideScale(const LevelTwoView()),
                                 );
                               }
                             : null,

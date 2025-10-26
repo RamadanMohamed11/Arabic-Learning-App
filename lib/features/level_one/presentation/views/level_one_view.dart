@@ -7,6 +7,7 @@ import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_
 import 'package:arabic_learning_app/features/exercises/presentation/views/revision_test_selection_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class LevelOneView extends StatefulWidget {
   const LevelOneView({super.key});
@@ -253,9 +254,7 @@ class _LevelOneViewState extends State<LevelOneView> {
               // Navigate to letter shapes view
               await Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => LetterShapesView(letter: letter.letter),
-                ),
+                AnimatedRoute.slideRight(LetterShapesView(letter: letter.letter)),
               );
               // إعادة تحميل التقدم عند العودة
               _loadProgress();
@@ -329,8 +328,8 @@ class _LevelOneViewState extends State<LevelOneView> {
           ? () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => RevisionTestSelectionView(
+                AnimatedRoute.elegantZoom(
+                  RevisionTestSelectionView(
                     groupNumber: reviewIndex,
                   ),
                 ),

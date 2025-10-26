@@ -3,6 +3,7 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/automated_letter_trace_screen.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class LetterExercisesView extends StatefulWidget {
   final String letter;
@@ -53,8 +54,8 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
 
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => AutomatedLetterTraceScreen(
+      AnimatedRoute.slideScale(
+        AutomatedLetterTraceScreen(
           svgAssetPath: 'assets/svg/${widget.letter}.svg',
           letterIndex: widget.letterIndex,
           onComplete: () async {

@@ -7,6 +7,7 @@ import 'package:arabic_learning_app/features/levels/presentation/views/levels_se
 import 'package:arabic_learning_app/features/about/presentation/views/about_view.dart';
 import 'package:arabic_learning_app/features/welcome/presentation/views/welcome_screen_view.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
+import 'package:arabic_learning_app/core/utils/page_transitions.dart';
 import 'package:go_router/go_router.dart';
 
 abstract class AppRouter {
@@ -44,38 +45,62 @@ abstract class AppRouter {
     routes: [
       GoRoute(
         path: kWelcomeScreenView,
-        builder: (context, state) => const WelcomeScreenView(),
+        pageBuilder: (context, state) => PageTransitions.fadeScale(
+          child: const WelcomeScreenView(),
+          state: state,
+        ),
       ),
       GoRoute(
         path: kPlacementTestView,
-        builder: (context, state) => const PlacementTestView(),
+        pageBuilder: (context, state) => PageTransitions.slideScale(
+          child: const PlacementTestView(),
+          state: state,
+        ),
       ),
       GoRoute(
         path: kLevelsSelectionView,
-        builder: (context, state) => const LevelsSelectionView(),
+        pageBuilder: (context, state) => PageTransitions.elegantZoom(
+          child: const LevelsSelectionView(),
+          state: state,
+        ),
       ),
       GoRoute(
         path: kAlphabetView,
-        builder: (context, state) => const AlphabetView(),
+        pageBuilder: (context, state) => PageTransitions.slideRight(
+          child: const AlphabetView(),
+          state: state,
+        ),
       ),
       GoRoute(
         path: kWritingPracticeView,
-        builder: (context, state) => const WritingPracticeView(),
+        pageBuilder: (context, state) => PageTransitions.slideUp(
+          child: const WritingPracticeView(),
+          state: state,
+        ),
       ),
       GoRoute(
         path: kWordTrainingView,
-        builder: (context, state) => const WordTrainingView(),
+        pageBuilder: (context, state) => PageTransitions.rotationFade(
+          child: const WordTrainingView(),
+          state: state,
+        ),
       ),
       GoRoute(
         path: kLetterTracingView,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final letter = state.uri.queryParameters['letter'] ?? 'ا';
-          return SimpleSvgLetterView(letter: letter);
+          return PageTransitions.slideScale(
+            child: SimpleSvgLetterView(letter: letter),
+            state: state,
+          );
         },
       ),
       GoRoute(
         path: kAboutView,
-        builder: (context, state) => const AboutView(),
+        pageBuilder: (context, state) => PageTransitions.fade(
+          child: const AboutView(),
+          state: state,
+        ),
       ),
     ],
   );

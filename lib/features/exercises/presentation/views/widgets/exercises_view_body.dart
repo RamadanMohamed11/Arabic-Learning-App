@@ -6,6 +6,7 @@ import 'package:arabic_learning_app/features/writing_practice/presentation/views
 import 'package:arabic_learning_app/features/memory_game/presentation/views/widgets/memory_game_view_body.dart';
 import 'package:arabic_learning_app/features/word_search/presentation/views/widgets/word_search_view_body.dart';
 import 'package:arabic_learning_app/features/pronunciation_practice/presentation/views/widgets/pronunciation_practice_view_body.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class ExerciseItem {
   final String title;
@@ -142,9 +143,7 @@ class ExercisesViewBody extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => Scaffold(body: exercise.page),
-          ),
+          AnimatedRoute.rotationFade(Scaffold(body: exercise.page)),
         );
       },
       child: Container(
@@ -170,9 +169,7 @@ class ExercisesViewBody extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => Scaffold(body: exercise.page),
-                ),
+                AnimatedRoute.rotationFade(Scaffold(body: exercise.page)),
               );
             },
             child: Padding(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/exercises/data/models/revision_test_model.dart';
 import 'package:arabic_learning_app/features/exercises/presentation/views/revision_test_view.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class RevisionTestSelectionView extends StatelessWidget {
   final int groupNumber; // رقم المجموعة (0-6)
@@ -166,8 +167,8 @@ class RevisionTestSelectionView extends StatelessWidget {
               if (testType == 'listening') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => RevisionTestView(
+                  AnimatedRoute.slideUp(
+                    RevisionTestView(
                       groupNumber: groupNumber,
                     ),
                   ),
