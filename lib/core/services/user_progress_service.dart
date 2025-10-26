@@ -168,6 +168,21 @@ class UserProgressService {
       _keyCompletedActivities,
       completedActivities.toList(),
     );
+    
+    // تحديث شريط التقدم بعد إكمال أي نشاط
+    await _updateProgressBar();
+  }
+  
+  /// تحديث شريط التقدم بناءً على الحروف المفتوحة
+  Future<void> _updateProgressBar() async {
+    final unlockedCount = getUnlockedLetters().length;
+    final progress = (unlockedCount / 28) * 100;
+    await setLevel1Progress(progress);
+    
+    // إذا تم إكمال جميع الحروف
+    if (unlockedCount >= 28) {
+      await setLevel1Completed(true);
+    }
   }
 
   bool isActivityCompleted(int letterIndex, int activityIndex) {
@@ -183,14 +198,7 @@ class UserProgressService {
     }
     
     // تحديث التقدم
-    final unlockedCount = getUnlockedLetters().length;
-    final progress = (unlockedCount / 28) * 100;
-    await setLevel1Progress(progress);
-    
-    // إذا تم إكمال جميع الحروف
-    if (unlockedCount >= 28) {
-      await setLevel1Completed(true);
-    }
+    await _updateProgressBar();
   }
 
   // إعادة تعيين كل شيء

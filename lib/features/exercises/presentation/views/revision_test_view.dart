@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/exercises/data/models/revision_test_model.dart';
+import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 
 class RevisionTestView extends StatefulWidget {
   final int groupNumber;
+  final VoidCallback? onLetterUnlocked;
 
   const RevisionTestView({
     super.key,
     required this.groupNumber,
+    this.onLetterUnlocked,
   });
 
   @override
@@ -24,16 +27,23 @@ class _RevisionTestViewState extends State<RevisionTestView> {
   bool _isAnswered = false;
   bool _isTestComplete = false;
   bool _isPlaying = false;
+  UserProgressService? _progressService;
+  bool _letterWasUnlocked = false;
 
   @override
   void initState() {
     super.initState();
     _testGroup = revisionTestGroups[widget.groupNumber];
     _initTts();
+    _loadProgressService();
     // تشغيل الصوت تلقائياً عند بدء كل سؤال
     Future.delayed(const Duration(milliseconds: 500), () {
       _speakLetter(_testGroup.questions[_currentQuestionIndex].correctAnswer);
     });
+  }
+
+  Future<void> _loadProgressService() async {
+    _progressService = await UserProgressService.getInstance();
   }
 
   Future<void> _initTts() async {
@@ -93,6 +103,43 @@ class _RevisionTestViewState extends State<RevisionTestView> {
       setState(() {
         _isTestComplete = true;
       });
+      // التحقق من النتيجة المثالية وفتح الحروف التالية
+      _checkAndUnlockNextLetters();
+    }
+  }
+
+  /// فتح الحرف التالي إذا كانت النتيجة 100%
+  Future<void> _checkAndUnlockNextLetters() async {
+    if (_progressService == null) return;
+    
+    // التحقق من أن الإجابات كلها صحيحة
+    final isPerfectScore = _score == _testGroup.questions.length;
+    
+    if (isPerfectScore) {
+      // حساب فهرس الحرف التالي
+      // كل مجموعة تحتوي على 4 حروف
+      final nextLetterIndex = (widget.groupNumber + 1) * 4;
+      
+      // فتح الحرف التالي فقط (إذا كان موجوداً)
+      if (nextLetterIndex < 28) {
+        await _progressService!.unlockLetter(nextLetterIndex);
+        
+        // تحديث شريط التقدم
+        final unlockedCount = _progressService!.getUnlockedLetters().length;
+        final progress = (unlockedCount / 28) * 100;
+        await _progressService!.setLevel1Progress(progress);
+        
+        // تعيين العلم للإشارة إلى أن حرفاً تم فتحه
+        _letterWasUnlocked = true;
+        
+        // استدعاء callback إذا كان موجوداً
+        widget.onLetterUnlocked?.call();
+      }
+      
+      // فتح الدرس/المجموعة التالية
+      if (widget.groupNumber < 6) { // 7 مجموعات (0-6)
+        await _progressService!.unlockLevel1Lesson(widget.groupNumber + 1);
+      }
     }
   }
 
@@ -107,6 +154,21 @@ class _RevisionTestViewState extends State<RevisionTestView> {
     Future.delayed(const Duration(milliseconds: 300), () {
       _speakLetter(_testGroup.questions[_currentQuestionIndex].correctAnswer);
     });
+  }
+
+  /// الحصول على نص الحرف المفتوح الجديد
+  String _getUnlockedLettersText() {
+    if (widget.groupNumber >= 6) return '';
+    
+    final nextLetterIndex = (widget.groupNumber + 1) * 4;
+    if (nextLetterIndex < 28) {
+      // الحصول على الحرف من المجموعة التالية (أول حرف)
+      final nextGroupNumber = widget.groupNumber + 1;
+      if (nextGroupNumber < revisionTestGroups.length) {
+        return revisionTestGroups[nextGroupNumber].letters[0];
+      }
+    }
+    return '';
   }
 
   @override
@@ -414,6 +476,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
   Widget _buildResultsScreen() {
     final percentage = (_score / _testGroup.questions.length * 100).round();
     final isPassed = percentage >= 75;
+    final isPerfectScore = _score == _testGroup.questions.length;
 
     return Scaffold(
       body: Container(
@@ -427,18 +490,18 @@ class _RevisionTestViewState extends State<RevisionTestView> {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 10),
                 Text(
                   isPassed ? '🎉' : '💪',
-                  style: const TextStyle(fontSize: 100),
+                  style: const TextStyle(fontSize: 80),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 Text(
-                  isPassed ? 'ممتاز!' : 'حاول مرة أخرى',
+                  isPerfectScore ? 'مذهل! 🌟' : isPassed ? 'ممتاز!' : 'حاول مرة أخرى',
                   style: const TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
@@ -447,20 +510,22 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  isPassed
-                      ? 'أحسنت! لقد أتقنت هذه المجموعة'
-                      : 'استمر في التدريب لتحسين نتيجتك',
+                  isPerfectScore
+                      ? 'إجابات مثالية! تم فتح الحرف التالي 🎉'
+                      : isPassed
+                          ? 'أحسنت! لقد أتقنت هذه المجموعة'
+                          : 'استمر في التدريب لتحسين نتيجتك',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 32),
 
                 // Score Card
                 Container(
-                  padding: const EdgeInsets.all(32),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -519,7 +584,52 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                const SizedBox(height: 24),
+
+                // Show unlocked letters if perfect score
+                if (isPerfectScore && widget.groupNumber < 6)
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.success.withOpacity(0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.lock_open, color: AppColors.success, size: 28),
+                            SizedBox(width: 8),
+                            Text(
+                              'حرف جديد مفتوح!',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.success,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          _getUnlockedLettersText(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                SizedBox(height: isPerfectScore && widget.groupNumber < 6 ? 24 : 32),
 
                 // Action Buttons
                 Row(
@@ -550,8 +660,8 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          Navigator.pop(context, _letterWasUnlocked);
+                          Navigator.pop(context, _letterWasUnlocked);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
@@ -574,6 +684,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),

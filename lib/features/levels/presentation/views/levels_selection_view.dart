@@ -41,37 +41,20 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(left: 8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(
+              Icons.menu,
+              color: Colors.white,
+              size: 28,
             ),
-            child: TextButton.icon(
-              onPressed: () {
-                context.push(AppRouter.kAboutView);
-              },
-              icon: const Icon(
-                Icons.info_outline,
-                color: Colors.white,
-                size: 20,
-              ),
-              label: const Text(
-                'حول التطبيق',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              ),
-            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
           ),
-        ],
+        ),
       ),
+      drawer: _buildDrawer(context),
       extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(
@@ -163,6 +146,129 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                     ],
                   ),
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.primaryGradient,
+          ),
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Text(
+                        '📚',
+                        style: TextStyle(fontSize: 40),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'تعليم اللغة العربية',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: const Icon(
+                  Icons.info_outline,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                title: const Text(
+                  'معلومات عن التطبيق',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(AppRouter.kAppInfoView);
+                },
+              ),
+              const Divider(
+                color: Colors.white24,
+                thickness: 1,
+                indent: 16,
+                endIndent: 16,
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.people,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                title: const Text(
+                  'فريق العمل وأصحاب الفكرة',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(AppRouter.kAboutView);
+                },
+              ),
+              const Divider(
+                color: Colors.white24,
+                thickness: 1,
+                indent: 16,
+                endIndent: 16,
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.contact_mail,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                title: const Text(
+                  'تواصل معنا',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(AppRouter.kAboutView);
+                },
               ),
             ],
           ),

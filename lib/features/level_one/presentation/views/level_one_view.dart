@@ -57,6 +57,7 @@ class _LevelOneViewState extends State<LevelOneView> {
     final totalLetters = arabicLetters.length;
 
     return Scaffold(
+      drawer: _buildDrawer(context),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -90,9 +91,17 @@ class _LevelOneViewState extends State<LevelOneView> {
                   children: [
                     Row(
                       children: [
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        Builder(
+                          builder: (context) => IconButton(
+                            onPressed: () {
+                              Scaffold.of(context).openDrawer();
+                            },
+                            icon: const Icon(
+                              Icons.menu,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
                         ),
                         Expanded(
                           child: Column(
@@ -120,33 +129,9 @@ class _LevelOneViewState extends State<LevelOneView> {
                           _getProgressEmoji(),
                           style: const TextStyle(fontSize: 32),
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextButton.icon(
-                            onPressed: () {
-                              context.push(AppRouter.kAboutView);
-                            },
-                            icon: const Icon(
-                              Icons.info_outline,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                            label: const Text(
-                              'حول',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              minimumSize: Size.zero,
-                            ),
-                          ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
                         ),
                       ],
                     ),
@@ -325,8 +310,8 @@ class _LevelOneViewState extends State<LevelOneView> {
 
     return GestureDetector(
       onTap: isUnlocked
-          ? () {
-              Navigator.push(
+          ? () async {
+              await Navigator.push(
                 context,
                 AnimatedRoute.elegantZoom(
                   RevisionTestSelectionView(
@@ -334,6 +319,8 @@ class _LevelOneViewState extends State<LevelOneView> {
                   ),
                 ),
               );
+              // إعادة تحميل التقدم بعد العودة من الاختبار
+              _loadProgress();
             }
           : null,
       child: Container(
@@ -381,6 +368,132 @@ class _LevelOneViewState extends State<LevelOneView> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.level1[0],
+              AppColors.level1[1],
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Text(
+                        '📚',
+                        style: TextStyle(fontSize: 40),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'المستوى الأول',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: const Icon(
+                  Icons.info_outline,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                title: const Text(
+                  'معلومات عن التطبيق',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(AppRouter.kAppInfoView);
+                },
+              ),
+              const Divider(
+                color: Colors.white24,
+                thickness: 1,
+                indent: 16,
+                endIndent: 16,
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.people,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                title: const Text(
+                  'فريق العمل وأصحاب الفكرة',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(AppRouter.kAboutView);
+                },
+              ),
+              const Divider(
+                color: Colors.white24,
+                thickness: 1,
+                indent: 16,
+                endIndent: 16,
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.contact_mail,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                title: const Text(
+                  'تواصل معنا',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(AppRouter.kAboutView);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
