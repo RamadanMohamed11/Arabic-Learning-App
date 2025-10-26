@@ -8,12 +8,10 @@ class AppInfoView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           'معلومات عن التطبيق',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: AppColors.primary,
         elevation: 0,
@@ -24,10 +22,7 @@ class AppInfoView extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.primary.withOpacity(0.08),
-              AppColors.background,
-            ],
+            colors: [AppColors.primary.withOpacity(0.08), AppColors.background],
           ),
         ),
         child: SafeArea(
@@ -51,7 +46,11 @@ class AppInfoView extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const Icon(Icons.menu_book_rounded, size: 72, color: AppColors.primary),
+                      const Icon(
+                        Icons.menu_book_rounded,
+                        size: 72,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(height: 12),
                       const Text(
                         'تطبيق تعلم الحروف العربية',
@@ -66,7 +65,10 @@ class AppInfoView extends StatelessWidget {
                       Text(
                         'تطبيق تفاعلي ممتع لتعلم الحروف العربية للأطفال والمبتدئين،'
                         ' مع أنشطة وتمارين صوتية وبصرية وتقدم تدريجي.',
-                        style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade700,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -80,15 +82,30 @@ class AppInfoView extends StatelessWidget {
                   title: 'الميزات الرئيسية',
                   child: Column(
                     children: const [
-                      _FeatureRow(icon: Icons.record_voice_over, text: 'نطق الحروف والكلمات بالصوت'),
+                      _FeatureRow(
+                        icon: Icons.record_voice_over,
+                        text: 'نطق الحروف والكلمات بالصوت',
+                      ),
                       SizedBox(height: 10),
-                      _FeatureRow(icon: Icons.draw_rounded, text: 'تتبع الحروف ورسمها تلقائياً'),
+                      _FeatureRow(
+                        icon: Icons.draw_rounded,
+                        text: 'تتبع الحروف ورسمها تلقائياً',
+                      ),
                       SizedBox(height: 10),
-                      _FeatureRow(icon: Icons.quiz_outlined, text: 'اختبارات مراجعة بعد كل مجموعة'),
+                      _FeatureRow(
+                        icon: Icons.quiz_outlined,
+                        text: 'اختبارات مراجعة بعد كل مجموعة',
+                      ),
                       SizedBox(height: 10),
-                      _FeatureRow(icon: Icons.lock_open, text: 'نظام فتح تدريجي للحروف'),
+                      _FeatureRow(
+                        icon: Icons.lock_open,
+                        text: 'نظام فتح تدريجي للحروف',
+                      ),
                       SizedBox(height: 10),
-                      _FeatureRow(icon: Icons.bar_chart_rounded, text: 'شريط تقدم يعكس إنجازك'),
+                      _FeatureRow(
+                        icon: Icons.bar_chart_rounded,
+                        text: 'شريط تقدم يعكس إنجازك',
+                      ),
                     ],
                   ),
                 ),
@@ -118,7 +135,10 @@ class AppInfoView extends StatelessWidget {
                   child: const Text(
                     'هدفنا تسهيل تعلم اللغة العربية بطريقة تفاعلية مبسطة تناسب الأطفال والمبتدئين،'
                     ' مع التركيز على المرح والتدرج وتحقيق الإنجاز.',
-                    style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.textPrimary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -200,7 +220,10 @@ class _Bullet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Text('• ', style: TextStyle(fontSize: 18, color: AppColors.textPrimary)),
+        const Text(
+          '• ',
+          style: TextStyle(fontSize: 18, color: AppColors.textPrimary),
+        ),
         Expanded(
           child: Text(
             text,

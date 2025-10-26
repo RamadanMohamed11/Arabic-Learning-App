@@ -267,7 +267,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  context.push(AppRouter.kAboutView);
+                  context.push(AppRouter.kContactUsView);
                 },
               ),
             ],

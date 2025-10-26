@@ -8,11 +8,12 @@ class AboutView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'حول التطبيق',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        centerTitle: true,
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: const Text(
+            'فريق العمل وأصحاب الفكرة',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
         backgroundColor: AppColors.primary,
@@ -24,10 +25,7 @@ class AboutView extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.primary.withOpacity(0.1),
-              AppColors.background,
-            ],
+            colors: [AppColors.primary.withOpacity(0.1), AppColors.background],
           ),
         ),
         child: SafeArea(
@@ -144,57 +142,6 @@ class AboutView extends StatelessWidget {
 
                 const SizedBox(height: 30),
 
-                // Contact Us Section
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.contact_mail,
-                            color: AppColors.primary,
-                            size: 28,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'تواصل معنا',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildContactItem(
-                        Icons.email,
-                        'البريد الإلكتروني',
-                        'contact@arabiclearning.com',
-                      ),
-                      const SizedBox(height: 12),
-                      _buildContactItem(
-                        Icons.phone,
-                        'الهاتف',
-                        '+20 123 456 7890',
-                      ),
-                    ],
-                  ),
-                ),
-
                 const SizedBox(height: 30),
 
                 // Footer
@@ -291,43 +238,4 @@ class AboutView extends StatelessWidget {
     );
   }
 
-  Widget _buildContactItem(IconData icon, String label, String value) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.primary, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

@@ -6,6 +6,7 @@ import 'package:arabic_learning_app/features/placement_test/presentation/views/p
 import 'package:arabic_learning_app/features/levels/presentation/views/levels_selection_view.dart';
 import 'package:arabic_learning_app/features/about/presentation/views/about_view.dart';
 import 'package:arabic_learning_app/features/about/presentation/views/app_info_view.dart';
+import 'package:arabic_learning_app/features/about/presentation/views/contact_us_view.dart';
 import 'package:arabic_learning_app/features/welcome/presentation/views/welcome_screen_view.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/core/utils/page_transitions.dart';
@@ -21,6 +22,7 @@ abstract class AppRouter {
   static const String kLetterTracingView = '/letter_tracing_view';
   static const String kAboutView = '/about';
   static const String kAppInfoView = '/app_info';
+  static const String kContactUsView = '/contact_us';
   
   static final GoRouter routes = GoRouter(
     initialLocation: kWelcomeScreenView,
@@ -108,6 +110,13 @@ abstract class AppRouter {
         path: kAppInfoView,
         pageBuilder: (context, state) => PageTransitions.fade(
           child: const AppInfoView(),
+          state: state,
+        ),
+      ),
+      GoRoute(
+        path: kContactUsView,
+        pageBuilder: (context, state) => PageTransitions.fade(
+          child: const ContactUsView(),
           state: state,
         ),
       ),
