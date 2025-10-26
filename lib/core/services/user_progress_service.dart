@@ -12,6 +12,8 @@ class UserProgressService {
   static const String _keyLevel2Completed = 'level2_completed';
   static const String _keyUnlockedLetters = 'unlocked_letters';
   static const String _keyCompletedActivities = 'completed_activities';
+  static const String _keyLevel1UnlockedLessons = 'level1_unlocked_lessons';
+  static const String _keyLevel2UnlockedLessons = 'level2_unlocked_lessons';
 
   // Singleton pattern
   static UserProgressService? _instance;
@@ -175,6 +177,84 @@ class UserProgressService {
     await prefs.clear();
   }
 
+  // إدارة الدروس المفتوحة في المستوى الأول
+  List<int> getLevel1UnlockedLessons() {
+    final List<String>? lessons = prefs.getStringList(_keyLevel1UnlockedLessons);
+    if (lessons == null) {
+      return [0]; // أول درس مفتوح افتراضياً (الحروف الأولى)
+    }
+    return lessons.map((e) => int.parse(e)).toList();
+  }
+
+  Future<void> unlockLevel1Lesson(int lessonIndex) async {
+    final unlockedLessons = getLevel1UnlockedLessons();
+    if (!unlockedLessons.contains(lessonIndex)) {
+      unlockedLessons.add(lessonIndex);
+      await prefs.setStringList(
+        _keyLevel1UnlockedLessons,
+        unlockedLessons.map((e) => e.toString()).toList(),
+      );
+    }
+  }
+
+  bool isLevel1LessonUnlocked(int lessonIndex) {
+    return getLevel1UnlockedLessons().contains(lessonIndex);
+  }
+
+  // إدارة الدروس المفتوحة في المستوى الثاني
+  List<int> getLevel2UnlockedLessons() {
+    final List<String>? lessons = prefs.getStringList(_keyLevel2UnlockedLessons);
+    if (lessons == null) {
+      return []; // لا توجد دروس مفتوحة افتراضياً
+    }
+    return lessons.map((e) => int.parse(e)).toList();
+  }
+
+  Future<void> unlockLevel2Lesson(int lessonIndex) async {
+    final unlockedLessons = getLevel2UnlockedLessons();
+    if (!unlockedLessons.contains(lessonIndex)) {
+      unlockedLessons.add(lessonIndex);
+      await prefs.setStringList(
+        _keyLevel2UnlockedLessons,
+        unlockedLessons.map((e) => e.toString()).toList(),
+      );
+    }
+  }
+
+  bool isLevel2LessonUnlocked(int lessonIndex) {
+    return getLevel2UnlockedLessons().contains(lessonIndex);
+  }
+
+  // إعداد المستويات بعد نجاح اختبار تحديد المستوى
+  Future<void> setupLevelsAfterPlacementTest({required bool passed}) async {
+    if (passed) {
+      // فتح كلا المستويين
+      await unlockLevel2();
+      
+      // فتح أول درس في كل مستوى فقط
+      await prefs.setStringList(_keyLevel1UnlockedLessons, ['0']); // أول درس في المستوى الأول
+      await prefs.setStringList(_keyLevel2UnlockedLessons, ['0']); // أول درس في المستوى الثاني
+      
+      // فتح أول حرف فقط في المستوى الأول (الألف)
+      await prefs.setStringList(_keyUnlockedLetters, ['0']);
+      
+      // تعيين المستوى الحالي إلى 1 (يمكن للمستخدم اختيار أي مستوى)
+      await setCurrentLevel(1);
+      
+      // إعادة تعيين التقدم
+      await setLevel1Progress(0.0);
+      await setLevel2Progress(0.0);
+      await prefs.setBool(_keyLevel1Completed, false);
+      await prefs.setBool(_keyLevel2Completed, false);
+    } else {
+      // فتح المستوى الأول فقط مع أول درس
+      await prefs.setStringList(_keyLevel1UnlockedLessons, ['0']);
+      await prefs.setStringList(_keyLevel2UnlockedLessons, []); // لا توجد دروس مفتوحة في المستوى الثاني
+      await prefs.setStringList(_keyUnlockedLetters, ['0']); // أول حرف فقط
+      await setCurrentLevel(1);
+    }
+  }
+
   // إعادة تعيين مستوى معين
   Future<void> resetLevel(int level) async {
     if (level == 1) {
@@ -182,9 +262,11 @@ class UserProgressService {
       await prefs.setBool(_keyLevel1Completed, false);
       await prefs.setStringList(_keyUnlockedLetters, ['0']);
       await prefs.setStringList(_keyCompletedActivities, []);
+      await prefs.setStringList(_keyLevel1UnlockedLessons, ['0']);
     } else if (level == 2) {
       await prefs.setDouble(_keyLevel2Progress, 0.0);
       await prefs.setBool(_keyLevel2Completed, false);
+      await prefs.setStringList(_keyLevel2UnlockedLessons, []);
     }
   }
 }

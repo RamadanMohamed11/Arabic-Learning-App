@@ -27,6 +27,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
   UserProgressService? _progressService;
   double _progress = 0.0;
   int _currentActivity = 0;
+  List<int> _unlockedLessons = [];
 
   final List<ActivityItem> _activities = const [
     ActivityItem(
@@ -77,6 +78,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
     _progressService = await UserProgressService.getInstance();
     setState(() {
       _progress = _progressService!.getLevel2Progress();
+      _unlockedLessons = _progressService!.getLevel2UnlockedLessons();
       _currentActivity = (_progress / (100 / _activities.length)).floor();
     });
   }
@@ -229,7 +231,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                   itemCount: _activities.length,
                   itemBuilder: (context, index) {
                     final activity = _activities[index];
-                    final isUnlocked = index <= _currentActivity;
+                    final isUnlocked = _unlockedLessons.contains(index);
                     final isCompleted = index < _currentActivity;
 
                     return Padding(

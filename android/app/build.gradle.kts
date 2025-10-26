@@ -6,41 +6,77 @@ plugins {
 }
 
 android {
-    namespace = "com.example.arabic_learning_app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    namespace = "com.ramadan.arabic_learning_app"
+    compileSdk = 36  // Required by plugins (audioplayers, path_provider, shared_preferences, speech_to_text)
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.arabic_learning_app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        applicationId = "com.ramadan.arabic_learning_app"
+        minSdk = flutter.minSdkVersion  // Android 5.0 - covers 99%+ of devices
+        targetSdk = 36  // Match compileSdk for plugin compatibility
+        versionCode = 1
+        versionName = "1.0.0"
+        
+        // Enable multidex for better compatibility
+        multiDexEnabled = true
+        
+        // Support for different screen densities
+        resConfigs("ar", "en")  // Only include Arabic and English resources
+        
+        // Note: ABI filters removed to support --split-per-abi builds
+        // Flutter handles architecture splitting automatically
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
             
-            // Disable minify to avoid R8 issues with ML Kit
+            // Disable minify and shrinking for better compatibility
             isMinifyEnabled = false
             isShrinkResources = false
+            isDebuggable = false
+            
+            // Proguard rules for better compatibility
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        
+        debug {
+            isDebuggable = true
+            isMinifyEnabled = false
+            // Removed applicationIdSuffix to avoid package conflicts
         }
     }
+    
+    // Add packaging options to avoid conflicts
+    packagingOptions {
+        resources {
+            excludes += listOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt"
+            )
+        }
+    }
+}
+
+dependencies {
+    // Multidex support for better compatibility
+    implementation("androidx.multidex:multidex:2.0.1")
 }
 
 flutter {

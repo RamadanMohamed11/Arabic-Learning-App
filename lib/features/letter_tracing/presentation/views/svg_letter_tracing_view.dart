@@ -7,10 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 class SvgLetterTracingView extends StatefulWidget {
   final String letter;
 
-  const SvgLetterTracingView({
-    super.key,
-    required this.letter,
-  });
+  const SvgLetterTracingView({super.key, required this.letter});
 
   @override
   State<SvgLetterTracingView> createState() => _SvgLetterTracingViewState();
@@ -51,10 +48,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
     );
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
-      CurvedAnimation(
-        parent: _celebrationController,
-        curve: Curves.elasticOut,
-      ),
+      CurvedAnimation(parent: _celebrationController, curve: Curves.elasticOut),
     );
   }
 
@@ -101,11 +95,11 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
     if (currentPathIndex >= letterPath!.paths.length) return;
 
     final currentPath = letterPath!.paths[currentPathIndex];
-    
+
     // تحقق من أن المستخدم بدأ بالقرب من بداية المسار
     final pathMetrics = currentPath.computeMetrics().first;
     final startPoint = pathMetrics.getTangentForOffset(0)?.position;
-    
+
     if (startPoint != null) {
       final distance = (position - startPoint).distance;
       if (distance > touchTolerance) {
@@ -149,19 +143,19 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
 
     final currentPath = letterPath!.paths[currentPathIndex];
     final pathMetrics = currentPath.computeMetrics().first;
-    
+
     // حساب نسبة الإكمال
     double totalCoverage = 0;
     int samplesCount = 0;
-    
+
     // عينات على طول المسار
     for (double i = 0; i <= pathMetrics.length; i += 10) {
       final tangent = pathMetrics.getTangentForOffset(i);
       if (tangent == null) continue;
-      
+
       final pathPoint = tangent.position;
       samplesCount++;
-      
+
       // تحقق من أن المستخدم مر بالقرب من هذه النقطة
       bool covered = false;
       for (final userPoint in userPath) {
@@ -171,12 +165,12 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
           break;
         }
       }
-      
+
       if (covered) {
         totalCoverage++;
       }
     }
-    
+
     // إذا غطى المستخدم 80% من المسار
     final coverageRatio = totalCoverage / samplesCount;
     if (coverageRatio >= 0.8) {
@@ -189,7 +183,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
     setState(() {
       currentPathIndex++;
       userPath.clear();
-      
+
       // تحقق من إكمال جميع المسارات
       if (currentPathIndex >= letterPath!.paths.length) {
         isCompleted = true;
@@ -209,9 +203,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('🌟 أحسنت! 🌟'),
-          ],
+          children: [Text('🌟 أحسنت! 🌟')],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -223,7 +215,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
             ),
             const SizedBox(height: 20),
             Text(
-              '${widget.letter}',
+              widget.letter,
               style: const TextStyle(
                 fontSize: 80,
                 color: Colors.green,
@@ -238,10 +230,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
               Navigator.pop(context);
               resetDrawing();
             },
-            child: const Text(
-              'حاول مرة أخرى',
-              style: TextStyle(fontSize: 18),
-            ),
+            child: const Text('حاول مرة أخرى', style: TextStyle(fontSize: 18)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -264,7 +253,9 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
 
   /// الحصول على الحرف التالي
   String _getNextLetter() {
-    final currentIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
+    final currentIndex = arabicLetters.indexWhere(
+      (l) => l.letter == widget.letter,
+    );
     if (currentIndex >= arabicLetters.length - 1) {
       return arabicLetters.first.letter; // العودة للبداية
     }
@@ -273,7 +264,9 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
 
   /// الحصول على الحرف السابق
   String? _getPreviousLetter() {
-    final currentIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
+    final currentIndex = arabicLetters.indexWhere(
+      (l) => l.letter == widget.letter,
+    );
     if (currentIndex <= 0) {
       return null;
     }
@@ -310,25 +303,16 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('تتبع حرف ${widget.letter}'),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text('تتبع حرف ${widget.letter}')),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (letterPath == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('تتبع حرف ${widget.letter}'),
-        ),
+        appBar: AppBar(title: Text('تتبع حرف ${widget.letter}')),
         body: const Center(
-          child: Text(
-            'الحرف غير متوفر',
-            style: TextStyle(fontSize: 24),
-          ),
+          child: Text('الحرف غير متوفر', style: TextStyle(fontSize: 24)),
         ),
       );
     }
@@ -364,10 +348,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.indigo.shade50,
-              Colors.white,
-            ],
+            colors: [Colors.indigo.shade50, Colors.white],
           ),
         ),
         child: Column(
@@ -384,7 +365,9 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
             Expanded(
               child: Center(
                 child: ScaleTransition(
-                  scale: isCompleted ? _scaleAnimation : const AlwaysStoppedAnimation(1.0),
+                  scale: isCompleted
+                      ? _scaleAnimation
+                      : const AlwaysStoppedAnimation(1.0),
                   child: Container(
                     width: 350,
                     height: 450,
@@ -402,8 +385,10 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: GestureDetector(
-                        onPanStart: (details) => onPanStart(details.localPosition),
-                        onPanUpdate: (details) => onPanUpdate(details.localPosition),
+                        onPanStart: (details) =>
+                            onPanStart(details.localPosition),
+                        onPanUpdate: (details) =>
+                            onPanUpdate(details.localPosition),
                         onPanEnd: (_) => onPanEnd(),
                         child: CustomPaint(
                           painter: SvgLetterTracePainter(
@@ -450,10 +435,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
               ),
               Text(
                 'المسار ${currentPathIndex + 1}/${letterPath!.paths.length}',
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
             ],
           ),
@@ -494,7 +476,9 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isCompleted ? Colors.green.withOpacity(0.2) : Colors.blue.withOpacity(0.2),
+        color: isCompleted
+            ? Colors.green.withOpacity(0.2)
+            : Colors.blue.withOpacity(0.2),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: isCompleted ? Colors.green : Colors.blue,
@@ -511,7 +495,9 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: isCompleted ? Colors.green.shade700 : Colors.blue.shade700,
+                color: isCompleted
+                    ? Colors.green.shade700
+                    : Colors.blue.shade700,
               ),
             ),
           ),
@@ -530,10 +516,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
           ElevatedButton.icon(
             onPressed: resetDrawing,
             icon: const Icon(Icons.refresh),
-            label: const Text(
-              'إعادة',
-              style: TextStyle(fontSize: 18),
-            ),
+            label: const Text('إعادة', style: TextStyle(fontSize: 18)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
@@ -546,10 +529,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
           ElevatedButton.icon(
             onPressed: _goToNextLetter,
             icon: const Icon(Icons.arrow_forward),
-            label: const Text(
-              'التالي',
-              style: TextStyle(fontSize: 18),
-            ),
+            label: const Text('التالي', style: TextStyle(fontSize: 18)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,

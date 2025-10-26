@@ -17,6 +17,7 @@ class LevelOneView extends StatefulWidget {
 class _LevelOneViewState extends State<LevelOneView> {
   UserProgressService? _progressService;
   List<int> _unlockedLetters = [];
+  List<int> _unlockedLessons = [];
   double _progress = 0.0;
 
   @override
@@ -29,6 +30,7 @@ class _LevelOneViewState extends State<LevelOneView> {
     _progressService = await UserProgressService.getInstance();
     setState(() {
       _unlockedLetters = _progressService!.getUnlockedLetters();
+      _unlockedLessons = _progressService!.getLevel1UnlockedLessons();
       _progress = _progressService!.getLevel1Progress();
     });
   }
@@ -227,7 +229,10 @@ class _LevelOneViewState extends State<LevelOneView> {
                     }
 
                     final letter = arabicLetters[letterIndex];
-                    final isUnlocked = _unlockedLetters.contains(letterIndex);
+                    // تحديد الدرس الذي ينتمي إليه هذا الحرف (كل 4 حروف = درس واحد)
+                    final lessonIndex = letterIndex ~/ 4;
+                    final isLessonUnlocked = _unlockedLessons.contains(lessonIndex);
+                    final isUnlocked = _unlockedLetters.contains(letterIndex) && isLessonUnlocked;
 
                     return _buildLetterCard(letter, letterIndex, isUnlocked);
                   },

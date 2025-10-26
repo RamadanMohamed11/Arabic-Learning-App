@@ -1,5 +1,4 @@
 import 'package:arabic_learning_app/core/utils/app_router.dart';
-import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

@@ -180,7 +180,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
         children: [
           const Text(
             'أشكال الحرف:',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
@@ -297,7 +297,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
         children: [
           const Text(
             'مثال:',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,

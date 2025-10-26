@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'dart:math' as dart_math;
 import 'package:flutter/material.dart';
 
@@ -70,7 +69,7 @@ class SvgLetterTracePainter extends CustomPainter {
     final currentPath = guidePaths[currentPathIndex];
     final pathMetrics = currentPath.computeMetrics().first;
     final startTangent = pathMetrics.getTangentForOffset(0);
-    
+
     if (startTangent == null) return;
     final startPoint = startTangent.position;
 
@@ -95,7 +94,7 @@ class SvgLetterTracePainter extends CustomPainter {
 
     for (int i = 0; i < currentPathIndex && i < guidePaths.length; i++) {
       final path = guidePaths[i];
-      
+
       // إضافة ظل
       canvas.drawShadow(path, Colors.black.withOpacity(0.3), 4.0, false);
       canvas.drawPath(path, paint);

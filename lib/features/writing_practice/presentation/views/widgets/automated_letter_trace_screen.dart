@@ -199,8 +199,9 @@ class _AutomatedLetterTraceScreenState
     if (allCompleted ||
         _isLoading ||
         currentPathIndex >= allPathPoints.length ||
-        nextPointIndex >= allPathPoints[currentPathIndex].length)
+        nextPointIndex >= allPathPoints[currentPathIndex].length) {
       return;
+    }
 
     List<Offset> currentPathPoints = allPathPoints[currentPathIndex];
     Offset targetPoint = currentPathPoints[nextPointIndex];
@@ -376,8 +377,9 @@ class _AutomatedLetterTraceScreenState
                         onPanStart: (details) {
                           if (allCompleted ||
                               allPathPoints.isEmpty ||
-                              currentPathIndex >= allPathPoints.length)
+                              currentPathIndex >= allPathPoints.length) {
                             return;
+                          }
                           List<Offset> currentPoints =
                               allPathPoints[currentPathIndex];
                           if (currentPoints.isEmpty) return;
@@ -595,7 +597,9 @@ class AutomatedLetterPainter extends CustomPainter {
       if (allUserPaths[i].isNotEmpty && pathsCompleted[i]) {
         final completedPath = Path();
         completedPath.moveTo(
-            allUserPaths[i].first.dx, allUserPaths[i].first.dy);
+          allUserPaths[i].first.dx,
+          allUserPaths[i].first.dy,
+        );
         for (int j = 1; j < allUserPaths[i].length; j++) {
           completedPath.lineTo(allUserPaths[i][j].dx, allUserPaths[i][j].dy);
         }
