@@ -3,7 +3,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/models/letter_shapes.dart';
 import 'package:arabic_learning_app/constants.dart';
-import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_exercises_view.dart';
+import 'package:arabic_learning_app/features/level_one/presentation/views/letter_test_selection_view.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class LetterShapesView extends StatefulWidget {
@@ -117,7 +117,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
 
             const SizedBox(height: 20),
 
-            // زر إكمال الحرف
+            // زر الانتقال للتمارين
             _buildCompleteButton(),
 
             const SizedBox(height: 30),
@@ -365,7 +365,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
           Navigator.push(
             context,
             AnimatedRoute.slideUp(
-              LetterExercisesView(
+              LetterTestSelectionView(
                 letter: widget.letter,
                 letterIndex: _letterIndex,
               ),

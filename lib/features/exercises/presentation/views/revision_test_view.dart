@@ -21,6 +21,8 @@ class RevisionTestView extends StatefulWidget {
 class _RevisionTestViewState extends State<RevisionTestView> {
   late FlutterTts _flutterTts;
   late RevisionTestGroup _testGroup;
+  late List<RevisionQuestion> _questions; // shuffled questions
+  late List<List<String>> _shuffledOptions; // per-question shuffled options
   int _currentQuestionIndex = 0;
   int _score = 0;
   String? _selectedAnswer;
@@ -34,12 +36,25 @@ class _RevisionTestViewState extends State<RevisionTestView> {
   void initState() {
     super.initState();
     _testGroup = revisionTestGroups[widget.groupNumber];
+    _prepareQuestions();
     _initTts();
     _loadProgressService();
     // تشغيل الصوت تلقائياً عند بدء كل سؤال
     Future.delayed(const Duration(milliseconds: 500), () {
-      _speakLetter(_testGroup.questions[_currentQuestionIndex].correctAnswer);
+      _speakLetter(_questions[_currentQuestionIndex].correctAnswer);
     });
+  }
+
+  void _prepareQuestions() {
+    _questions = List<RevisionQuestion>.of(_testGroup.questions);
+    _questions.shuffle();
+    _shuffledOptions = _questions
+        .map((q) {
+          final opts = List<String>.of(q.options);
+          opts.shuffle();
+          return opts;
+        })
+        .toList();
   }
 
   Future<void> _loadProgressService() async {
@@ -82,7 +97,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
     setState(() {
       _selectedAnswer = answer;
       _isAnswered = true;
-      if (answer == _testGroup.questions[_currentQuestionIndex].correctAnswer) {
+      if (answer == _questions[_currentQuestionIndex].correctAnswer) {
         _score++;
       }
     });
@@ -97,7 +112,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
       });
       // تشغيل الحرف الجديد
       Future.delayed(const Duration(milliseconds: 300), () {
-        _speakLetter(_testGroup.questions[_currentQuestionIndex].correctAnswer);
+        _speakLetter(_questions[_currentQuestionIndex].correctAnswer);
       });
     } else {
       setState(() {
@@ -116,6 +131,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
     final isPerfectScore = _score == _testGroup.questions.length;
     
     if (isPerfectScore) {
+      // Mark this revision as completed
+      await _progressService!.completeRevision(widget.groupNumber);
+      
       // حساب فهرس الحرف التالي
       // كل مجموعة تحتوي على 4 حروف
       final nextLetterIndex = (widget.groupNumber + 1) * 4;
@@ -150,9 +168,10 @@ class _RevisionTestViewState extends State<RevisionTestView> {
       _selectedAnswer = null;
       _isAnswered = false;
       _isTestComplete = false;
+      _prepareQuestions();
     });
     Future.delayed(const Duration(milliseconds: 300), () {
-      _speakLetter(_testGroup.questions[_currentQuestionIndex].correctAnswer);
+      _speakLetter(_questions[_currentQuestionIndex].correctAnswer);
     });
   }
 
@@ -183,7 +202,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
       return _buildResultsScreen();
     }
 
-    final currentQuestion = _testGroup.questions[_currentQuestionIndex];
+    final currentQuestion = _questions[_currentQuestionIndex];
     final progress = (_currentQuestionIndex + 1) / _testGroup.questions.length;
 
     return Scaffold(
@@ -356,9 +375,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                           mainAxisSpacing: 16,
                           childAspectRatio: 1.2,
                         ),
-                        itemCount: currentQuestion.options.length,
+                        itemCount: _shuffledOptions[_currentQuestionIndex].length,
                         itemBuilder: (context, index) {
-                          final option = currentQuestion.options[index];
+                          final option = _shuffledOptions[_currentQuestionIndex][index];
                           final isCorrect = option == currentQuestion.correctAnswer;
                           final isSelected = option == _selectedAnswer;
 

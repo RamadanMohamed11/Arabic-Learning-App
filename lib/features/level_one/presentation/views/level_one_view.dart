@@ -20,6 +20,7 @@ class _LevelOneViewState extends State<LevelOneView> {
   UserProgressService? _progressService;
   List<int> _unlockedLetters = [];
   List<int> _unlockedLessons = [];
+  List<int> _completedRevisions = [];
   double _progress = 0.0;
 
   @override
@@ -33,6 +34,7 @@ class _LevelOneViewState extends State<LevelOneView> {
     setState(() {
       _unlockedLetters = _progressService!.getUnlockedLetters();
       _unlockedLessons = _progressService!.getLevel1UnlockedLessons();
+      _completedRevisions = _progressService!.getCompletedRevisions();
       _progress = _progressService!.getLevel1Progress();
     });
   }
@@ -219,7 +221,20 @@ class _LevelOneViewState extends State<LevelOneView> {
                     // تحديد الدرس الذي ينتمي إليه هذا الحرف (كل 4 حروف = درس واحد)
                     final lessonIndex = letterIndex ~/ 4;
                     final isLessonUnlocked = _unlockedLessons.contains(lessonIndex);
-                    final isUnlocked = _unlockedLetters.contains(letterIndex) && isLessonUnlocked;
+                    
+                    // Check if previous revision is completed (if letter is after first revision)
+                    // Letters 0-3 (lesson 0): no previous revision
+                    // Letters 4-7 (lesson 1): need revision 0 completed
+                    // Letters 8-11 (lesson 2): need revision 1 completed, etc.
+                    bool isPreviousRevisionCompleted = true;
+                    if (lessonIndex > 0) {
+                      final previousRevisionIndex = lessonIndex - 1;
+                      isPreviousRevisionCompleted = _completedRevisions.contains(previousRevisionIndex);
+                    }
+                    
+                    final isUnlocked = _unlockedLetters.contains(letterIndex) && 
+                                      isLessonUnlocked && 
+                                      isPreviousRevisionCompleted;
 
                     return _buildLetterCard(letter, letterIndex, isUnlocked);
                   },
@@ -305,8 +320,11 @@ class _LevelOneViewState extends State<LevelOneView> {
   }
 
   Widget _buildReviewCard(int reviewIndex) {
-    // تحديد ما إذا كان هذا الاختبار مفتوحاً (مفتوح إذا كان الدرس قد اكتمل)
-    final isUnlocked = _unlockedLessons.contains(reviewIndex);
+    // Revision test unlocks AFTER completing the 4 letters it reviews
+    // Review 0 tests letters 0-3, so it unlocks when lesson 1 is unlocked
+    // Review 1 tests letters 4-7, so it unlocks when lesson 2 is unlocked
+    final requiredLessonIndex = reviewIndex + 1;
+    final isUnlocked = _unlockedLessons.contains(requiredLessonIndex);
 
     return GestureDetector(
       onTap: isUnlocked

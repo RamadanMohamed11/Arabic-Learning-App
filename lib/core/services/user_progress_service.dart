@@ -14,6 +14,7 @@ class UserProgressService {
   static const String _keyCompletedActivities = 'completed_activities';
   static const String _keyLevel1UnlockedLessons = 'level1_unlocked_lessons';
   static const String _keyLevel2UnlockedLessons = 'level2_unlocked_lessons';
+  static const String _keyCompletedRevisions = 'completed_revisions';
   static const String _keyUserName = 'user_name';
   static const String _keyWelcomeScreenSeen = 'welcome_screen_seen';
 
@@ -195,6 +196,10 @@ class UserProgressService {
     // فتح الحرف التالي
     if (letterIndex < 27) { // 28 حرف (0-27)
       await unlockLetter(letterIndex + 1);
+      
+      // Also ensure the lesson for the next letter is unlocked
+      final nextLetterLessonIndex = (letterIndex + 1) ~/ 4;
+      await unlockLevel1Lesson(nextLetterLessonIndex);
     }
     
     // تحديث التقدم
@@ -252,6 +257,30 @@ class UserProgressService {
 
   bool isLevel2LessonUnlocked(int lessonIndex) {
     return getLevel2UnlockedLessons().contains(lessonIndex);
+  }
+
+  // إدارة اختبارات المراجعة المكتملة
+  List<int> getCompletedRevisions() {
+    final List<String>? revisions = prefs.getStringList(_keyCompletedRevisions);
+    if (revisions == null) {
+      return [];
+    }
+    return revisions.map((e) => int.parse(e)).toList();
+  }
+
+  Future<void> completeRevision(int revisionIndex) async {
+    final completedRevisions = getCompletedRevisions();
+    if (!completedRevisions.contains(revisionIndex)) {
+      completedRevisions.add(revisionIndex);
+      await prefs.setStringList(
+        _keyCompletedRevisions,
+        completedRevisions.map((e) => e.toString()).toList(),
+      );
+    }
+  }
+
+  bool isRevisionCompleted(int revisionIndex) {
+    return getCompletedRevisions().contains(revisionIndex);
   }
 
   // إعداد المستويات بعد نجاح اختبار تحديد المستوى
