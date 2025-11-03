@@ -3,8 +3,10 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/exercises/data/models/revision_test_model.dart';
 import 'package:arabic_learning_app/features/exercises/presentation/views/revision_test_view.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
+import 'package:arabic_learning_app/core/services/user_progress_service.dart';
+import 'package:arabic_learning_app/features/exercises/presentation/views/widgets/revision_writing_practice.dart';
 
-class RevisionTestSelectionView extends StatelessWidget {
+class RevisionTestSelectionView extends StatefulWidget {
   final int groupNumber; // رقم المجموعة (0-6)
 
   const RevisionTestSelectionView({
@@ -13,8 +15,82 @@ class RevisionTestSelectionView extends StatelessWidget {
   });
 
   @override
+  State<RevisionTestSelectionView> createState() => _RevisionTestSelectionViewState();
+}
+
+class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
+  UserProgressService? _progressService;
+  bool _listeningCompleted = false;
+  bool _writingCompleted = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    _progressService = await UserProgressService.getInstance();
+    setState(() {
+      _listeningCompleted = _progressService!.isRevisionListeningCompleted(widget.groupNumber);
+      _writingCompleted = _progressService!.isRevisionWritingCompleted(widget.groupNumber);
+      _isLoading = false;
+    });
+  }
+
+  int _getLetterIndex(String letter) {
+    const arabicLetters = [
+      'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر',
+      'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف',
+      'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'
+    ];
+    return arabicLetters.indexOf(letter);
+  }
+
+  /// Check if both tests are completed and unlock next letter
+  Future<void> _checkAndUnlockNextLetter() async {
+    if (_progressService == null) return;
+
+    final listeningDone = _progressService!.isRevisionListeningCompleted(widget.groupNumber);
+    final writingDone = _progressService!.isRevisionWritingCompleted(widget.groupNumber);
+
+    // Only unlock if BOTH tests are completed
+    if (listeningDone && writingDone) {
+      // Mark this revision as completed
+      await _progressService!.completeRevision(widget.groupNumber);
+
+      // حساب فهرس الحرف التالي
+      final nextLetterIndex = (widget.groupNumber + 1) * 4;
+
+      // فتح الحرف التالي فقط (إذا كان موجوداً)
+      if (nextLetterIndex < 28) {
+        await _progressService!.unlockLetter(nextLetterIndex);
+
+        // تحديث شريط التقدم
+        final unlockedCount = _progressService!.getUnlockedLetters().length;
+        final progress = (unlockedCount / 28) * 100;
+        await _progressService!.setLevel1Progress(progress);
+      }
+
+      // فتح الدرس/المجموعة التالية
+      if (widget.groupNumber < 6) {
+        await _progressService!.unlockLevel1Lesson(widget.groupNumber + 1);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final testGroup = revisionTestGroups[groupNumber];
+    final testGroup = revisionTestGroups[widget.groupNumber];
+
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
 
     return Scaffold(
       body: Container(
@@ -126,19 +202,19 @@ class RevisionTestSelectionView extends StatelessWidget {
                         icon: Icons.hearing,
                         color: AppColors.exercise2[0],
                         testType: 'listening',
+                        isCompleted: _listeningCompleted,
                       ),
 
                       const SizedBox(height: 16),
 
-                      // Future test types can be added here
                       _buildTestOption(
                         context,
-                        title: 'اختبارات أخرى',
-                        description: 'قريباً...',
-                        icon: Icons.more_horiz,
-                        color: Colors.grey,
-                        testType: null,
-                        isComingSoon: true,
+                        title: 'اختبار الكتابة',
+                        description: 'ارسم الحروف: ${testGroup.letters.join(' - ')}',
+                        icon: Icons.edit,
+                        color: AppColors.exercise1[0],
+                        testType: 'writing',
+                        isCompleted: _writingCompleted,
                       ),
                     ],
                   ),
@@ -159,20 +235,46 @@ class RevisionTestSelectionView extends StatelessWidget {
     required Color color,
     required String? testType,
     bool isComingSoon = false,
+    bool isCompleted = false,
   }) {
     return GestureDetector(
       onTap: isComingSoon
           ? null
-          : () {
+          : () async {
               if (testType == 'listening') {
-                Navigator.push(
+                await Navigator.push(
                   context,
                   AnimatedRoute.slideUp(
                     RevisionTestView(
-                      groupNumber: groupNumber,
+                      groupNumber: widget.groupNumber,
+                      isStandalone: true,
                     ),
                   ),
                 );
+                // Reload progress after returning
+                await _loadProgress();
+              } else if (testType == 'writing') {
+                final letters = revisionTestGroups[widget.groupNumber].letters;
+                final letterIndices = letters.map((letter) => _getLetterIndex(letter)).toList();
+                
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideScale(
+                    RevisionWritingPractice(
+                      letters: letters,
+                      letterIndices: letterIndices,
+                      onComplete: () async {
+                        // Mark writing test as completed
+                        await _progressService!.completeRevisionWriting(widget.groupNumber);
+                        // Check if both tests are completed to unlock next letter
+                        await _checkAndUnlockNextLetter();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                );
+                // Reload progress after returning
+                await _loadProgress();
               }
             },
       child: Container(
@@ -233,7 +335,20 @@ class RevisionTestSelectionView extends StatelessWidget {
                 ],
               ),
             ),
-            if (!isComingSoon)
+            if (isCompleted)
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Colors.white,
+                  size: 32,
+                ),
+              )
+            else if (!isComingSoon)
               const Icon(
                 Icons.arrow_forward_ios,
                 color: Colors.white,

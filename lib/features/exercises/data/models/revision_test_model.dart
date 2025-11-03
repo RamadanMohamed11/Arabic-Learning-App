@@ -31,23 +31,23 @@ final List<RevisionTestGroup> revisionTestGroups = [
     groupNumber: 1,
     title: 'المجموعة 1',
     emoji: '🟩',
-    letters: ['أ', 'ب', 'ت', 'ث'],
+    letters: ['ا', 'ب', 'ت', 'ث'],
     questions: [
       RevisionQuestion(
-        correctAnswer: 'أ',
-        options: ['ب', 'ث', 'أ', 'ت'],
+        correctAnswer: 'ا',
+        options: ['ب', 'ث', 'ا', 'ت'],
       ),
       RevisionQuestion(
         correctAnswer: 'ب',
-        options: ['ت', 'أ', 'ب', 'ث'],
+        options: ['ت', 'ا', 'ب', 'ث'],
       ),
       RevisionQuestion(
         correctAnswer: 'ت',
-        options: ['ث', 'ب', 'أ', 'ت'],
+        options: ['ث', 'ب', 'ا', 'ت'],
       ),
       RevisionQuestion(
         correctAnswer: 'ث',
-        options: ['ت', 'أ', 'ث', 'ب'],
+        options: ['ت', 'ا', 'ث', 'ب'],
       ),
     ],
   ),
@@ -61,7 +61,7 @@ final List<RevisionTestGroup> revisionTestGroups = [
     questions: [
       RevisionQuestion(
         correctAnswer: 'ج',
-        options: ['ج', 'ب', 'خ', 'أ'],
+        options: ['ج', 'ب', 'خ', 'ا'],
       ),
       RevisionQuestion(
         correctAnswer: 'ح',
@@ -73,7 +73,7 @@ final List<RevisionTestGroup> revisionTestGroups = [
       ),
       RevisionQuestion(
         correctAnswer: 'د',
-        options: ['د', 'أ', 'ب', 'ج'],
+        options: ['د', 'ا', 'ب', 'ج'],
       ),
     ],
   ),
@@ -91,11 +91,11 @@ final List<RevisionTestGroup> revisionTestGroups = [
       ),
       RevisionQuestion(
         correctAnswer: 'ر',
-        options: ['ر', 'ب', 'أ', 'ذ'],
+        options: ['ر', 'ب', 'ا', 'ذ'],
       ),
       RevisionQuestion(
         correctAnswer: 'ز',
-        options: ['ث', 'ر', 'ز', 'أ'],
+        options: ['ث', 'ر', 'ز', 'ا'],
       ),
       RevisionQuestion(
         correctAnswer: 'س',
@@ -117,7 +117,7 @@ final List<RevisionTestGroup> revisionTestGroups = [
       ),
       RevisionQuestion(
         correctAnswer: 'ص',
-        options: ['ص', 'ط', 'أ', 'ذ'],
+        options: ['ص', 'ط', 'ا', 'ذ'],
       ),
       RevisionQuestion(
         correctAnswer: 'ض',
@@ -169,7 +169,7 @@ final List<RevisionTestGroup> revisionTestGroups = [
       ),
       RevisionQuestion(
         correctAnswer: 'ك',
-        options: ['ك', 'ل', 'أ', 'ط'],
+        options: ['ك', 'ل', 'ا', 'ط'],
       ),
       RevisionQuestion(
         correctAnswer: 'ل',
@@ -187,15 +187,15 @@ final List<RevisionTestGroup> revisionTestGroups = [
     groupNumber: 7,
     title: 'المجموعة 7',
     emoji: '🟫',
-    letters: ['ن', 'هـ', 'و', 'ي'],
+    letters: ['ن', 'ه', 'و', 'ي'],
     questions: [
       RevisionQuestion(
         correctAnswer: 'ن',
-        options: ['ن', 'م', 'هـ', 'ب'],
+        options: ['ن', 'م', 'ه', 'ب'],
       ),
       RevisionQuestion(
-        correctAnswer: 'هـ',
-        options: ['هـ', 'ن', 'و', 'ك'],
+        correctAnswer: 'ه',
+        options: ['ه', 'ن', 'و', 'ك'],
       ),
       RevisionQuestion(
         correctAnswer: 'و',
@@ -203,7 +203,7 @@ final List<RevisionTestGroup> revisionTestGroups = [
       ),
       RevisionQuestion(
         correctAnswer: 'ي',
-        options: ['ي', 'هـ', 'م', 'ز'],
+        options: ['ي', 'ه', 'م', 'ز'],
       ),
     ],
   ),

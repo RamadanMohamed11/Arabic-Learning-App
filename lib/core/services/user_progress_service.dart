@@ -15,6 +15,8 @@ class UserProgressService {
   static const String _keyLevel1UnlockedLessons = 'level1_unlocked_lessons';
   static const String _keyLevel2UnlockedLessons = 'level2_unlocked_lessons';
   static const String _keyCompletedRevisions = 'completed_revisions';
+  static const String _keyRevisionListening = 'revision_listening_completed';
+  static const String _keyRevisionWriting = 'revision_writing_completed';
   static const String _keyUserName = 'user_name';
   static const String _keyWelcomeScreenSeen = 'welcome_screen_seen';
 
@@ -281,6 +283,53 @@ class UserProgressService {
 
   bool isRevisionCompleted(int revisionIndex) {
     return getCompletedRevisions().contains(revisionIndex);
+  }
+
+  // إدارة اختبارات المراجعة - الاستماع والكتابة بشكل منفصل
+  List<int> getRevisionListeningCompleted() {
+    final List<String>? completed = prefs.getStringList(_keyRevisionListening);
+    if (completed == null) {
+      return [];
+    }
+    return completed.map((e) => int.parse(e)).toList();
+  }
+
+  Future<void> completeRevisionListening(int groupNumber) async {
+    final completed = getRevisionListeningCompleted();
+    if (!completed.contains(groupNumber)) {
+      completed.add(groupNumber);
+      await prefs.setStringList(
+        _keyRevisionListening,
+        completed.map((e) => e.toString()).toList(),
+      );
+    }
+  }
+
+  bool isRevisionListeningCompleted(int groupNumber) {
+    return getRevisionListeningCompleted().contains(groupNumber);
+  }
+
+  List<int> getRevisionWritingCompleted() {
+    final List<String>? completed = prefs.getStringList(_keyRevisionWriting);
+    if (completed == null) {
+      return [];
+    }
+    return completed.map((e) => int.parse(e)).toList();
+  }
+
+  Future<void> completeRevisionWriting(int groupNumber) async {
+    final completed = getRevisionWritingCompleted();
+    if (!completed.contains(groupNumber)) {
+      completed.add(groupNumber);
+      await prefs.setStringList(
+        _keyRevisionWriting,
+        completed.map((e) => e.toString()).toList(),
+      );
+    }
+  }
+
+  bool isRevisionWritingCompleted(int groupNumber) {
+    return getRevisionWritingCompleted().contains(groupNumber);
   }
 
   // إعداد المستويات بعد نجاح اختبار تحديد المستوى

@@ -3,15 +3,19 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/exercises/data/models/revision_test_model.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
+import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/automated_letter_trace_screen.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class RevisionTestView extends StatefulWidget {
   final int groupNumber;
   final VoidCallback? onLetterUnlocked;
+  final bool isStandalone;
 
   const RevisionTestView({
     super.key,
     required this.groupNumber,
     this.onLetterUnlocked,
+    this.isStandalone = false,
   });
 
   @override
@@ -115,12 +119,52 @@ class _RevisionTestViewState extends State<RevisionTestView> {
         _speakLetter(_questions[_currentQuestionIndex].correctAnswer);
       });
     } else {
-      setState(() {
-        _isTestComplete = true;
-      });
-      // التحقق من النتيجة المثالية وفتح الحروف التالية
-      _checkAndUnlockNextLetters();
+      // بعد انتهاء الأسئلة
+      if (widget.isStandalone) {
+        // إذا كان الاختبار منفصل، عرض النتيجة فقط
+        setState(() {
+          _isTestComplete = true;
+        });
+        _checkAndUnlockNextLetters();
+      } else {
+        // إذا كان الاختبار متكامل، انتقل إلى تمرين الكتابة
+        _startWritingPractice();
+      }
     }
+  }
+
+  /// بدء تمرين الكتابة للحرف الأول من المجموعة
+  void _startWritingPractice() {
+    final letterToWrite = _testGroup.letters[0]; // الحرف الأول من المجموعة
+    final letterIndex = _getLetterIndex(letterToWrite);
+
+    Navigator.push(
+      context,
+      AnimatedRoute.slideScale(
+        AutomatedLetterTraceScreen(
+          svgAssetPath: 'assets/svg/$letterToWrite.svg',
+          letterIndex: letterIndex,
+          onComplete: () {
+            setState(() {
+              _isTestComplete = true;
+            });
+            // التحقق من النتيجة وفتح الحروف التالية
+            _checkAndUnlockNextLetters();
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
+
+  /// الحصول على فهرس الحرف في الأبجدية العربية
+  int _getLetterIndex(String letter) {
+    const arabicLetters = [
+      'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر',
+      'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف',
+      'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'
+    ];
+    return arabicLetters.indexOf(letter);
   }
 
   /// فتح الحرف التالي إذا كانت النتيجة 100%
@@ -129,6 +173,11 @@ class _RevisionTestViewState extends State<RevisionTestView> {
     
     // التحقق من أن الإجابات كلها صحيحة
     final isPerfectScore = _score == _testGroup.questions.length;
+    
+    // إذا كان الاختبار منفصل، حفظ النتيجة للاستماع فقط
+    if (widget.isStandalone && isPerfectScore) {
+      await _progressService!.completeRevisionListening(widget.groupNumber);
+    }
     
     if (isPerfectScore) {
       // Mark this revision as completed
@@ -679,8 +728,12 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () {
+                          // In standalone mode, only pop once to return to revision selection
+                          // In integrated mode, pop twice to return to level view
                           Navigator.pop(context, _letterWasUnlocked);
-                          Navigator.pop(context, _letterWasUnlocked);
+                          if (!widget.isStandalone) {
+                            Navigator.pop(context, _letterWasUnlocked);
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
