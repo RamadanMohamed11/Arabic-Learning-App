@@ -5,6 +5,7 @@ import 'package:arabic_learning_app/features/exercises/presentation/views/revisi
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/exercises/presentation/views/widgets/revision_writing_practice.dart';
+import 'package:arabic_learning_app/features/exercises/presentation/views/widgets/revision_pronunciation_practice.dart';
 
 class RevisionTestSelectionView extends StatefulWidget {
   final int groupNumber; // رقم المجموعة (0-6)
@@ -22,6 +23,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
   UserProgressService? _progressService;
   bool _listeningCompleted = false;
   bool _writingCompleted = false;
+  bool _pronunciationCompleted = false;
   bool _isLoading = true;
 
   @override
@@ -35,6 +37,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
     setState(() {
       _listeningCompleted = _progressService!.isRevisionListeningCompleted(widget.groupNumber);
       _writingCompleted = _progressService!.isRevisionWritingCompleted(widget.groupNumber);
+      _pronunciationCompleted = _progressService!.isRevisionPronunciationCompleted(widget.groupNumber);
       _isLoading = false;
     });
   }
@@ -48,15 +51,16 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
     return arabicLetters.indexOf(letter);
   }
 
-  /// Check if both tests are completed and unlock next letter
+  /// Check if all three tests are completed and unlock next letter
   Future<void> _checkAndUnlockNextLetter() async {
     if (_progressService == null) return;
 
     final listeningDone = _progressService!.isRevisionListeningCompleted(widget.groupNumber);
     final writingDone = _progressService!.isRevisionWritingCompleted(widget.groupNumber);
+    final pronunciationDone = _progressService!.isRevisionPronunciationCompleted(widget.groupNumber);
 
-    // Only unlock if BOTH tests are completed
-    if (listeningDone && writingDone) {
+    // Only unlock if ALL THREE tests are completed
+    if (listeningDone && writingDone && pronunciationDone) {
       // Mark this revision as completed
       await _progressService!.completeRevision(widget.groupNumber);
 
@@ -160,63 +164,77 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                 ),
               ),
 
-              const SizedBox(height: 32),
-
-              // Content
+              // Content - Make scrollable to prevent overflow
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.headphones,
-                        size: 100,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(height: 32),
-                      const Text(
-                        'اختبار الاستماع',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        const Icon(
+                          Icons.quiz,
+                          size: 70,
+                          color: AppColors.primary,
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'استمع إلى الحرف واختر الإجابة الصحيحة من بين الخيارات',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: AppColors.textSecondary,
+                        const SizedBox(height: 16),
+                        const Text(
+                          'اختبارات المراجعة',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 48),
+                        const SizedBox(height: 8),
+                        Text(
+                          'أكمل الاختبارات الثلاثة لفتح الحرف التالي',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
 
-                      // Test Options
-                      _buildTestOption(
-                        context,
-                        title: 'اختبار الاستماع',
-                        description: 'استمع واختر الحرف الصحيح',
-                        icon: Icons.hearing,
-                        color: AppColors.exercise2[0],
-                        testType: 'listening',
-                        isCompleted: _listeningCompleted,
-                      ),
+                        // Test Options
+                        _buildTestOption(
+                          context,
+                          title: 'اختبار الاستماع',
+                          description: 'استمع واختر الحرف الصحيح',
+                          icon: Icons.hearing,
+                          color: AppColors.exercise2[0],
+                          testType: 'listening',
+                          isCompleted: _listeningCompleted,
+                        ),
 
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 12),
 
-                      _buildTestOption(
-                        context,
-                        title: 'اختبار الكتابة',
-                        description: 'ارسم الحروف: ${testGroup.letters.join(' - ')}',
-                        icon: Icons.edit,
-                        color: AppColors.exercise1[0],
-                        testType: 'writing',
-                        isCompleted: _writingCompleted,
-                      ),
-                    ],
+                        _buildTestOption(
+                          context,
+                          title: 'اختبار الكتابة',
+                          description: 'ارسم الحروف: ${testGroup.letters.join(' - ')}',
+                          icon: Icons.edit,
+                          color: AppColors.exercise1[0],
+                          testType: 'writing',
+                          isCompleted: _writingCompleted,
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        _buildTestOption(
+                          context,
+                          title: 'اختبار النطق',
+                          description: 'انطق الحروف: ${testGroup.letters.join(' - ')}',
+                          icon: Icons.mic,
+                          color: AppColors.exercise2[1],
+                          testType: 'pronunciation',
+                          isCompleted: _pronunciationCompleted,
+                        ),
+
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -266,7 +284,27 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                       onComplete: () async {
                         // Mark writing test as completed
                         await _progressService!.completeRevisionWriting(widget.groupNumber);
-                        // Check if both tests are completed to unlock next letter
+                        // Check if all tests are completed to unlock next letter
+                        await _checkAndUnlockNextLetter();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                );
+                // Reload progress after returning
+                await _loadProgress();
+              } else if (testType == 'pronunciation') {
+                final letters = revisionTestGroups[widget.groupNumber].letters;
+                
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideUp(
+                    RevisionPronunciationPractice(
+                      letters: letters,
+                      onComplete: () async {
+                        // Mark pronunciation test as completed
+                        await _progressService!.completeRevisionPronunciation(widget.groupNumber);
+                        // Check if all tests are completed to unlock next letter
                         await _checkAndUnlockNextLetter();
                         Navigator.pop(context);
                       },

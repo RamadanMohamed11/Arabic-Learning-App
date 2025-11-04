@@ -56,20 +56,32 @@ class _CharacterPronunciationPracticeViewState
           if (mounted) {
             setState(() {
               if (_recognizedWords.isEmpty) {
-                _feedbackMessage = 'لم يتم التعرف على الصوت، حاول مرة أخرى';
-                _feedbackColor = Colors.orange;
+                _feedbackMessage = 'استمع للنطق الصحيح 🔊';
+                _feedbackColor = Colors.blue;
               }
             });
+            // Speak the correct letter name
+            if (_letterName != null) {
+              Future.delayed(const Duration(milliseconds: 500), () {
+                _speak(_letterName!.nameWithDiacritics);
+              });
+            }
           }
         },
         onStatus: (status) {
           if (status == 'notListening' && mounted) {
             setState(() {
               if (_recognizedWords.isEmpty && _feedbackMessage == '...جارٍ الاستماع') {
-                _feedbackMessage = 'لم يتم التعرف على الصوت، حاول مرة أخرى';
-                _feedbackColor = Colors.orange;
+                _feedbackMessage = 'استمع للنطق الصحيح 🔊';
+                _feedbackColor = Colors.blue;
               }
             });
+            // Speak the correct letter name
+            if (_recognizedWords.isEmpty && _letterName != null) {
+              Future.delayed(const Duration(milliseconds: 500), () {
+                _speak(_letterName!.nameWithDiacritics);
+              });
+            }
           }
         },
       );
@@ -79,9 +91,15 @@ class _CharacterPronunciationPracticeViewState
     } catch (e) {
       if (mounted) {
         setState(() {
-          _feedbackMessage = 'لم يتم التعرف على الصوت، حاول مرة أخرى';
-          _feedbackColor = Colors.orange;
+          _feedbackMessage = 'استمع للنطق الصحيح 🔊';
+          _feedbackColor = Colors.blue;
         });
+        // Speak the correct letter name
+        if (_letterName != null) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            _speak(_letterName!.nameWithDiacritics);
+          });
+        }
       }
     }
   }
@@ -127,9 +145,15 @@ class _CharacterPronunciationPracticeViewState
     } catch (e) {
       if (mounted) {
         setState(() {
-          _feedbackMessage = 'لم يتم التعرف على الصوت، حاول مرة أخرى';
-          _feedbackColor = Colors.orange;
+          _feedbackMessage = 'استمع للنطق الصحيح 🔊';
+          _feedbackColor = Colors.blue;
         });
+        // Speak the correct letter name
+        if (_letterName != null) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            _speak(_letterName!.nameWithDiacritics);
+          });
+        }
       }
     }
   }

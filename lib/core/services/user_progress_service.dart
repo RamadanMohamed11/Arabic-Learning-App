@@ -17,6 +17,7 @@ class UserProgressService {
   static const String _keyCompletedRevisions = 'completed_revisions';
   static const String _keyRevisionListening = 'revision_listening_completed';
   static const String _keyRevisionWriting = 'revision_writing_completed';
+  static const String _keyRevisionPronunciation = 'revision_pronunciation_completed';
   static const String _keyUserName = 'user_name';
   static const String _keyWelcomeScreenSeen = 'welcome_screen_seen';
 
@@ -330,6 +331,29 @@ class UserProgressService {
 
   bool isRevisionWritingCompleted(int groupNumber) {
     return getRevisionWritingCompleted().contains(groupNumber);
+  }
+
+  List<int> getRevisionPronunciationCompleted() {
+    final List<String>? completed = prefs.getStringList(_keyRevisionPronunciation);
+    if (completed == null) {
+      return [];
+    }
+    return completed.map((e) => int.parse(e)).toList();
+  }
+
+  Future<void> completeRevisionPronunciation(int groupNumber) async {
+    final completed = getRevisionPronunciationCompleted();
+    if (!completed.contains(groupNumber)) {
+      completed.add(groupNumber);
+      await prefs.setStringList(
+        _keyRevisionPronunciation,
+        completed.map((e) => e.toString()).toList(),
+      );
+    }
+  }
+
+  bool isRevisionPronunciationCompleted(int groupNumber) {
+    return getRevisionPronunciationCompleted().contains(groupNumber);
   }
 
   // إعداد المستويات بعد نجاح اختبار تحديد المستوى
