@@ -7,12 +7,14 @@ class AutomatedLetterTraceScreen extends StatefulWidget {
   final String svgAssetPath;
   final int letterIndex;
   final VoidCallback? onComplete;
+  final bool isEmbedded;
 
   const AutomatedLetterTraceScreen({
     super.key,
     required this.svgAssetPath,
     required this.letterIndex,
     this.onComplete,
+    this.isEmbedded = false,
   });
 
   @override
@@ -41,6 +43,7 @@ class _AutomatedLetterTraceScreenState
   bool _isPerfect = false;
   int _missedPoints = 0;
   int _totalAttempts = 0;
+  bool _isInteractingWithBoard = false;
 
   @override
   void initState() {
@@ -192,6 +195,7 @@ class _AutomatedLetterTraceScreenState
       allCompleted = false;
       _showFeedback = false;
       _missedPoints = 0;
+      _isInteractingWithBoard = false;
     });
   }
 
@@ -269,8 +273,312 @@ class _AutomatedLetterTraceScreenState
     }
   }
 
+  Widget _buildMainContent({required bool embedded}) {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(color: Colors.teal.shade600),
+      );
+    }
+
+    final double gapSmall = embedded ? 8 : 10;
+    final double gapMedium = embedded ? 14 : 20;
+    final double gapLarge = embedded ? 22 : 30;
+    final EdgeInsets outerPadding = EdgeInsets.symmetric(
+      horizontal: embedded ? 12 : 20,
+      vertical: embedded ? 8 : 16,
+    );
+
+    final Widget instructionsCard = Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(embedded ? 12 : 16),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.shade200, width: 2),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline,
+            color: Colors.blue.shade700,
+            size: embedded ? 24 : 28,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              currentPathIndex < allPathPoints.length
+                  ? 'تتبع المسار ${currentPathIndex + 1} من ${allPathPoints.length}\nيمكنك رفع إصبعك بين المسارات!'
+                  : 'تتبع الحرف باتباع المسار الرمادي.\nيمكنك رفع إصبعك بين المسارات!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.blue.shade900,
+                fontSize: embedded ? 13 : 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final Widget progressRow = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(allPathPoints.length, (index) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: 40,
+          height: 8,
+          decoration: BoxDecoration(
+            color: pathsCompleted[index]
+                ? Colors.green
+                : index == currentPathIndex
+                ? Colors.teal
+                : Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        );
+      }),
+    );
+
+    final Widget drawingBoard = Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.teal.shade200, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.teal.withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onPanDown: (details) {
+            if (!_isInteractingWithBoard) {
+              setState(() {
+                _isInteractingWithBoard = true;
+              });
+            }
+          },
+          onPanStart: (details) {
+            if (!_isInteractingWithBoard) {
+              setState(() {
+                _isInteractingWithBoard = true;
+              });
+            }
+            if (allCompleted ||
+                allPathPoints.isEmpty ||
+                currentPathIndex >= allPathPoints.length) {
+              return;
+            }
+            List<Offset> currentPoints = allPathPoints[currentPathIndex];
+            if (currentPoints.isEmpty) return;
+
+            if (nextPointIndex > 0 && nextPointIndex < currentPoints.length) {
+              double distanceToNextPoint =
+                  (details.localPosition - currentPoints[nextPointIndex])
+                      .distance;
+              if (distanceToNextPoint < 50.0) {
+                onUserDrag(details.localPosition);
+              }
+            } else if (nextPointIndex == 0) {
+              double distanceToFirstPoint =
+                  (details.localPosition - currentPoints[0]).distance;
+              if (distanceToFirstPoint < 35.0) {
+                onUserDrag(details.localPosition);
+              }
+            }
+          },
+          onPanUpdate: (details) => onUserDrag(details.localPosition),
+          onPanEnd: (details) {
+            if (!allCompleted && currentPathIndex < allPathPoints.length) {
+              List<Offset> currentPoints = allPathPoints[currentPathIndex];
+              if (nextPointIndex > 0 &&
+                  nextPointIndex < (currentPoints.length * 0.1)) {
+                _missedPoints++;
+                Future.delayed(const Duration(milliseconds: 500), resetDrawing);
+              }
+            }
+            if (_isInteractingWithBoard) {
+              setState(() {
+                _isInteractingWithBoard = false;
+              });
+            }
+          },
+          onPanCancel: () {
+            if (_isInteractingWithBoard) {
+              setState(() {
+                _isInteractingWithBoard = false;
+              });
+            }
+          },
+          child: CustomPaint(
+            size: const Size(320, 320),
+            painter: AutomatedLetterPainter(
+              guidePaths: guidePaths,
+              userDrawnPoints: userPath,
+              allUserPaths: allUserPaths,
+              allCompleted: allCompleted,
+              currentPathIndex: currentPathIndex,
+              nextPointIndex: nextPointIndex,
+              allPathPoints: allPathPoints,
+              pathsCompleted: pathsCompleted,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final Widget feedback = AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (child, animation) =>
+          FadeTransition(opacity: animation, child: child),
+      child: !_showFeedback
+          ? const SizedBox.shrink()
+          : Container(
+              key: const ValueKey('feedbackVisible'),
+              padding: EdgeInsets.all(embedded ? 16 : 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _isPerfect
+                      ? [Colors.green.shade50, Colors.green.shade100]
+                      : [Colors.orange.shade50, Colors.orange.shade100],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: _isPerfect ? Colors.green : Colors.orange,
+                  width: 3,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    _isPerfect ? Icons.star : Icons.refresh,
+                    color: _isPerfect ? Colors.green : Colors.orange,
+                    size: embedded ? 40 : 48,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _isPerfect ? '🎉 ممتاز! 🎉' : 'حاول مرة أخرى!',
+                    style: TextStyle(
+                      color: _isPerfect ? Colors.green : Colors.orange,
+                      fontSize: embedded ? 24 : 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _isPerfect
+                        ? 'عمل رائع! لقد تتبعت الحرف بشكل مثالي!'
+                        : 'استمر في التدريب! يمكنك القيام بعمل أفضل!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: _isPerfect
+                          ? Colors.green.shade900
+                          : Colors.orange.shade900,
+                      fontSize: embedded ? 13 : 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+
+    final Widget resetButton = ElevatedButton.icon(
+      onPressed: resetDrawing,
+      icon: const Icon(Icons.refresh),
+      label: const Text(
+        'حاول مرة أخرى',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
+        padding: EdgeInsets.symmetric(
+          horizontal: 32,
+          vertical: embedded ? 12 : 16,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 3,
+      ),
+    );
+
+    final Widget stats = Text(
+      'المحاولات: $_totalAttempts',
+      style: TextStyle(
+        color: Colors.grey.shade600,
+        fontSize: embedded ? 11 : 12,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+
+    final List<Widget> children = [
+      instructionsCard,
+      SizedBox(height: gapSmall),
+    ];
+
+    if (allPathPoints.isNotEmpty) {
+      children.add(progressRow);
+      children.add(SizedBox(height: gapMedium));
+    } else {
+      children.add(SizedBox(height: gapMedium));
+    }
+
+    children
+      ..add(drawingBoard)
+      ..add(SizedBox(height: gapLarge))
+      ..add(feedback)
+      ..add(SizedBox(height: _showFeedback ? gapMedium : gapSmall))
+      ..add(resetButton)
+      ..add(SizedBox(height: gapSmall))
+      ..add(stats);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final content = Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: embedded
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        );
+
+        return NotificationListener<UserScrollNotification>(
+          onNotification: (notification) => _isInteractingWithBoard,
+          child: SingleChildScrollView(
+            primary: false,
+            physics: _isInteractingWithBoard
+                ? const NeverScrollableScrollPhysics()
+                : const ClampingScrollPhysics(),
+            padding: outerPadding,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Align(
+                alignment: embedded ? Alignment.topCenter : Alignment.center,
+                child: content,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Widget body = _buildMainContent(embedded: widget.isEmbedded);
+
+    if (widget.isEmbedded) {
+      return Container(color: const Color(0xFFF5F5F5), child: body);
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -289,257 +597,7 @@ class _AutomatedLetterTraceScreenState
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Center(
-        child: _isLoading
-            ? CircularProgressIndicator(color: Colors.teal.shade600)
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Instructions
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue.shade200, width: 2),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.blue.shade700,
-                          size: 28,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            currentPathIndex < allPathPoints.length
-                                ? 'تتبع المسار ${currentPathIndex + 1} من ${allPathPoints.length}\nيمكنك رفع إصبعك بين المسارات!'
-                                : 'تتبع الحرف باتباع المسار الرمادي.\nيمكنك رفع إصبعك بين المسارات!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.blue.shade900,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Progress Indicator
-                  if (allPathPoints.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(allPathPoints.length, (index) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: 40,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: pathsCompleted[index]
-                                ? Colors.green
-                                : index == currentPathIndex
-                                ? Colors.teal
-                                : Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        );
-                      }),
-                    ),
-
-                  const SizedBox(height: 20),
-
-                  // Drawing Board
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.teal.shade200, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.teal.withOpacity(0.2),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: GestureDetector(
-                        onPanStart: (details) {
-                          if (allCompleted ||
-                              allPathPoints.isEmpty ||
-                              currentPathIndex >= allPathPoints.length) {
-                            return;
-                          }
-                          List<Offset> currentPoints =
-                              allPathPoints[currentPathIndex];
-                          if (currentPoints.isEmpty) return;
-
-                          // If continuing the same path (already started)
-                          if (nextPointIndex > 0 &&
-                              nextPointIndex < currentPoints.length) {
-                            // Check if near the next point to continue
-                            double distanceToNextPoint =
-                                (details.localPosition -
-                                        currentPoints[nextPointIndex])
-                                    .distance;
-                            if (distanceToNextPoint < 50.0) {
-                              onUserDrag(details.localPosition);
-                            }
-                          } else if (nextPointIndex == 0) {
-                            // Must start from the beginning
-                            double distanceToFirstPoint =
-                                (details.localPosition - currentPoints[0])
-                                    .distance;
-                            if (distanceToFirstPoint < 35.0) {
-                              onUserDrag(details.localPosition);
-                            }
-                          }
-                        },
-                        onPanUpdate: (details) =>
-                            onUserDrag(details.localPosition),
-                        onPanEnd: (details) {
-                          // Do NOT reset - allow user to lift finger and continue
-                          // Only reset if they barely started (less than 10% of current path)
-                          if (!allCompleted &&
-                              currentPathIndex < allPathPoints.length) {
-                            List<Offset> currentPoints =
-                                allPathPoints[currentPathIndex];
-                            // Only reset if user completed less than 10% of current path
-                            if (nextPointIndex > 0 &&
-                                nextPointIndex < (currentPoints.length * 0.1)) {
-                              _missedPoints++;
-                              Future.delayed(
-                                const Duration(milliseconds: 500),
-                                resetDrawing,
-                              );
-                            }
-                            // Otherwise, keep progress and allow them to continue
-                          }
-                        },
-                        child: CustomPaint(
-                          size: const Size(320, 320),
-                          painter: AutomatedLetterPainter(
-                            guidePaths: guidePaths,
-                            userDrawnPoints: userPath,
-                            allUserPaths: allUserPaths,
-                            allCompleted: allCompleted,
-                            currentPathIndex: currentPathIndex,
-                            nextPointIndex: nextPointIndex,
-                            allPathPoints: allPathPoints,
-                            pathsCompleted: pathsCompleted,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Feedback Message
-                  AnimatedOpacity(
-                    opacity: _showFeedback ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 500),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: _isPerfect
-                              ? [Colors.green.shade50, Colors.green.shade100]
-                              : [Colors.orange.shade50, Colors.orange.shade100],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: _isPerfect ? Colors.green : Colors.orange,
-                          width: 3,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            _isPerfect ? Icons.star : Icons.refresh,
-                            color: _isPerfect ? Colors.green : Colors.orange,
-                            size: 48,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            _isPerfect ? '🎉 ممتاز! 🎉' : 'حاول مرة أخرى!',
-                            style: TextStyle(
-                              color: _isPerfect ? Colors.green : Colors.orange,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _isPerfect
-                                ? 'عمل رائع! لقد تتبعت الحرف بشكل مثالي!'
-                                : 'استمر في التدريب! يمكنك القيام بعمل أفضل!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: _isPerfect
-                                  ? Colors.green.shade900
-                                  : Colors.orange.shade900,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Reset Button
-                  ElevatedButton.icon(
-                    onPressed: resetDrawing,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text(
-                      'حاول مرة أخرى',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 3,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Stats
-                  Text(
-                    'المحاولات: $_totalAttempts',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-      ),
+      body: body,
     );
   }
 }

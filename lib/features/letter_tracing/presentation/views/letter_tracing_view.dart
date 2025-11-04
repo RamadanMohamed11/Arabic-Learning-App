@@ -7,10 +7,7 @@ import 'package:arabic_learning_app/core/utils/animated_route.dart';
 class LetterTracingView extends StatefulWidget {
   final String letter;
 
-  const LetterTracingView({
-    super.key,
-    required this.letter,
-  });
+  const LetterTracingView({super.key, required this.letter});
 
   @override
   State<LetterTracingView> createState() => _LetterTracingViewState();
@@ -47,10 +44,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
     );
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
-      CurvedAnimation(
-        parent: _celebrationController,
-        curve: Curves.elasticOut,
-      ),
+      CurvedAnimation(parent: _celebrationController, curve: Curves.elasticOut),
     );
   }
 
@@ -143,7 +137,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
           for (int i = 0; i < currentStrokeIndex; i++) {
             completedPoints += letterPath!.strokes[i].length;
           }
-          
+
           if (userPath.length > completedPoints) {
             userPath.removeRange(completedPoints, userPath.length);
           }
@@ -184,7 +178,9 @@ class _LetterTracingViewState extends State<LetterTracingView>
 
   /// الحصول على الحرف التالي (دائماً يرجع حرف، حتى لو كان آخر حرف يرجع للأول)
   String _getNextLetter() {
-    final currentIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
+    final currentIndex = arabicLetters.indexWhere(
+      (l) => l.letter == widget.letter,
+    );
     if (currentIndex == -1 || currentIndex >= arabicLetters.length - 1) {
       // إذا كان آخر حرف، ارجع للحرف الأول
       return arabicLetters[0].letter;
@@ -194,7 +190,9 @@ class _LetterTracingViewState extends State<LetterTracingView>
 
   /// الحصول على الحرف السابق
   String? _getPreviousLetter() {
-    final currentIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
+    final currentIndex = arabicLetters.indexWhere(
+      (l) => l.letter == widget.letter,
+    );
     if (currentIndex <= 0) {
       return null; // أول حرف
     }
@@ -231,9 +229,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: Colors.green.shade50,
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -258,10 +254,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
             Text(
               'لقد أتقنت كتابة حرف "${widget.letter}"',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 20),
             Text(
@@ -275,10 +268,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
             const SizedBox(height: 16),
             Text(
               'الحرف التالي: $nextLetter',
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 18, color: Colors.grey),
             ),
           ],
         ),
@@ -288,10 +278,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
               Navigator.pop(context);
               resetDrawing();
             },
-            child: const Text(
-              'حاول مرة أخرى',
-              style: TextStyle(fontSize: 18),
-            ),
+            child: const Text('حاول مرة أخرى', style: TextStyle(fontSize: 18)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -321,10 +308,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
           backgroundColor: const Color(0xFF1A237E),
         ),
         body: const Center(
-          child: Text(
-            'الحرف غير متوفر',
-            style: TextStyle(fontSize: 24),
-          ),
+          child: Text('الحرف غير متوفر', style: TextStyle(fontSize: 24)),
         ),
       );
     }
@@ -337,10 +321,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
       appBar: AppBar(
         title: Text(
           'تتبع حرف "${widget.letter}"',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xFF1A237E),
         elevation: 0,
@@ -349,7 +330,9 @@ class _LetterTracingViewState extends State<LetterTracingView>
           IconButton(
             icon: const Icon(Icons.arrow_back_ios, size: 24),
             onPressed: previousLetter != null ? _goToPreviousLetter : null,
-            tooltip: previousLetter != null ? 'الحرف السابق: $previousLetter' : null,
+            tooltip: previousLetter != null
+                ? 'الحرف السابق: $previousLetter'
+                : null,
           ),
           // زر إعادة
           IconButton(
@@ -405,7 +388,8 @@ class _LetterTracingViewState extends State<LetterTracingView>
                   borderRadius: BorderRadius.circular(20),
                   child: GestureDetector(
                     onPanStart: (details) => onPanStart(details.localPosition),
-                    onPanUpdate: (details) => onPanUpdate(details.localPosition),
+                    onPanUpdate: (details) =>
+                        onPanUpdate(details.localPosition),
                     onPanEnd: (details) => onPanEnd(),
                     child: CustomPaint(
                       size: const Size(320, 360),
@@ -463,10 +447,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
               ),
               Text(
                 'Stroke ${currentStrokeIndex + 1}/${letterPath!.strokes.length}',
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
             ],
           ),
@@ -507,7 +488,9 @@ class _LetterTracingViewState extends State<LetterTracingView>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isCompleted ? Colors.green.withOpacity(0.2) : Colors.blue.withOpacity(0.2),
+        color: isCompleted
+            ? Colors.green.withOpacity(0.2)
+            : Colors.blue.withOpacity(0.2),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: isCompleted ? Colors.green : Colors.blue,
@@ -516,11 +499,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
       ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: isCompleted ? Colors.green : Colors.blue,
-            size: 30,
-          ),
+          Icon(icon, color: isCompleted ? Colors.green : Colors.blue, size: 30),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -547,10 +526,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
           ElevatedButton.icon(
             onPressed: resetDrawing,
             icon: const Icon(Icons.refresh),
-            label: const Text(
-              'إعادة',
-              style: TextStyle(fontSize: 18),
-            ),
+            label: const Text('إعادة', style: TextStyle(fontSize: 18)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
@@ -563,10 +539,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
           ElevatedButton.icon(
             onPressed: _goToNextLetter,
             icon: const Icon(Icons.arrow_forward),
-            label: const Text(
-              'التالي',
-              style: TextStyle(fontSize: 18),
-            ),
+            label: const Text('التالي', style: TextStyle(fontSize: 18)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,

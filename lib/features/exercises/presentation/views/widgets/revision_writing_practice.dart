@@ -64,122 +64,123 @@ class _RevisionWritingPracticeState extends State<RevisionWritingPractice> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Column(
-        children: [
-          // Progress indicator
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: BoxDecoration(
-              color: AppColors.exercise1[0].withOpacity(0.1),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(widget.letters.length, (index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: index < _currentLetterIndex
-                              ? Colors.green
-                              : index == _currentLetterIndex
-                                  ? AppColors.exercise1[0]
-                                  : Colors.grey.shade300,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: index < _currentLetterIndex
-                              ? const Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 20,
-                                )
-                              : Text(
-                                  widget.letters[index],
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: index == _currentLetterIndex
-                                        ? Colors.white
-                                        : Colors.grey.shade600,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Progress indicator - more compact
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              decoration: BoxDecoration(
+                color: AppColors.exercise1[0].withOpacity(0.1),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(widget.letters.length, (index) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: index < _currentLetterIndex
+                                ? Colors.green
+                                : index == _currentLetterIndex
+                                ? AppColors.exercise1[0]
+                                : Colors.grey.shade300,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: index < _currentLetterIndex
+                                ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16,
+                                  )
+                                : Text(
+                                    widget.letters[index],
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: index == _currentLetterIndex
+                                          ? Colors.white
+                                          : Colors.grey.shade600,
+                                    ),
                                   ),
-                                ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.letters[index],
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: index <= _currentLetterIndex
-                              ? AppColors.textPrimary
-                              : Colors.grey.shade400,
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.letters[index],
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: index <= _currentLetterIndex
+                                ? AppColors.textPrimary
+                                : Colors.grey.shade400,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+            // Letter tracing screen
+            Expanded(
+              child: AutomatedLetterTraceScreen(
+                key: ValueKey(_currentLetterIndex),
+                svgAssetPath:
+                    'assets/svg/${widget.letters[_currentLetterIndex]}.svg',
+                letterIndex: widget.letterIndices[_currentLetterIndex],
+                onComplete: _onLetterComplete,
+                isEmbedded: true,
+              ),
+            ),
+            // Next/Finish button - more compact
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, -3),
                   ),
-                );
-              }),
-            ),
-          ),
-          // Letter tracing screen
-          Expanded(
-            child: AutomatedLetterTraceScreen(
-              key: ValueKey(_currentLetterIndex),
-              svgAssetPath:
-                  'assets/svg/${widget.letters[_currentLetterIndex]}.svg',
-              letterIndex: widget.letterIndices[_currentLetterIndex],
-              onComplete: _onLetterComplete,
-            ),
-          ),
-          // Next/Finish button
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: SafeArea(
+                ],
+              ),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _currentLetterCompleted ? _handleNextButton : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _currentLetterCompleted
-                        ? AppColors.exercise1[0]
+                        ? Colors.teal
                         : Colors.grey.shade300,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: _currentLetterCompleted ? 5 : 0,
+                    elevation: _currentLetterCompleted ? 3 : 0,
                   ),
                   child: Text(
                     _currentLetterIndex < widget.letters.length - 1
                         ? 'التالي'
                         : 'إنهاء',
                     style: const TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
