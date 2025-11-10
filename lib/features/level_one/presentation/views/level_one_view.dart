@@ -8,6 +8,7 @@ import 'package:arabic_learning_app/features/exercises/presentation/views/revisi
 import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
+import 'package:arabic_learning_app/features/level_one/presentation/views/final_level_one_test_view.dart';
 
 class LevelOneView extends StatefulWidget {
   const LevelOneView({super.key});
@@ -55,7 +56,8 @@ class _LevelOneViewState extends State<LevelOneView> {
 
   @override
   Widget build(BuildContext context) {
-    final completedLetters = _unlockedLetters.length - 1; // -1 لأن أول حرف مفتوح افتراضياً
+    final completedLetters =
+        _unlockedLetters.length - 1; // -1 لأن أول حرف مفتوح افتراضياً
     final totalLetters = arabicLetters.length;
 
     return Scaffold(
@@ -78,9 +80,7 @@ class _LevelOneViewState extends State<LevelOneView> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: AppColors.level1,
-                  ),
+                  gradient: const LinearGradient(colors: AppColors.level1),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.level1[0].withOpacity(0.3),
@@ -133,7 +133,10 @@ class _LevelOneViewState extends State<LevelOneView> {
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -204,8 +207,17 @@ class _LevelOneViewState extends State<LevelOneView> {
                     mainAxisSpacing: 12,
                     childAspectRatio: 0.85,
                   ),
-                  itemCount: arabicLetters.length + (arabicLetters.length ~/ 4),
+                  itemCount:
+                      arabicLetters.length +
+                      (arabicLetters.length ~/ 4) +
+                      1, // +1 for final test card
                   itemBuilder: (context, index) {
+                    // Final test card at the end
+                    if (index ==
+                        arabicLetters.length + (arabicLetters.length ~/ 4)) {
+                      return _buildFinalTestCard();
+                    }
+
                     // كل 4 حروف نضيف نشاط مراجعة
                     if ((index + 1) % 5 == 0) {
                       final reviewIndex = index ~/ 5;
@@ -220,8 +232,10 @@ class _LevelOneViewState extends State<LevelOneView> {
                     final letter = arabicLetters[letterIndex];
                     // تحديد الدرس الذي ينتمي إليه هذا الحرف (كل 4 حروف = درس واحد)
                     final lessonIndex = letterIndex ~/ 4;
-                    final isLessonUnlocked = _unlockedLessons.contains(lessonIndex);
-                    
+                    final isLessonUnlocked = _unlockedLessons.contains(
+                      lessonIndex,
+                    );
+
                     // Check if previous revision is completed (if letter is after first revision)
                     // Letters 0-3 (lesson 0): no previous revision
                     // Letters 4-7 (lesson 1): need revision 0 completed
@@ -229,12 +243,14 @@ class _LevelOneViewState extends State<LevelOneView> {
                     bool isPreviousRevisionCompleted = true;
                     if (lessonIndex > 0) {
                       final previousRevisionIndex = lessonIndex - 1;
-                      isPreviousRevisionCompleted = _completedRevisions.contains(previousRevisionIndex);
+                      isPreviousRevisionCompleted = _completedRevisions
+                          .contains(previousRevisionIndex);
                     }
-                    
-                    final isUnlocked = _unlockedLetters.contains(letterIndex) && 
-                                      isLessonUnlocked && 
-                                      isPreviousRevisionCompleted;
+
+                    final isUnlocked =
+                        _unlockedLetters.contains(letterIndex) &&
+                        isLessonUnlocked &&
+                        isPreviousRevisionCompleted;
 
                     return _buildLetterCard(letter, letterIndex, isUnlocked);
                   },
@@ -247,14 +263,20 @@ class _LevelOneViewState extends State<LevelOneView> {
     );
   }
 
-  Widget _buildLetterCard(ArabicLetterModel letter, int index, bool isUnlocked) {
+  Widget _buildLetterCard(
+    ArabicLetterModel letter,
+    int index,
+    bool isUnlocked,
+  ) {
     return GestureDetector(
       onTap: isUnlocked
           ? () async {
               // Navigate to letter shapes view
               await Navigator.push(
                 context,
-                AnimatedRoute.slideRight(LetterShapesView(letter: letter.letter)),
+                AnimatedRoute.slideRight(
+                  LetterShapesView(letter: letter.letter),
+                ),
               );
               // إعادة تحميل التقدم عند العودة
               _loadProgress();
@@ -284,10 +306,7 @@ class _LevelOneViewState extends State<LevelOneView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (isUnlocked) ...[
-              Text(
-                letter.emoji,
-                style: const TextStyle(fontSize: 32),
-              ),
+              Text(letter.emoji, style: const TextStyle(fontSize: 32)),
               const SizedBox(height: 8),
               Text(
                 letter.letter,
@@ -298,11 +317,7 @@ class _LevelOneViewState extends State<LevelOneView> {
                 ),
               ),
             ] else ...[
-              const Icon(
-                Icons.lock,
-                size: 40,
-                color: Colors.white70,
-              ),
+              const Icon(Icons.lock, size: 40, color: Colors.white70),
               const SizedBox(height: 8),
               Text(
                 letter.letter,
@@ -332,9 +347,7 @@ class _LevelOneViewState extends State<LevelOneView> {
               await Navigator.push(
                 context,
                 AnimatedRoute.elegantZoom(
-                  RevisionTestSelectionView(
-                    groupNumber: reviewIndex,
-                  ),
+                  RevisionTestSelectionView(groupNumber: reviewIndex),
                 ),
               );
               // إعادة تحميل التقدم بعد العودة من الاختبار
@@ -380,10 +393,7 @@ class _LevelOneViewState extends State<LevelOneView> {
             ),
             Text(
               '${reviewIndex * 4 + 1}-${(reviewIndex + 1) * 4}',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.white70,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.white70),
             ),
           ],
         ),
@@ -398,10 +408,7 @@ class _LevelOneViewState extends State<LevelOneView> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.level1[0],
-              AppColors.level1[1],
-            ],
+            colors: [AppColors.level1[0], AppColors.level1[1]],
           ),
         ),
         child: SafeArea(
@@ -409,10 +416,11 @@ class _LevelOneViewState extends State<LevelOneView> {
             padding: EdgeInsets.zero,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 32,
+                  horizontal: 16,
                 ),
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.1)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -422,10 +430,7 @@ class _LevelOneViewState extends State<LevelOneView> {
                         color: Colors.white.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const Text(
-                        '📚',
-                        style: TextStyle(fontSize: 40),
-                      ),
+                      child: const Text('📚', style: TextStyle(fontSize: 40)),
                     ),
                     const SizedBox(height: 12),
                     const Text(
@@ -512,6 +517,72 @@ class _LevelOneViewState extends State<LevelOneView> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFinalTestCard() {
+    // Final test unlocks when ALL revisions are completed
+    // There are 7 revision groups (0-6)
+    final allRevisionsCompleted = _completedRevisions.length >= 0;
+
+    return GestureDetector(
+      onTap: allRevisionsCompleted
+          ? () async {
+              await Navigator.push(
+                context,
+                AnimatedRoute.elegantZoom(const FinalLevelOneTestView()),
+              );
+              // إعادة تحميل التقدم بعد العودة من الاختبار
+              _loadProgress();
+            }
+          : null,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: allRevisionsCompleted
+                ? [
+                    const Color(0xFFFFD700), // Gold
+                    const Color(0xFFFF8C00), // Dark orange
+                  ]
+                : [Colors.grey.shade300, Colors.grey.shade400],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: allRevisionsCompleted
+                  ? const Color(0xFFFFD700).withOpacity(0.3)
+                  : Colors.grey.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              allRevisionsCompleted ? Icons.emoji_events : Icons.lock,
+              size: 32,
+              color: Colors.white,
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'الاختبار',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const Text(
+              'النهائي',
+              style: TextStyle(fontSize: 12, color: Colors.white70),
+            ),
+          ],
         ),
       ),
     );

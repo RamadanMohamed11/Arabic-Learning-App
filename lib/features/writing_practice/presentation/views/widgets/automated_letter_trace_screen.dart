@@ -165,6 +165,28 @@ class _AutomatedLetterTraceScreenState
             }
           }
         }
+
+        // Fallback: ensure there's at least one point to trace (handles tiny dot paths)
+        if (pathPoints.isEmpty) {
+          final PathMetrics singleMetrics = transformedPath.computeMetrics();
+          final Iterator<PathMetric> metricIterator = singleMetrics.iterator;
+          if (metricIterator.moveNext()) {
+            final Tangent? tangent = metricIterator.current.getTangentForOffset(
+              0,
+            );
+            if (tangent != null) {
+              pathPoints.add(tangent.position);
+            }
+          }
+
+          if (pathPoints.isEmpty) {
+            final Rect pathBounds = transformedPath.getBounds();
+            if (!pathBounds.isEmpty) {
+              pathPoints.add(pathBounds.center);
+            }
+          }
+        }
+
         allPoints.add(pathPoints);
         print('✅ Path $i: Generated ${pathPoints.length} points');
       }
