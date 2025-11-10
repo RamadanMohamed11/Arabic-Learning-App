@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
+import 'package:arabic_learning_app/features/level_two/presentation/views/word_spelling_view.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class ActivityItem {
   final String title;
@@ -31,9 +33,9 @@ class _LevelTwoViewState extends State<LevelTwoView> {
 
   final List<ActivityItem> _activities = const [
     ActivityItem(
-      title: 'تجميع الحروف',
-      description: 'تعلم كيفية تكوين الكلمات من الحروف',
-      icon: Icons.build,
+      title: 'تهجئة الكلمة',
+      description: 'رتب الحروف لتكوين الكلمات الصحيحة',
+      icon: Icons.extension,
       colors: AppColors.exercise1,
     ),
     ActivityItem(
@@ -79,6 +81,10 @@ class _LevelTwoViewState extends State<LevelTwoView> {
     setState(() {
       _progress = _progressService!.getLevel2Progress();
       _unlockedLessons = _progressService!.getLevel2UnlockedLessons();
+      // Ensure first activity is always unlocked for testing
+      if (!_unlockedLessons.contains(0)) {
+        _unlockedLessons.add(0);
+      }
       _currentActivity = (_progress / (100 / _activities.length)).floor();
     });
   }
@@ -261,9 +267,24 @@ class _LevelTwoViewState extends State<LevelTwoView> {
   }) {
     return GestureDetector(
       onTap: isUnlocked
-          ? () {
+          ? () async {
               // Navigate to activity
-              // TODO: Implement activity navigation
+              if (index == 0) {
+                // Word Spelling Activity
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const WordSpellingView()),
+                );
+                _loadProgress();
+              } else {
+                // TODO: Implement other activities
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('هذا النشاط قيد التطوير 🚧'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
             }
           : null,
       child: Container(
