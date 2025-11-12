@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/missing_word_model.dart';
 
@@ -23,16 +24,69 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
   bool _isCorrect = false;
   bool _showFeedback = false;
   List<String> _shuffledOptions = [];
+  late FlutterTts _flutterTts;
+  bool _isSpeaking = false;
 
   @override
   void initState() {
     super.initState();
     _initOptions();
+    _initTts();
+  }
+
+  Widget _buildSpeakerButton() {
+    return Center(
+      child: GestureDetector(
+        onTap: _isSpeaking ? null : _speakAnswer,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: AppColors.primaryGradient),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.25),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Icon(
+            _isSpeaking ? Icons.volume_up : Icons.play_arrow,
+            color: Colors.white,
+            size: 28,
+          ),
+        ),
+      ),
+    );
   }
 
   void _initOptions() {
     _shuffledOptions = List<String>.from(widget.question.options);
     _shuffledOptions.shuffle();
+  }
+
+  Future<void> _initTts() async {
+    _flutterTts = FlutterTts();
+    await _flutterTts.setLanguage('ar-SA');
+    await _flutterTts.setSpeechRate(0.5);
+    await _flutterTts.setVolume(1.0);
+    _flutterTts.setCompletionHandler(() {
+      if (mounted) {
+        setState(() => _isSpeaking = false);
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _speakAnswer();
+      }
+    });
+  }
+
+  Future<void> _speakAnswer() async {
+    setState(() => _isSpeaking = true);
+    await _flutterTts.stop();
+    await _flutterTts.speak(widget.question.answer);
   }
 
   @override
@@ -43,6 +97,11 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
       _isCorrect = false;
       _showFeedback = false;
       _initOptions();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _speakAnswer();
+        }
+      });
     }
   }
 
@@ -99,6 +158,8 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                _buildSpeakerButton(),
+                const SizedBox(height: 12),
                 _buildPuzzleRow(),
               ],
             ),
@@ -306,5 +367,11 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop();
+    super.dispose();
   }
 }

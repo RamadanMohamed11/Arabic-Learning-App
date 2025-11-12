@@ -5,6 +5,8 @@ import 'package:arabic_learning_app/features/level_two/presentation/views/word_s
 import 'package:arabic_learning_app/features/level_two/presentation/views/word_match_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/missing_word_view.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
+import 'package:arabic_learning_app/features/level_two/presentation/views/image_description_view.dart';
+import 'package:arabic_learning_app/features/level_two/presentation/views/sentence_order_view.dart';
 
 class ActivityItem {
   final String title;
@@ -59,15 +61,15 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       colors: AppColors.exercise5,
     ),
     ActivityItem(
-      title: 'قراءة الجمل',
-      description: 'اقرأ الجمل بطلاقة وفهم',
-      icon: Icons.record_voice_over,
+      title: 'رتّب الكلمات',
+      description: 'رتّب الكلمات لتكوين جملة صحيحة',
+      icon: Icons.format_list_numbered,
       colors: AppColors.exercise2,
     ),
     ActivityItem(
-      title: 'مراجعة شاملة',
-      description: 'راجع كل ما تعلمته',
-      icon: Icons.quiz,
+      title: 'اكتب وصفًا للصورة',
+      description: 'اكتب جملة أو جملتين تصف الصورة',
+      icon: Icons.description,
       colors: AppColors.exercise6,
     ),
   ];
@@ -94,6 +96,14 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       // Ensure third activity is unlocked for testing
       if (!_unlockedLessons.contains(2)) {
         _unlockedLessons.add(2);
+      }
+      // Ensure sixth activity is unlocked for testing
+      if (!_unlockedLessons.contains(5)) {
+        _unlockedLessons.add(5);
+      }
+      // Ensure fifth activity is unlocked for testing
+      if (!_unlockedLessons.contains(4)) {
+        _unlockedLessons.add(4);
       }
       _currentActivity = (_progress / (100 / _activities.length)).floor();
     });
@@ -298,6 +308,20 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                 await Navigator.push(
                   context,
                   AnimatedRoute.slideRight(const MissingWordView()),
+                );
+                _loadProgress();
+              } else if (index == 4) {
+                // Sentence Order Activity
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const SentenceOrderView()),
+                );
+                _loadProgress();
+              } else if (index == 5) {
+                // Image Description Activity
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const ImageDescriptionView()),
                 );
                 _loadProgress();
               } else {

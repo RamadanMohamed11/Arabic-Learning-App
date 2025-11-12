@@ -95,14 +95,14 @@ const List<MissingWordQuestion> missingWordQuestions = [
   ),
   MissingWordQuestion(
     puzzle: 'يـر_م',
-    answer: 'يرسم',
+    answer: 'يَرْسُمُ',
     imagePath: 'assets/images/يرسم.jpg',
     missingLetter: 'س',
     options: ['س', 'ش', 'ص', 'ز'],
   ),
   MissingWordQuestion(
     puzzle: 'يـف_ح',
-    answer: 'يفتح',
+    answer: 'يَفْتَحُ',
     imagePath: 'assets/images/يفتح.jpg',
     missingLetter: 'ت',
     options: ['ت', 'ث', 'ط', 'د'],
