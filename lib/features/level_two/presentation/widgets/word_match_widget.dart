@@ -115,23 +115,14 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
             padding: const EdgeInsets.all(12),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final isWide = constraints.maxWidth > 720;
-                return isWide
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: _buildWordColumn()),
-                          const SizedBox(width: 16),
-                          Expanded(flex: 2, child: _buildImageGrid()),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          _buildWordColumn(),
-                          const SizedBox(height: 16),
-                          _buildImageGrid(),
-                        ],
-                      );
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: _buildWordColumn()),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildImageGrid()),
+                  ],
+                );
               },
             ),
           ),
@@ -148,35 +139,22 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.blue.shade200, width: 2),
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const crossAxisCount = 3;
-          const crossAxisSpacing = 8.0;
-          const mainAxisSpacing = 8.0;
-          const tileHeight = 60.0; // fixed height for stability
-          final tileWidth =
-              (constraints.maxWidth - crossAxisSpacing * (crossAxisCount - 1)) /
-                  crossAxisCount;
-          final aspectRatio = tileWidth / tileHeight;
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: _wordOrder.length,
+        itemBuilder: (context, index) {
+          final originalIndex = _wordOrder[index];
+          final item = widget.items[originalIndex];
+          final matched = _matched.contains(originalIndex);
+          final selected = _selectedWordOriginalIndex == originalIndex;
 
-          return GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: crossAxisSpacing,
-              mainAxisSpacing: mainAxisSpacing,
-              childAspectRatio: aspectRatio,
-            ),
-            itemCount: _wordOrder.length,
-            itemBuilder: (context, gridIndex) {
-              final originalIndex = _wordOrder[gridIndex];
-              final item = widget.items[originalIndex];
-              final matched = _matched.contains(originalIndex);
-              final selected = _selectedWordOriginalIndex == originalIndex;
-
-              return GestureDetector(
-                onTap: () => _onSelectWord(originalIndex),
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: GestureDetector(
+              onTap: () => _onSelectWord(originalIndex),
+              child: SizedBox(
+                height: 56, // fixed height per row
                 child: Stack(
                   children: [
                     AnimatedContainer(
@@ -192,7 +170,7 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
                               : (selected
                                   ? AppColors.primary
                                   : Colors.grey.shade300),
-                          width: 2, // fixed border width to avoid size change
+                          width: 2,
                         ),
                       ),
                       child: Center(
@@ -225,8 +203,8 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
                       ),
                   ],
                 ),
-              );
-            },
+              ),
+            ),
           );
         },
       ),
@@ -241,61 +219,67 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.green.shade200, width: 2),
       ),
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        alignment: WrapAlignment.center,
-        children: _imageOrder.map((originalIndex) {
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: _imageOrder.length,
+        itemBuilder: (context, index) {
+          final originalIndex = _imageOrder[index];
           final item = widget.items[originalIndex];
           final matched = _matched.contains(originalIndex);
           final selected = _selectedImageOriginalIndex == originalIndex;
-          return GestureDetector(
-            onTap: () => _onSelectImage(originalIndex),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: matched
-                      ? AppColors.success
-                      : selected
-                          ? AppColors.primary
-                          : Colors.grey.shade300,
-                  width: 3,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: (matched
-                            ? AppColors.success
-                            : selected
-                                ? AppColors.primary
-                                : Colors.black)
-                        .withOpacity(0.08),
-                    blurRadius: 10,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset(item.imagePath, fit: BoxFit.cover),
-                  if (matched)
-                    Container(
-                      color: Colors.black.withOpacity(0.25),
-                      child: const Center(
-                        child: Icon(Icons.check_circle, color: Colors.white, size: 42),
-                      ),
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: GestureDetector(
+              onTap: () => _onSelectImage(originalIndex),
+              child: SizedBox(
+                height: 110,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: matched
+                          ? AppColors.success
+                          : selected
+                              ? AppColors.primary
+                              : Colors.grey.shade300,
+                      width: 3,
                     ),
-                ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: (matched
+                                ? AppColors.success
+                                : selected
+                                    ? AppColors.primary
+                                    : Colors.black)
+                            .withOpacity(0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.asset(item.imagePath, fit: BoxFit.cover),
+                      if (matched)
+                        Container(
+                          color: Colors.black.withOpacity(0.25),
+                          child: const Center(
+                            child: Icon(Icons.check_circle, color: Colors.white, size: 42),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           );
-        }).toList(),
+        },
       ),
     );
   }

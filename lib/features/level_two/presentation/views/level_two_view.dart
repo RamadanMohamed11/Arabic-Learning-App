@@ -3,6 +3,7 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/word_spelling_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/word_match_view.dart';
+import 'package:arabic_learning_app/features/level_two/presentation/views/missing_word_view.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class ActivityItem {
@@ -46,9 +47,9 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       colors: AppColors.exercise3,
     ),
     ActivityItem(
-      title: 'كتابة الكلمات',
-      description: 'اكتب الكلمات بشكل صحيح',
-      icon: Icons.edit,
+      title: 'إكمال الكلمة الناقصة',
+      description: 'أكمل الحرف/الحروف الناقصة لِتكوين الكلمة الصحيحة',
+      icon: Icons.edit_note,
       colors: AppColors.exercise4,
     ),
     ActivityItem(
@@ -89,6 +90,10 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       // Ensure second activity is unlocked for testing
       if (!_unlockedLessons.contains(1)) {
         _unlockedLessons.add(1);
+      }
+      // Ensure third activity is unlocked for testing
+      if (!_unlockedLessons.contains(2)) {
+        _unlockedLessons.add(2);
       }
       _currentActivity = (_progress / (100 / _activities.length)).floor();
     });
@@ -286,6 +291,13 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                 await Navigator.push(
                   context,
                   AnimatedRoute.slideRight(const WordMatchView()),
+                );
+                _loadProgress();
+              } else if (index == 2) {
+                // Missing Word Activity
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const MissingWordView()),
                 );
                 _loadProgress();
               } else {
