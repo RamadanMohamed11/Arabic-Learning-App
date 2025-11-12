@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/word_spelling_view.dart';
+import 'package:arabic_learning_app/features/level_two/presentation/views/word_match_view.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class ActivityItem {
@@ -39,9 +40,9 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       colors: AppColors.exercise1,
     ),
     ActivityItem(
-      title: 'قراءة الكلمات',
-      description: 'تدرب على قراءة الكلمات بطلاقة',
-      icon: Icons.menu_book,
+      title: 'وصل الكلمة',
+      description: 'أوصل كل كلمة بالصورة المناسبة',
+      icon: Icons.link,
       colors: AppColors.exercise3,
     ),
     ActivityItem(
@@ -84,6 +85,10 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       // Ensure first activity is always unlocked for testing
       if (!_unlockedLessons.contains(0)) {
         _unlockedLessons.add(0);
+      }
+      // Ensure second activity is unlocked for testing
+      if (!_unlockedLessons.contains(1)) {
+        _unlockedLessons.add(1);
       }
       _currentActivity = (_progress / (100 / _activities.length)).floor();
     });
@@ -274,6 +279,13 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                 await Navigator.push(
                   context,
                   AnimatedRoute.slideRight(const WordSpellingView()),
+                );
+                _loadProgress();
+              } else if (index == 1) {
+                // Word Match Activity
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const WordMatchView()),
                 );
                 _loadProgress();
               } else {
