@@ -147,7 +147,7 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: DragTarget<int>(
-                      onWillAccept: (_) => true,
+                      onWillAcceptWithDetails: (_) => true,
                       onAcceptWithDetails: (details) {
                         final data = details.data;
                         setState(() {
@@ -164,25 +164,40 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
                           height: 56,
                           constraints: const BoxConstraints(minWidth: 80),
                           decoration: BoxDecoration(
-                            color: idx != null ? Colors.white : Colors.grey.shade200,
+                            color: idx != null
+                                ? Colors.white
+                                : Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: candidate.isNotEmpty ? AppColors.primary : Colors.grey.shade400,
+                              color: candidate.isNotEmpty
+                                  ? AppColors.primary
+                                  : Colors.grey.shade400,
                               width: 2,
                             ),
                           ),
                           child: idx != null
                               ? Draggable<int>(
                                   data: idx,
-                                  feedback: _buildWordChip(words[idx], dragging: true),
-                                  childWhenDragging: const SizedBox(width: 64, height: 36),
+                                  feedback: _buildWordChip(
+                                    words[idx],
+                                    dragging: true,
+                                  ),
+                                  childWhenDragging: const SizedBox(
+                                    width: 64,
+                                    height: 36,
+                                  ),
                                   onDragCompleted: () {
                                     setState(() => _arranged[index] = null);
                                   },
-                                  child: Center(child: _buildWordChip(words[idx])),
+                                  child: Center(
+                                    child: _buildWordChip(words[idx]),
+                                  ),
                                 )
                               : Center(
-                                  child: Icon(Icons.add, color: Colors.grey.shade400),
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.grey.shade400,
+                                  ),
                                 ),
                         );
                       },
@@ -245,8 +260,13 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               icon: const Icon(Icons.refresh),
               label: const Text('إعادة'),
@@ -257,8 +277,13 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               icon: const Icon(Icons.check),
               label: const Text('تحقق'),
@@ -271,19 +296,29 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: _isCorrect ? AppColors.success.withOpacity(0.1) : AppColors.error.withOpacity(0.1),
+              color: _isCorrect
+                  ? AppColors.success.withOpacity(0.1)
+                  : AppColors.error.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: _isCorrect ? AppColors.success : AppColors.error, width: 2),
+              border: Border.all(
+                color: _isCorrect ? AppColors.success : AppColors.error,
+                width: 2,
+              ),
             ),
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(_isCorrect ? Icons.check_circle : Icons.cancel, color: _isCorrect ? AppColors.success : AppColors.error),
+                    Icon(
+                      _isCorrect ? Icons.check_circle : Icons.cancel,
+                      color: _isCorrect ? AppColors.success : AppColors.error,
+                    ),
                     const SizedBox(width: 8),
                     Text(
-                      _isCorrect ? 'أحسنت! الجملة صحيحة.' : 'حاول ترتيب كل الكلمات أولاً أو راجع الترتيب.',
+                      _isCorrect
+                          ? 'أحسنت! الجملة صحيحة.'
+                          : 'حاول ترتيب كل الكلمات أولاً أو راجع الترتيب.',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -299,10 +334,18 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.success,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 28,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    child: const Text('التالي', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      'التالي',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ],
@@ -313,19 +356,36 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
     );
   }
 
-  Widget _buildWordChip(String word, {bool dragging = false, bool enabled = false}) {
+  Widget _buildWordChip(
+    String word, {
+    bool dragging = false,
+    bool enabled = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: dragging ? AppColors.primary.withOpacity(0.9) : (enabled ? Colors.white : Colors.white),
+        color: dragging
+            ? AppColors.primary.withOpacity(0.9)
+            : (enabled ? Colors.white : Colors.white),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: dragging ? AppColors.primary : Colors.grey.shade300, width: 2),
+        border: Border.all(
+          color: dragging ? AppColors.primary : Colors.grey.shade300,
+          width: 2,
+        ),
         boxShadow: dragging
             ? [
-                BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4)),
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
               ]
             : [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6, offset: const Offset(0, 4)),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 4),
+                ),
               ],
       ),
       child: Text(

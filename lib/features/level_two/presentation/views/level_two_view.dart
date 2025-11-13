@@ -7,6 +7,7 @@ import 'package:arabic_learning_app/features/level_two/presentation/views/missin
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/image_description_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/sentence_order_view.dart';
+import 'package:arabic_learning_app/features/level_two/presentation/views/final_test_view.dart';
 
 class ActivityItem {
   final String title;
@@ -72,6 +73,12 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       icon: Icons.description,
       colors: AppColors.exercise6,
     ),
+    ActivityItem(
+      title: 'اختبار نهاية المستوى',
+      description: 'اختبر مهاراتك في الكلمات والجمل',
+      icon: Icons.emoji_events,
+      colors: AppColors.exercise1,
+    ),
   ];
 
   @override
@@ -104,6 +111,10 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       // Ensure fifth activity is unlocked for testing
       if (!_unlockedLessons.contains(4)) {
         _unlockedLessons.add(4);
+      }
+      // Ensure final test is unlocked for testing
+      if (!_unlockedLessons.contains(6)) {
+        _unlockedLessons.add(6);
       }
       _currentActivity = (_progress / (100 / _activities.length)).floor();
     });
@@ -322,6 +333,13 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                 await Navigator.push(
                   context,
                   AnimatedRoute.slideRight(const ImageDescriptionView()),
+                );
+                _loadProgress();
+              } else if (index == 6) {
+                // Final Test
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const FinalTestView()),
                 );
                 _loadProgress();
               } else {
