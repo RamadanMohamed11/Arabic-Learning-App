@@ -8,6 +8,7 @@ import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/image_description_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/sentence_order_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/final_test_view.dart';
+import 'package:arabic_learning_app/features/level_two/presentation/views/image_name_view.dart';
 
 class ActivityItem {
   final String title;
@@ -56,9 +57,9 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       colors: AppColors.exercise4,
     ),
     ActivityItem(
-      title: 'تكوين الجمل',
-      description: 'ابدأ في تكوين جمل بسيطة',
-      icon: Icons.text_fields,
+      title: 'اكتب اسم الصورة',
+      description: 'يُعرض للمتعلم صورة ويكتب الكلمة المناسبة',
+      icon: Icons.image,
       colors: AppColors.exercise5,
     ),
     ActivityItem(
@@ -111,6 +112,10 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       // Ensure fifth activity is unlocked for testing
       if (!_unlockedLessons.contains(4)) {
         _unlockedLessons.add(4);
+      }
+      // Ensure fourth activity (Image Name) is unlocked for testing
+      if (!_unlockedLessons.contains(3)) {
+        _unlockedLessons.add(3);
       }
       // Ensure final test is unlocked for testing
       if (!_unlockedLessons.contains(6)) {
@@ -319,6 +324,13 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                 await Navigator.push(
                   context,
                   AnimatedRoute.slideRight(const MissingWordView()),
+                );
+                _loadProgress();
+              } else if (index == 3) {
+                // Image Name Activity (Activity 4)
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const ImageNameView()),
                 );
                 _loadProgress();
               } else if (index == 4) {
