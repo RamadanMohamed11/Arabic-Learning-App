@@ -90,6 +90,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
     setState(() {
       _arrangedLetters = List.filled(widget.question.letters.length, null);
       _showFeedback = false;
+      _isCorrect = false;
     });
   }
 
@@ -123,7 +124,6 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
           _buildDraggableLetters(),
           const SizedBox(height: 24),
           _buildActionButtons(),
-          if (_showFeedback) _buildFeedback(),
           const SizedBox(height: 20),
         ],
       ),
@@ -146,19 +146,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
       ),
       child: Column(
         children: [
-          Text(
-            widget.question.emoji,
-            style: const TextStyle(fontSize: 64),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            widget.question.meaning,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
-          ),
+          Text(widget.question.emoji, style: const TextStyle(fontSize: 64)),
         ],
       ),
     );
@@ -243,7 +231,10 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
                 child: letter != null
                     ? Draggable<String>(
                         data: letter,
-                        feedback: _buildDraggingLetter(letter, AppColors.primary),
+                        feedback: _buildDraggingLetter(
+                          letter,
+                          AppColors.primary,
+                        ),
                         childWhenDragging: Container(),
                         onDragCompleted: () {
                           setState(() => _arrangedLetters[index] = null);
@@ -260,7 +251,11 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
                         ),
                       )
                     : Center(
-                        child: Icon(Icons.add, color: Colors.grey.shade400, size: 24),
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.grey.shade400,
+                          size: 24,
+                        ),
                       ),
               );
             },
@@ -271,6 +266,60 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
   }
 
   Widget _buildDraggableLetters() {
+    if (_isCorrect) {
+      return Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.green.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.green.shade200, width: 2),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(Icons.celebration, color: AppColors.success, size: 40),
+            SizedBox(height: 12),
+            Text(
+              'ممتاز! الإجابة صحيحة',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.success,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_showFeedback && !_isCorrect) {
+      return Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.red.shade200, width: 2),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(Icons.error_outline, color: AppColors.error, size: 40),
+            SizedBox(height: 12),
+            Text(
+              '❌ حاول مرة أخرى',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.error,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -332,15 +381,66 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
     );
   }
 
-  Widget _buildDraggingLetter(String letter, Color color) {
+  Widget _buildActionButtons() {
+    final allSlotsFilled = _arrangedLetters.every((l) => l != null);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton.icon(
+          onPressed: _resetArrangedLetters,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          icon: const Icon(Icons.refresh),
+          label: const Text(
+            'إعادة',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(width: 16),
+        ElevatedButton.icon(
+          onPressed: _isCorrect
+              ? widget.onNext
+              : (allSlotsFilled ? _checkAnswer : null),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _isCorrect ? AppColors.success : AppColors.primary,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          icon: Icon(_isCorrect ? Icons.arrow_forward : Icons.check),
+          label: Text(
+            _isCorrect ? 'التالي' : 'تحقق',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDraggingLetter(String letter, Color backgroundColor) {
     return Material(
       color: Colors.transparent,
       child: Container(
         width: 60,
         height: 70,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.8),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: backgroundColor.withOpacity(0.4),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Center(
           child: Text(
@@ -351,91 +451,6 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
               color: Colors.white,
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton.icon(
-          onPressed: _resetArrangedLetters,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          icon: const Icon(Icons.refresh),
-          label: const Text('إعادة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        ),
-        const SizedBox(width: 16),
-        ElevatedButton.icon(
-          onPressed: _arrangedLetters.every((l) => l != null) ? _checkAnswer : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          icon: const Icon(Icons.check),
-          label: const Text('تحقق', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFeedback() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 24),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: _isCorrect
-              ? AppColors.success.withOpacity(0.1)
-              : AppColors.error.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: _isCorrect ? AppColors.success : AppColors.error,
-            width: 2,
-          ),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              _isCorrect ? Icons.check_circle : Icons.cancel,
-              color: _isCorrect ? AppColors.success : AppColors.error,
-              size: 48,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _isCorrect ? '🎉 ممتاز! الإجابة صحيحة!' : '❌ حاول مرة أخرى',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: _isCorrect ? AppColors.success : AppColors.error,
-              ),
-            ),
-            if (_isCorrect) ...[
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: widget.onNext,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.success,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text(
-                  'التالي',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ],
         ),
       ),
     );
