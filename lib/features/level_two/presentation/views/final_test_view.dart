@@ -409,8 +409,9 @@ class _FinalTestViewState extends State<FinalTestView> {
                   setState(() {
                     _checked = true;
                     if (_selectedOption != null &&
-                        order[_selectedOption!] == q.correctIndex)
+                        order[_selectedOption!] == q.correctIndex) {
                       _score++;
+                    }
                   });
                 },
                 style: ElevatedButton.styleFrom(

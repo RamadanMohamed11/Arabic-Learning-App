@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" android:minSdkVersion="31" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
-        android:label="اللغة العربية من البداية"
+        android:label="الأمل"
         android:name=".MainApplication"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
