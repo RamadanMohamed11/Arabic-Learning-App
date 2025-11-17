@@ -5,7 +5,6 @@ import 'package:arabic_learning_app/features/level_two/presentation/views/word_s
 import 'package:arabic_learning_app/features/level_two/presentation/views/word_match_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/missing_word_view.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
-import 'package:arabic_learning_app/features/level_two/presentation/views/image_description_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/sentence_order_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/final_test_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/image_name_view.dart';
@@ -34,8 +33,8 @@ class LevelTwoView extends StatefulWidget {
 class _LevelTwoViewState extends State<LevelTwoView> {
   UserProgressService? _progressService;
   double _progress = 0.0;
-  int _currentActivity = 0;
   List<int> _unlockedLessons = [];
+  Set<int> _completedActivities = {};
 
   final List<ActivityItem> _activities = const [
     ActivityItem(
@@ -69,12 +68,6 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       colors: AppColors.exercise2,
     ),
     ActivityItem(
-      title: 'اكتب وصفًا للصورة',
-      description: 'اكتب جملة أو جملتين تصف الصورة',
-      icon: Icons.description,
-      colors: AppColors.exercise6,
-    ),
-    ActivityItem(
       title: 'اختبار نهاية المستوى',
       description: 'اختبر مهاراتك في الكلمات والجمل',
       icon: Icons.emoji_events,
@@ -89,40 +82,74 @@ class _LevelTwoViewState extends State<LevelTwoView> {
   }
 
   Future<void> _loadProgress() async {
-    _progressService = await UserProgressService.getInstance();
+    final service = await UserProgressService.getInstance();
+    final progress = service.getLevel2Progress();
+    List<int> unlocked = service.getLevel2UnlockedLessons();
+    if (unlocked.isEmpty || !unlocked.contains(0)) {
+      await service.unlockLevel2Lesson(0);
+      unlocked = service.getLevel2UnlockedLessons();
+    }
+    unlocked.sort();
+
     setState(() {
-      _progress = _progressService!.getLevel2Progress();
-      _unlockedLessons = _progressService!.getLevel2UnlockedLessons();
-      // Ensure first activity is always unlocked for testing
-      if (!_unlockedLessons.contains(0)) {
-        _unlockedLessons.add(0);
-      }
-      // Ensure second activity is unlocked for testing
-      if (!_unlockedLessons.contains(1)) {
-        _unlockedLessons.add(1);
-      }
-      // Ensure third activity is unlocked for testing
-      if (!_unlockedLessons.contains(2)) {
-        _unlockedLessons.add(2);
-      }
-      // Ensure sixth activity is unlocked for testing
-      if (!_unlockedLessons.contains(5)) {
-        _unlockedLessons.add(5);
-      }
-      // Ensure fifth activity is unlocked for testing
-      if (!_unlockedLessons.contains(4)) {
-        _unlockedLessons.add(4);
-      }
-      // Ensure fourth activity (Image Name) is unlocked for testing
-      if (!_unlockedLessons.contains(3)) {
-        _unlockedLessons.add(3);
-      }
-      // Ensure final test is unlocked for testing
-      if (!_unlockedLessons.contains(6)) {
-        _unlockedLessons.add(6);
-      }
-      _currentActivity = (_progress / (100 / _activities.length)).floor();
+      _progressService = service;
+      _progress = progress;
+      _unlockedLessons = unlocked;
+      _completedActivities = service.getLevel2CompletedActivities().toSet();
     });
+  }
+
+  Future<void> _openActivity(int index) async {
+    if (_progressService == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('جاري تحميل التقدم، حاول مرة أخرى.')),
+      );
+      return;
+    }
+
+    final view = _getActivityView(index);
+    if (view == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('هذا النشاط قيد التطوير 🚧'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final result = await Navigator.push(
+      context,
+      AnimatedRoute.slideRight(view),
+    );
+
+    if (result == true) {
+      await _progressService!.completeLevel2Activity(
+        activityIndex: index,
+        totalActivities: _activities.length,
+      );
+    }
+
+    await _loadProgress();
+  }
+
+  Widget? _getActivityView(int index) {
+    switch (index) {
+      case 0:
+        return const WordSpellingView();
+      case 1:
+        return const WordMatchView();
+      case 2:
+        return const MissingWordView();
+      case 3:
+        return const ImageNameView();
+      case 4:
+        return const SentenceOrderView();
+      case 5:
+        return const FinalTestView();
+      default:
+        return null;
+    }
   }
 
   String _getProgressEmoji() {
@@ -162,9 +189,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: AppColors.level2,
-                  ),
+                  gradient: const LinearGradient(colors: AppColors.level2),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.level2[0].withOpacity(0.3),
@@ -179,7 +204,10 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                       children: [
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
                         ),
                         Expanded(
                           child: Column(
@@ -231,7 +259,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                                 ),
                               ),
                               Text(
-                                '${_currentActivity + 1} / ${_activities.length} نشاط',
+                                '${_completedActivities.length} / ${_activities.length} نشاط مكتمل',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -274,7 +302,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                   itemBuilder: (context, index) {
                     final activity = _activities[index];
                     final isUnlocked = _unlockedLessons.contains(index);
-                    final isCompleted = index < _currentActivity;
+                    final isCompleted = _completedActivities.contains(index);
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
@@ -302,69 +330,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
     required bool isCompleted,
   }) {
     return GestureDetector(
-      onTap: isUnlocked
-          ? () async {
-              // Navigate to activity
-              if (index == 0) {
-                // Word Spelling Activity
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const WordSpellingView()),
-                );
-                _loadProgress();
-              } else if (index == 1) {
-                // Word Match Activity
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const WordMatchView()),
-                );
-                _loadProgress();
-              } else if (index == 2) {
-                // Missing Word Activity
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const MissingWordView()),
-                );
-                _loadProgress();
-              } else if (index == 3) {
-                // Image Name Activity (Activity 4)
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const ImageNameView()),
-                );
-                _loadProgress();
-              } else if (index == 4) {
-                // Sentence Order Activity
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const SentenceOrderView()),
-                );
-                _loadProgress();
-              } else if (index == 5) {
-                // Image Description Activity
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const ImageDescriptionView()),
-                );
-                _loadProgress();
-              } else if (index == 6) {
-                // Final Test
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const FinalTestView()),
-                );
-                _loadProgress();
-              } else {
-                // TODO: Implement other activities
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('هذا النشاط قيد التطوير 🚧'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              }
-            }
-          : null,
+      onTap: isUnlocked ? () => _openActivity(index) : null,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -445,8 +411,8 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                 isCompleted
                     ? Icons.check_circle
                     : isUnlocked
-                        ? activity.icon
-                        : Icons.lock,
+                    ? activity.icon
+                    : Icons.lock,
                 color: Colors.white,
                 size: 28,
               ),

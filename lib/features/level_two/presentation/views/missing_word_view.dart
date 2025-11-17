@@ -43,7 +43,10 @@ class _MissingWordViewState extends State<MissingWordView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('✏️ إكمال الكلمة الناقصة', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          '✏️ إكمال الكلمة الناقصة',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -74,21 +77,30 @@ class _MissingWordViewState extends State<MissingWordView> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.amber.shade100,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.star, color: Colors.amber, size: 18),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 18,
+                              ),
                               const SizedBox(width: 4),
-                              Text('$_score',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  )),
+                              Text(
+                                '$_score',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -98,7 +110,9 @@ class _MissingWordViewState extends State<MissingWordView> {
                     LinearProgressIndicator(
                       value: (_current + 1) / missingWordQuestions.length,
                       backgroundColor: Colors.grey.shade300,
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
                       minHeight: 8,
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -125,127 +139,175 @@ class _MissingWordViewState extends State<MissingWordView> {
     final percentage = (_score / total * 100).round();
     final isPassed = percentage >= 70;
 
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isPassed
-                ? [AppColors.success, AppColors.success.withOpacity(0.7)]
-                : [AppColors.warning, AppColors.warning.withOpacity(0.7)],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, true);
+        return false;
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: isPassed
+                  ? [AppColors.success, AppColors.success.withOpacity(0.7)]
+                  : [AppColors.warning, AppColors.warning.withOpacity(0.7)],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                Text(isPassed ? '🎉' : '💪', style: const TextStyle(fontSize: 80)),
-                const SizedBox(height: 24),
-                Text(
-                  isPassed ? 'رائع جداً!' : 'حاول مرة أخرى!',
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  Text(
+                    isPassed ? '🎉' : '💪',
+                    style: const TextStyle(fontSize: 80),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  isPassed
-                      ? 'أحسنت! أكملت الكلمات الناقصة بشكل صحيح.'
-                      : 'حاول مجدداً لإتقان إكمال الكلمات.',
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+                  const SizedBox(height: 24),
+                  Text(
+                    isPassed ? 'رائع جداً!' : 'حاول مرة أخرى!',
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      const Text('نتيجتك',
+                  const SizedBox(height: 16),
+                  Text(
+                    isPassed
+                        ? 'أحسنت! أكملت الكلمات الناقصة بشكل صحيح.'
+                        : 'حاول مجدداً لإتقان إكمال الكلمات.',
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'نتيجتك',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
-                          )),
-                      const SizedBox(height: 24),
-                      Text(
-                        '$percentage%',
-                        style: TextStyle(
-                          fontSize: 72,
-                          fontWeight: FontWeight.bold,
-                          color: isPassed ? AppColors.success : AppColors.warning,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: (isPassed ? AppColors.success : AppColors.warning).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: isPassed ? AppColors.success : AppColors.warning,
-                            width: 2,
                           ),
                         ),
-                        child: Text(
-                          '$_score / $total',
+                        const SizedBox(height: 24),
+                        Text(
+                          '$percentage%',
                           style: TextStyle(
-                            fontSize: 32,
+                            fontSize: 72,
                             fontWeight: FontWeight.bold,
-                            color: isPassed ? AppColors.success : AppColors.warning,
+                            color: isPassed
+                                ? AppColors.success
+                                : AppColors.warning,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                (isPassed
+                                        ? AppColors.success
+                                        : AppColors.warning)
+                                    .withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isPassed
+                                  ? AppColors.success
+                                  : AppColors.warning,
+                              width: 2,
+                            ),
+                          ),
+                          child: Text(
+                            '$_score / $total',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: isPassed
+                                  ? AppColors.success
+                                  : AppColors.warning,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => Navigator.pop(context, true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 5,
+                        ),
+                        icon: const Icon(Icons.home, size: 24),
+                        label: const Text(
+                          'الرئيسية',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton.icon(
+                        onPressed: _restart,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: isPassed
+                              ? AppColors.success
+                              : AppColors.warning,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 5,
+                        ),
+                        icon: const Icon(Icons.refresh, size: 24),
+                        label: const Text(
+                          'إعادة',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 5,
-                      ),
-                      icon: const Icon(Icons.home, size: 24),
-                      label: const Text('الرئيسية', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton.icon(
-                      onPressed: _restart,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: isPassed ? AppColors.success : AppColors.warning,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 5,
-                      ),
-                      icon: const Icon(Icons.refresh, size: 24),
-                      label: const Text('إعادة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

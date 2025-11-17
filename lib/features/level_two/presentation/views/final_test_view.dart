@@ -727,108 +727,114 @@ class _FinalTestViewState extends State<FinalTestView> {
     final percentage = (_score / _total * 100).round();
     final isPassed = percentage >= 70;
 
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isPassed
-                ? [AppColors.success, AppColors.success.withOpacity(0.7)]
-                : [AppColors.warning, AppColors.warning.withOpacity(0.7)],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, true);
+        return false;
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: isPassed
+                  ? [AppColors.success, AppColors.success.withOpacity(0.7)]
+                  : [AppColors.warning, AppColors.warning.withOpacity(0.7)],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                Text(
-                  isPassed ? '🎉' : '💪',
-                  style: const TextStyle(fontSize: 80),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  isPassed ? 'ممتاز!' : 'أحسنت المحاولة!',
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  Text(
+                    isPassed ? '🎉' : '💪',
+                    style: const TextStyle(fontSize: 80),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'نتيجتك: $percentage% ($_score / $_total)',
-                  style: const TextStyle(fontSize: 20, color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 28,
-                          vertical: 14,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 5,
-                      ),
-                      icon: const Icon(Icons.home, size: 22),
-                      label: const Text(
-                        'الرئيسية',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                  const SizedBox(height: 24),
+                  Text(
+                    isPassed ? 'ممتاز!' : 'أحسنت المحاولة!',
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    const SizedBox(width: 12),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _section = 0;
-                          _index = 0;
-                          _score = 0;
-                          _completed = false;
-                          _checked = false;
-                          _selectedOption = null;
-                          _dictationCtrl.clear();
-                          _spoken = '';
-                          _initRandomization();
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.success,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 28,
-                          vertical: 14,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'نتيجتك: $percentage% ($_score / $_total)',
+                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => Navigator.pop(context, true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 5,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                        icon: const Icon(Icons.home, size: 22),
+                        label: const Text(
+                          'الرئيسية',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        elevation: 5,
                       ),
-                      icon: const Icon(Icons.refresh, size: 22),
-                      label: const Text(
-                        'إعادة الاختبار',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      const SizedBox(width: 12),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _section = 0;
+                            _index = 0;
+                            _score = 0;
+                            _completed = false;
+                            _checked = false;
+                            _selectedOption = null;
+                            _dictationCtrl.clear();
+                            _spoken = '';
+                            _initRandomization();
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.success,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 5,
+                        ),
+                        icon: const Icon(Icons.refresh, size: 22),
+                        label: const Text(
+                          'إعادة الاختبار',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
