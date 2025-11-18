@@ -49,5 +49,9 @@
 	<string>نحتاج الوصول لميزة التعرف على الكلام للتحقق من نطقك للكلمات العربية</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>نحتاج الوصول للميكروفون لتسجيل نطقك للكلمات العربية</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>نحتاج حفظ صور الشهادات في ألبوم الصور لديك</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>نحتاج حفظ صور الشهادات في ألبوم الصور لديك</string>
 </dict>
 </plist>

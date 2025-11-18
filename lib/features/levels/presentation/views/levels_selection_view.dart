@@ -6,6 +6,7 @@ import 'package:arabic_learning_app/features/level_two/presentation/views/level_
 import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
+import 'package:arabic_learning_app/features/certificate/presentation/views/certificate_view.dart';
 
 class LevelsSelectionView extends StatefulWidget {
   const LevelsSelectionView({super.key});
@@ -43,11 +44,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(
-              Icons.menu,
-              color: Colors.white,
-              size: 28,
-            ),
+            icon: const Icon(Icons.menu, color: Colors.white, size: 28),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -72,10 +69,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
-                    const Text(
-                      '🎓',
-                      style: TextStyle(fontSize: 60),
-                    ),
+                    const Text('🎓', style: TextStyle(fontSize: 60)),
                     const SizedBox(height: 16),
                     const Text(
                       'اختر المستوى',
@@ -88,10 +82,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                     const SizedBox(height: 8),
                     const Text(
                       'ابدأ رحلتك في تعلم اللغة العربية',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white70,
-                      ),
+                      style: TextStyle(fontSize: 18, color: Colors.white70),
                     ),
                   ],
                 ),
@@ -138,12 +129,50 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                             ? () {
                                 Navigator.push(
                                   context,
-                                  AnimatedRoute.slideScale(const LevelTwoView()),
+                                  AnimatedRoute.slideScale(
+                                    const LevelTwoView(),
+                                  ),
                                 );
                               }
                             : null,
                       ),
                     ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 16,
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      AnimatedRoute.slideScale(
+                        const CertificateView(
+                          participantName: 'رمضان محمد',
+                          date: '18 نوفمبر 2025',
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
+                    ),
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 4,
+                  ),
+                  icon: const Icon(Icons.workspace_premium_outlined),
+                  label: const Text(
+                    'عرض شهادة الاختبار',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -169,10 +198,11 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
             padding: EdgeInsets.zero,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 32,
+                  horizontal: 16,
                 ),
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.1)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -182,10 +212,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                         color: Colors.white.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const Text(
-                        '📚',
-                        style: TextStyle(fontSize: 40),
-                      ),
+                      child: const Text('📚', style: TextStyle(fontSize: 40)),
                     ),
                     const SizedBox(height: 12),
                     const Text(
@@ -371,10 +398,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                     children: [
                       const Text(
                         'التقدم',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white70,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.white70),
                       ),
                       Text(
                         '${progress.toStringAsFixed(0)}%',
