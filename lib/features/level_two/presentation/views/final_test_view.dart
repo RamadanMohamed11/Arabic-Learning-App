@@ -147,23 +147,22 @@ class _FinalTestViewState extends State<FinalTestView> {
       onResult: _onSpeechResult,
       listenMode: stt.ListenMode.dictation,
       partialResults: true,
-      listenFor: const Duration(seconds: 7),
-      pauseFor: const Duration(seconds: 2),
+      listenFor: const Duration(minutes: 2),
+      pauseFor: const Duration(seconds: 30),
     );
   }
 
   Future<void> _stopListeningB() async {
     await _stt.stop();
-    if (mounted) setState(() => _isListening = false);
+    if (mounted) {
+      setState(() => _isListening = false);
+    }
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
     if (!mounted) return;
     setState(() {
       _spoken = result.recognizedWords;
-      if (result.finalResult) {
-        _isListening = false;
-      }
     });
   }
 

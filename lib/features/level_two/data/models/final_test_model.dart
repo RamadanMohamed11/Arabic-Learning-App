@@ -13,17 +13,13 @@ class FinalWordQuestion {
 class FinalReadQuestion {
   final String text; // sentence/word to read
 
-  const FinalReadQuestion({
-    required this.text,
-  });
+  const FinalReadQuestion({required this.text});
 }
 
 class FinalDictationQuestion {
   final String text; // sentence/word to dictate
 
-  const FinalDictationQuestion({
-    required this.text,
-  });
+  const FinalDictationQuestion({required this.text});
 }
 
 // Section A: اختر الكلمة الصحيحة للصورة (5 أسئلة)
@@ -50,7 +46,7 @@ const List<FinalWordQuestion> finalAQuestions = [
     correctIndex: 2,
   ),
   FinalWordQuestion(
-    prompt: '🌕',
+    prompt: '🌙',
     options: ['قمر', 'شمس', 'نجمة'],
     correctIndex: 0,
   ),
