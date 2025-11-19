@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:go_router/go_router.dart';
@@ -46,6 +47,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   bool _isPlayingAudio = false;
   bool _ttsInitialized = false;
   int _audioAttempts = 0;
+  String _ttsLanguage = 'ar-SA';
 
   final List<PlacementTestQuestion> _questions = [
     // أسئلة الكتابة (3 أسئلة)
@@ -147,6 +149,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
       // تجربة لغات مختلفة للعربية
       List<String> arabicLanguages = ['ar-SA', 'ar', 'ar-EG', 'ar-AE'];
       bool languageSet = false;
+      String selectedLanguage = _ttsLanguage;
 
       for (String lang in arabicLanguages) {
         try {
@@ -154,6 +157,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           if (result == 1) {
             print('TTS language set successfully: $lang');
             languageSet = true;
+            selectedLanguage = lang;
             break;
           }
         } catch (e) {
@@ -166,10 +170,12 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
         print('Warning: Could not set Arabic language, using default');
       }
 
-      // إعداد معاملات TTS
-      await _flutterTts.setSpeechRate(0.3); // أبطأ قليلاً للوضوح
-      await _flutterTts.setVolume(1.0);
-      await _flutterTts.setPitch(1.0);
+      await TtsConfig.configure(
+        _flutterTts,
+        language: selectedLanguage,
+        speechRate: 0.3,
+      );
+      _ttsLanguage = selectedLanguage;
 
       // إعداد callbacks للـ TTS
       _flutterTts.setCompletionHandler(() {
@@ -252,8 +258,11 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
           print('TTS speak attempt ${i + 1}/$maxRetries');
 
           // تأكيد إعدادات TTS قبل كل محاولة
-          await _flutterTts.setVolume(1.0);
-          await _flutterTts.setSpeechRate(0.3);
+          await TtsConfig.configure(
+            _flutterTts,
+            language: _ttsLanguage,
+            speechRate: 0.3,
+          );
 
           final result = await _flutterTts.speak(text);
           print('TTS speak result: $result');

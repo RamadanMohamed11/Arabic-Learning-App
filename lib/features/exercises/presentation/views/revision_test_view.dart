@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/exercises/data/models/revision_test_model.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
@@ -52,13 +53,11 @@ class _RevisionTestViewState extends State<RevisionTestView> {
   void _prepareQuestions() {
     _questions = List<RevisionQuestion>.of(_testGroup.questions);
     _questions.shuffle();
-    _shuffledOptions = _questions
-        .map((q) {
-          final opts = List<String>.of(q.options);
-          opts.shuffle();
-          return opts;
-        })
-        .toList();
+    _shuffledOptions = _questions.map((q) {
+      final opts = List<String>.of(q.options);
+      opts.shuffle();
+      return opts;
+    }).toList();
   }
 
   Future<void> _loadProgressService() async {
@@ -67,10 +66,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
 
   Future<void> _initTts() async {
     _flutterTts = FlutterTts();
-    await _flutterTts.setLanguage('ar-SA');
-    await _flutterTts.setSpeechRate(0.4);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
+    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
 
     _flutterTts.setStartHandler(() {
       setState(() {
@@ -160,9 +156,34 @@ class _RevisionTestViewState extends State<RevisionTestView> {
   /// الحصول على فهرس الحرف في الأبجدية العربية
   int _getLetterIndex(String letter) {
     const arabicLetters = [
-      'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر',
-      'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف',
-      'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'
+      'ا',
+      'ب',
+      'ت',
+      'ث',
+      'ج',
+      'ح',
+      'خ',
+      'د',
+      'ذ',
+      'ر',
+      'ز',
+      'س',
+      'ش',
+      'ص',
+      'ض',
+      'ط',
+      'ظ',
+      'ع',
+      'غ',
+      'ف',
+      'ق',
+      'ك',
+      'ل',
+      'م',
+      'ن',
+      'ه',
+      'و',
+      'ي',
     ];
     return arabicLetters.indexOf(letter);
   }
@@ -170,41 +191,42 @@ class _RevisionTestViewState extends State<RevisionTestView> {
   /// فتح الحرف التالي إذا كانت النتيجة 100%
   Future<void> _checkAndUnlockNextLetters() async {
     if (_progressService == null) return;
-    
+
     // التحقق من أن الإجابات كلها صحيحة
     final isPerfectScore = _score == _testGroup.questions.length;
-    
+
     // إذا كان الاختبار منفصل، حفظ النتيجة للاستماع فقط
     if (widget.isStandalone && isPerfectScore) {
       await _progressService!.completeRevisionListening(widget.groupNumber);
     }
-    
+
     if (isPerfectScore) {
       // Mark this revision as completed
       await _progressService!.completeRevision(widget.groupNumber);
-      
+
       // حساب فهرس الحرف التالي
       // كل مجموعة تحتوي على 4 حروف
       final nextLetterIndex = (widget.groupNumber + 1) * 4;
-      
+
       // فتح الحرف التالي فقط (إذا كان موجوداً)
       if (nextLetterIndex < 28) {
         await _progressService!.unlockLetter(nextLetterIndex);
-        
+
         // تحديث شريط التقدم
         final unlockedCount = _progressService!.getUnlockedLetters().length;
         final progress = (unlockedCount / 28) * 100;
         await _progressService!.setLevel1Progress(progress);
-        
+
         // تعيين العلم للإشارة إلى أن حرفاً تم فتحه
         _letterWasUnlocked = true;
-        
+
         // استدعاء callback إذا كان موجوداً
         widget.onLetterUnlocked?.call();
       }
-      
+
       // فتح الدرس/المجموعة التالية
-      if (widget.groupNumber < 6) { // 7 مجموعات (0-6)
+      if (widget.groupNumber < 6) {
+        // 7 مجموعات (0-6)
         await _progressService!.unlockLevel1Lesson(widget.groupNumber + 1);
       }
     }
@@ -227,7 +249,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
   /// الحصول على نص الحرف المفتوح الجديد
   String _getUnlockedLettersText() {
     if (widget.groupNumber >= 6) return '';
-    
+
     final nextLetterIndex = (widget.groupNumber + 1) * 4;
     if (nextLetterIndex < 28) {
       // الحصول على الحرف من المجموعة التالية (أول حرف)
@@ -273,9 +295,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: AppColors.exercise2,
-                  ),
+                  gradient: const LinearGradient(colors: AppColors.exercise2),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.exercise2[0].withOpacity(0.3),
@@ -290,7 +310,10 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                       children: [
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
                         ),
                         Expanded(
                           child: Column(
@@ -348,7 +371,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                     LinearProgressIndicator(
                       value: progress,
                       backgroundColor: Colors.white.withOpacity(0.3),
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Colors.white,
+                      ),
                       minHeight: 8,
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -365,7 +390,8 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                     children: [
                       // Listen Button
                       GestureDetector(
-                        onTap: () => _speakLetter(currentQuestion.correctAnswer),
+                        onTap: () =>
+                            _speakLetter(currentQuestion.correctAnswer),
                         child: Container(
                           padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
@@ -418,16 +444,20 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                       GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 1.2,
-                        ),
-                        itemCount: _shuffledOptions[_currentQuestionIndex].length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 1.2,
+                            ),
+                        itemCount:
+                            _shuffledOptions[_currentQuestionIndex].length,
                         itemBuilder: (context, index) {
-                          final option = _shuffledOptions[_currentQuestionIndex][index];
-                          final isCorrect = option == currentQuestion.correctAnswer;
+                          final option =
+                              _shuffledOptions[_currentQuestionIndex][index];
+                          final isCorrect =
+                              option == currentQuestion.correctAnswer;
                           final isSelected = option == _selectedAnswer;
 
                           Color getBackgroundColor() {
@@ -474,7 +504,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                                       style: TextStyle(
                                         fontSize: 48,
                                         fontWeight: FontWeight.bold,
-                                        color: _isAnswered && (isSelected || isCorrect)
+                                        color:
+                                            _isAnswered &&
+                                                (isSelected || isCorrect)
                                             ? Colors.white
                                             : AppColors.textPrimary,
                                       ),
@@ -482,7 +514,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                                     if (_isAnswered && isSelected) ...[
                                       const SizedBox(width: 8),
                                       Icon(
-                                        isCorrect ? Icons.check_circle : Icons.cancel,
+                                        isCorrect
+                                            ? Icons.check_circle
+                                            : Icons.cancel,
                                         color: Colors.white,
                                         size: 32,
                                       ),
@@ -517,7 +551,8 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                _currentQuestionIndex < _testGroup.questions.length - 1
+                                _currentQuestionIndex <
+                                        _testGroup.questions.length - 1
                                     ? 'السؤال التالي'
                                     : 'إنهاء الاختبار',
                                 style: const TextStyle(
@@ -553,13 +588,22 @@ class _RevisionTestViewState extends State<RevisionTestView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: isPassed
-                ? [AppColors.success.withOpacity(0.3), AppColors.success.withOpacity(0.1)]
-                : [AppColors.warning.withOpacity(0.3), AppColors.warning.withOpacity(0.1)],
+                ? [
+                    AppColors.success.withOpacity(0.3),
+                    AppColors.success.withOpacity(0.1),
+                  ]
+                : [
+                    AppColors.warning.withOpacity(0.3),
+                    AppColors.warning.withOpacity(0.1),
+                  ],
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 40.0,
+            ),
             child: Column(
               children: [
                 const SizedBox(height: 10),
@@ -569,7 +613,11 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  isPerfectScore ? 'مذهل! 🌟' : isPassed ? 'ممتاز!' : 'حاول مرة أخرى',
+                  isPerfectScore
+                      ? 'مذهل! 🌟'
+                      : isPassed
+                      ? 'ممتاز!'
+                      : 'حاول مرة أخرى',
                   style: const TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
@@ -581,8 +629,8 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                   isPerfectScore
                       ? 'إجابات مثالية! تم فتح الحرف التالي 🎉'
                       : isPassed
-                          ? 'أحسنت! لقد أتقنت هذه المجموعة'
-                          : 'استمر في التدريب لتحسين نتيجتك',
+                      ? 'أحسنت! لقد أتقنت هذه المجموعة'
+                      : 'استمر في التدريب لتحسين نتيجتك',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
@@ -626,7 +674,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                             style: TextStyle(
                               fontSize: 72,
                               fontWeight: FontWeight.bold,
-                              color: isPassed ? AppColors.success : AppColors.warning,
+                              color: isPassed
+                                  ? AppColors.success
+                                  : AppColors.warning,
                             ),
                           ),
                           Text(
@@ -645,7 +695,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: isPassed ? AppColors.success : AppColors.warning,
+                          color: isPassed
+                              ? AppColors.success
+                              : AppColors.warning,
                         ),
                       ),
                     ],
@@ -671,7 +723,11 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
-                            Icon(Icons.lock_open, color: AppColors.success, size: 28),
+                            Icon(
+                              Icons.lock_open,
+                              color: AppColors.success,
+                              size: 28,
+                            ),
                             SizedBox(width: 8),
                             Text(
                               'حرف جديد مفتوح!',
@@ -697,7 +753,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                     ),
                   ),
 
-                SizedBox(height: isPerfectScore && widget.groupNumber < 6 ? 24 : 32),
+                SizedBox(
+                  height: isPerfectScore && widget.groupNumber < 6 ? 24 : 32,
+                ),
 
                 // Action Buttons
                 Row(

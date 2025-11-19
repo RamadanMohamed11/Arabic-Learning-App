@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
@@ -53,10 +54,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
   }
 
   Future<void> _initTts() async {
-    await _flutterTts.setLanguage('ar-SA');
-    await _flutterTts.setSpeechRate(0.35); // نطق بطيء وواضح
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.1); // نبرة لطيفة
+    await TtsConfig.configure(_flutterTts, speechRate: 0.35, pitch: 1.1);
   }
 
   Future<void> _playWelcomeAudio() async {

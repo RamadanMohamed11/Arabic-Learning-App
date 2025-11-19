@@ -3,6 +3,7 @@ import 'package:arabic_learning_app/features/letter_tracing/data/svg_letter_path
 import 'package:arabic_learning_app/features/letter_tracing/presentation/widgets/svg_letter_trace_painter.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class SvgLetterTracingView extends StatefulWidget {
@@ -62,10 +63,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
   }
 
   Future<void> _initTts() async {
-    await _flutterTts.setLanguage('ar-SA');
-    await _flutterTts.setSpeechRate(0.4);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
+    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
   }
 
   Future<void> _speak(String text) async {

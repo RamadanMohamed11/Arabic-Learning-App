@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/automated_letter_trace_screen.dart';
 
@@ -33,10 +34,7 @@ class _ListenAndWriteQuestionState extends State<ListenAndWriteQuestion> {
   }
 
   Future<void> _configureTts() async {
-    await _flutterTts.setLanguage('ar-SA');
-    await _flutterTts.setSpeechRate(0.4);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
+    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
 
     _flutterTts.setStartHandler(() {
       if (mounted) setState(() => _isPlaying = true);

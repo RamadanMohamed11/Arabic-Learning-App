@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_one/data/models/final_test_model.dart';
 import 'package:arabic_learning_app/core/data/letter_names.dart';
@@ -80,10 +81,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
 
   Future<void> _initTts() async {
     _flutterTts = FlutterTts();
-    await _flutterTts.setLanguage('ar-SA');
-    await _flutterTts.setSpeechRate(0.4);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
+    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
 
     _flutterTts.setStartHandler(() {
       if (mounted) setState(() => _isSpeaking = true);
@@ -145,7 +143,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
 
   void _checkPronunciation() {
     final letterName = getLetterName(widget.question.correctAnswer);
-    
+
     if (letterName == null) {
       setState(() {
         _feedbackMessage = 'خطأ: الحرف غير موجود';
@@ -288,10 +286,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.blue.shade200,
-                width: 2,
-              ),
+              border: Border.all(color: Colors.blue.shade200, width: 2),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -357,10 +352,11 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
                   : AppColors.primary,
               boxShadow: [
                 BoxShadow(
-                  color: (_speechToText.isListening
-                          ? Colors.red
-                          : AppColors.primary)
-                      .withOpacity(0.4),
+                  color:
+                      (_speechToText.isListening
+                              ? Colors.red
+                              : AppColors.primary)
+                          .withOpacity(0.4),
                   blurRadius: 20,
                   spreadRadius: 5,
                 ),
@@ -380,10 +376,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
           _speechToText.isListening
               ? 'استمع...'
               : 'اضغط على الميكروفون وقل اسم الحرف',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           textAlign: TextAlign.center,
         ),
 
@@ -396,10 +389,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 48,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -410,10 +400,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
               children: const [
                 Text(
                   'السؤال التالي',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(width: 8),
                 Icon(Icons.arrow_forward),

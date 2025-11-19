@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/sentence_order_model.dart';
 
@@ -60,9 +61,10 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
 
   Future<void> _initTts() async {
     _flutterTts = FlutterTts();
-    await _flutterTts.setLanguage('ar-SA');
-    await _flutterTts.setSpeechRate(0.5);
-    await _flutterTts.setVolume(1.0);
+    await TtsConfig.configure(
+      _flutterTts,
+      speechRate: 0.5,
+    );
   }
 
   Future<void> _speakSentence() async {

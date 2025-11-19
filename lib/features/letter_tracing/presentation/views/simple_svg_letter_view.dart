@@ -3,15 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:arabic_learning_app/features/letter_tracing/data/simple_svg_letter_paths.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class SimpleSvgLetterView extends StatefulWidget {
   final String letter;
 
-  const SimpleSvgLetterView({
-    super.key,
-    required this.letter,
-  });
+  const SimpleSvgLetterView({super.key, required this.letter});
 
   @override
   State<SimpleSvgLetterView> createState() => _SimpleSvgLetterViewState();
@@ -41,10 +39,7 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
   }
 
   Future<void> _initTts() async {
-    await _flutterTts.setLanguage('ar-SA');
-    await _flutterTts.setSpeechRate(0.4);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
+    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
   }
 
   Future<void> _speak(String text) async {
@@ -59,7 +54,9 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
 
   /// الحصول على الحرف التالي
   String _getNextLetter() {
-    final currentIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
+    final currentIndex = arabicLetters.indexWhere(
+      (l) => l.letter == widget.letter,
+    );
     if (currentIndex >= arabicLetters.length - 1) {
       return arabicLetters.first.letter;
     }
@@ -68,7 +65,9 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
 
   /// الحصول على الحرف السابق
   String? _getPreviousLetter() {
-    final currentIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
+    final currentIndex = arabicLetters.indexWhere(
+      (l) => l.letter == widget.letter,
+    );
     if (currentIndex <= 0) {
       return null;
     }
@@ -101,30 +100,21 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('تتبع حرف ${widget.letter}'),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text('تتبع حرف ${widget.letter}')),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (letterPath == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('تتبع حرف ${widget.letter}'),
-        ),
+        appBar: AppBar(title: Text('تتبع حرف ${widget.letter}')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.error_outline, size: 64, color: Colors.red),
               const SizedBox(height: 20),
-              const Text(
-                'الحرف غير متوفر',
-                style: TextStyle(fontSize: 24),
-              ),
+              const Text('الحرف غير متوفر', style: TextStyle(fontSize: 24)),
               const SizedBox(height: 10),
               Text(
                 'حرف: ${widget.letter}',
@@ -170,10 +160,7 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.indigo.shade50,
-              Colors.white,
-            ],
+            colors: [Colors.indigo.shade50, Colors.white],
           ),
         ),
         child: Column(
@@ -187,10 +174,7 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
               decoration: BoxDecoration(
                 color: Colors.blue.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: Colors.blue,
-                  width: 2,
-                ),
+                border: Border.all(color: Colors.blue, width: 2),
               ),
               child: const Row(
                 children: [
@@ -249,14 +233,14 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
                   ElevatedButton.icon(
                     onPressed: () => _speak('حرف ${widget.letter}'),
                     icon: const Icon(Icons.volume_up),
-                    label: const Text(
-                      'نطق',
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    label: const Text('نطق', style: TextStyle(fontSize: 18)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 15,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
@@ -265,14 +249,14 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
                   ElevatedButton.icon(
                     onPressed: _goToNextLetter,
                     icon: const Icon(Icons.arrow_forward),
-                    label: const Text(
-                      'التالي',
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    label: const Text('التالي', style: TextStyle(fontSize: 18)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 15,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),

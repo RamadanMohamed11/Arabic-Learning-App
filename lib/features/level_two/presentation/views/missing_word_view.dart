@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/missing_word_model.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/widgets/missing_word_widget.dart';
@@ -26,9 +27,7 @@ class _MissingWordViewState extends State<MissingWordView> {
   }
 
   Future<void> _initInstruction() async {
-    await _instructionTts.setLanguage('ar-SA');
-    await _instructionTts.setSpeechRate(0.45);
-    await _instructionTts.setVolume(1.0);
+    await TtsConfig.configure(_instructionTts, speechRate: 0.45);
     WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/final_test_model.dart';
 
@@ -42,9 +43,7 @@ class _FinalTestViewState extends State<FinalTestView> {
   }
 
   Future<void> _initTts() async {
-    await _tts.setLanguage('ar-SA');
-    await _tts.setSpeechRate(0.45);
-    await _tts.setVolume(1.0);
+    await TtsConfig.configure(_tts, speechRate: 0.45);
     WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
   }
 
