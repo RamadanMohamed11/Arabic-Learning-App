@@ -18,6 +18,11 @@ class _ImageNameViewState extends State<ImageNameView> {
   bool _checked = false;
   bool _lastCorrect = false;
   late final FlutterTts _tts;
+  static const Map<String, String> _ttsOverrides = {
+    'يرسم': 'يَرْسُم',
+    'يكتب': 'يَكْتُب',
+    'يقرأ': 'يَقْرَأ',
+  };
 
   @override
   void initState() {
@@ -41,7 +46,8 @@ class _ImageNameViewState extends State<ImageNameView> {
 
   Future<void> _speak(String text) async {
     await _tts.stop();
-    await _tts.speak(text);
+    final toSpeak = _ttsOverrides[text.trim()] ?? text;
+    await _tts.speak(toSpeak);
   }
 
   String _normalize(String s) {
@@ -203,7 +209,7 @@ class _ImageNameViewState extends State<ImageNameView> {
                       children: [
                         // Image with robust error handling
                         Container(
-                          height: 220,
+                          height: 280,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -219,7 +225,8 @@ class _ImageNameViewState extends State<ImageNameView> {
                           clipBehavior: Clip.antiAlias,
                           child: Image.asset(
                             item.imagePath,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.center,
                             errorBuilder: (context, error, stack) {
                               return Center(
                                 child: Column(

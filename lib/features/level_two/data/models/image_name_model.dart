@@ -24,10 +24,8 @@ const List<ImageNameItem> imageNameItems = [
   ImageNameItem(answer: 'طبيب', imagePath: 'assets/images/طبيب.jpg'),
   ImageNameItem(answer: 'مهندس', imagePath: 'assets/images/مهندس.jpg'),
   ImageNameItem(answer: 'يرسم', imagePath: 'assets/images/يرسم.jpg'),
-  // يكتب: نستخدم صورة قلم
-  ImageNameItem(answer: 'يكتب', imagePath: 'assets/images/قلم.jpg', accepted: ['قلم', 'كتابة']),
-  // يقرأ: نستخدم صورة كتب
-  ImageNameItem(answer: 'يقرأ', imagePath: 'assets/images/كتب.jpg', accepted: ['قراءة', 'كتاب', 'كتب']),
+  ImageNameItem(answer: 'يكتب', imagePath: 'assets/images/يكتب.jpg'),
+  ImageNameItem(answer: 'يقرأ', imagePath: 'assets/images/يقرأ.jpg'),
   // ينام: يوجد ملف "نام.jpg"؛ نقبل كلا الصيغتين
   ImageNameItem(answer: 'ينام', imagePath: 'assets/images/نام.jpg', accepted: ['نام']),
   ImageNameItem(answer: 'يشرب', imagePath: 'assets/images/يشرب.jpg'),
