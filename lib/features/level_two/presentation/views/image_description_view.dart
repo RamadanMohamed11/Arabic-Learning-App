@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/image_description_model.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/widgets/image_description_widget.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class ImageDescriptionView extends StatefulWidget {
   const ImageDescriptionView({super.key});
@@ -14,6 +15,31 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
   int _current = 0;
   int _score = 0;
   bool _complete = false;
+  late final FlutterTts _instructionTts;
+  bool _instructionPlayed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _instructionTts = FlutterTts();
+    _initInstruction();
+  }
+
+  Future<void> _initInstruction() async {
+    await _instructionTts.setLanguage('ar-SA');
+    await _instructionTts.setSpeechRate(0.45);
+    await _instructionTts.setVolume(1.0);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
+  }
+
+  Future<void> _playInstruction() async {
+    if (_instructionPlayed) return;
+    _instructionPlayed = true;
+    await _instructionTts.stop();
+    await _instructionTts.speak(
+      'انظر إلى الصورة واكتب وصفاً قصيراً يحتوي على كلمتين على الأقل.',
+    );
+  }
 
   void _onCorrect() {
     setState(() => _score++);
@@ -36,6 +62,12 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
   }
 
   @override
+  void dispose() {
+    _instructionTts.stop();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (_complete) return _buildResults();
 
@@ -43,7 +75,10 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🖊️ اكتب وصفًا للصورة', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          '🖊️ اكتب وصفًا للصورة',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -74,21 +109,30 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.amber.shade100,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.star, color: Colors.amber, size: 18),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 18,
+                              ),
                               const SizedBox(width: 4),
-                              Text('$_score',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  )),
+                              Text(
+                                '$_score',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -98,7 +142,9 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
                     LinearProgressIndicator(
                       value: (_current + 1) / imageDescriptionItems.length,
                       backgroundColor: Colors.grey.shade300,
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
                       minHeight: 8,
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -143,7 +189,10 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
             child: Column(
               children: [
                 const SizedBox(height: 40),
-                Text(isPassed ? '🎉' : '💪', style: const TextStyle(fontSize: 80)),
+                Text(
+                  isPassed ? '🎉' : '💪',
+                  style: const TextStyle(fontSize: 80),
+                ),
                 const SizedBox(height: 24),
                 Text(
                   isPassed ? 'رائع جداً!' : 'حاول مرة أخرى!',
@@ -177,29 +226,40 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
                   ),
                   child: Column(
                     children: [
-                      const Text('نتيجتك',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          )),
+                      const Text(
+                        'نتيجتك',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
                       const SizedBox(height: 24),
                       Text(
                         '$percentage%',
                         style: TextStyle(
                           fontSize: 72,
                           fontWeight: FontWeight.bold,
-                          color: isPassed ? AppColors.success : AppColors.warning,
+                          color: isPassed
+                              ? AppColors.success
+                              : AppColors.warning,
                         ),
                       ),
                       const SizedBox(height: 16),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
-                          color: (isPassed ? AppColors.success : AppColors.warning).withOpacity(0.1),
+                          color:
+                              (isPassed ? AppColors.success : AppColors.warning)
+                                  .withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: isPassed ? AppColors.success : AppColors.warning,
+                            color: isPassed
+                                ? AppColors.success
+                                : AppColors.warning,
                             width: 2,
                           ),
                         ),
@@ -208,7 +268,9 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
-                            color: isPassed ? AppColors.success : AppColors.warning,
+                            color: isPassed
+                                ? AppColors.success
+                                : AppColors.warning,
                           ),
                         ),
                       ),
@@ -224,25 +286,49 @@ class _ImageDescriptionViewState extends State<ImageDescriptionView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         elevation: 5,
                       ),
                       icon: const Icon(Icons.home, size: 24),
-                      label: const Text('الرئيسية', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      label: const Text(
+                        'الرئيسية',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 16),
                     ElevatedButton.icon(
                       onPressed: _restart,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        foregroundColor: isPassed ? AppColors.success : AppColors.warning,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        foregroundColor: isPassed
+                            ? AppColors.success
+                            : AppColors.warning,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         elevation: 5,
                       ),
                       icon: const Icon(Icons.refresh, size: 24),
-                      label: const Text('إعادة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      label: const Text(
+                        'إعادة',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),

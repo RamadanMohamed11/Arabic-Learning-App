@@ -18,6 +18,7 @@ class _ImageNameViewState extends State<ImageNameView> {
   bool _checked = false;
   bool _lastCorrect = false;
   late final FlutterTts _tts;
+  bool _instructionPlayed = false;
   static const Map<String, String> _ttsOverrides = {
     'يرسم': 'يَرْسُم',
     'يكتب': 'يَكْتُب',
@@ -42,6 +43,14 @@ class _ImageNameViewState extends State<ImageNameView> {
     await _tts.setLanguage('ar-SA');
     await _tts.setSpeechRate(0.45);
     await _tts.setVolume(1.0);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
+  }
+
+  Future<void> _playInstruction() async {
+    if (_instructionPlayed) return;
+    _instructionPlayed = true;
+    await _tts.stop();
+    await _tts.speak('انظر إلى الصورة واكتب اسمها الصحيح.');
   }
 
   Future<void> _speak(String text) async {

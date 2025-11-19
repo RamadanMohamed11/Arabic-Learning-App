@@ -34,7 +34,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
     _flutterTts = FlutterTts();
     _configureTts();
     _initializeLetters();
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 1800), () {
       if (mounted) _speakLetters();
     });
   }

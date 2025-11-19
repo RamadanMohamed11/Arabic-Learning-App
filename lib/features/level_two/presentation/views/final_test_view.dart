@@ -18,6 +18,7 @@ class _FinalTestViewState extends State<FinalTestView> {
   bool _sttReady = false;
   bool _isListening = false;
   String _spoken = '';
+  bool _instructionPlayed = false;
 
   int _section = 0; // 0=A, 1=B, 2=C
   int _index = 0; // index within current section
@@ -44,6 +45,7 @@ class _FinalTestViewState extends State<FinalTestView> {
     await _tts.setLanguage('ar-SA');
     await _tts.setSpeechRate(0.45);
     await _tts.setVolume(1.0);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
   }
 
   Future<void> _initStt() async {
@@ -110,6 +112,15 @@ class _FinalTestViewState extends State<FinalTestView> {
   Future<void> _speak(String text) async {
     await _tts.stop();
     await _tts.speak(text);
+  }
+
+  Future<void> _playInstruction() async {
+    if (_instructionPlayed) return;
+    _instructionPlayed = true;
+    await _tts.stop();
+    await _tts.speak(
+      'هذا اختبار نهاية المستوى الثاني، استمع للتعليمات في كل قسم وأجب بعناية.',
+    );
   }
 
   void _initRandomization() {

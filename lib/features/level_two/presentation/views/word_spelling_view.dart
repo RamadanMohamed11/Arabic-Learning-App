@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/word_spelling_model.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/widgets/word_spelling_widget.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 /// Main view for word spelling activity
 class WordSpellingView extends StatefulWidget {
@@ -15,6 +16,31 @@ class _WordSpellingViewState extends State<WordSpellingView> {
   int _currentQuestionIndex = 0;
   int _score = 0;
   bool _isTestComplete = false;
+  late final FlutterTts _instructionTts;
+  bool _instructionPlayed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _instructionTts = FlutterTts();
+    _initInstruction();
+  }
+
+  Future<void> _initInstruction() async {
+    await _instructionTts.setLanguage('ar-SA');
+    await _instructionTts.setSpeechRate(0.45);
+    await _instructionTts.setVolume(1.0);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
+  }
+
+  Future<void> _playInstruction() async {
+    if (_instructionPlayed) return;
+    _instructionPlayed = true;
+    await _instructionTts.stop();
+    await _instructionTts.speak(
+      'استمع للحروف ثم اسحبها بالترتيب الصحيح لتكوين الكلمة.',
+    );
+  }
 
   void _onCorrect() {
     setState(() => _score++);
@@ -34,6 +60,12 @@ class _WordSpellingViewState extends State<WordSpellingView> {
       _score = 0;
       _isTestComplete = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _instructionTts.stop();
+    super.dispose();
   }
 
   @override

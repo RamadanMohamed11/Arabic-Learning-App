@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/word_match_model.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/widgets/word_match_widget.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class WordMatchView extends StatefulWidget {
   const WordMatchView({super.key});
@@ -13,6 +14,29 @@ class WordMatchView extends StatefulWidget {
 class _WordMatchViewState extends State<WordMatchView> {
   int _matched = 0;
   bool _complete = false;
+  late final FlutterTts _instructionTts;
+  bool _instructionPlayed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _instructionTts = FlutterTts();
+    _initInstruction();
+  }
+
+  Future<void> _initInstruction() async {
+    await _instructionTts.setLanguage('ar-SA');
+    await _instructionTts.setSpeechRate(0.45);
+    await _instructionTts.setVolume(1.0);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
+  }
+
+  Future<void> _playInstruction() async {
+    if (_instructionPlayed) return;
+    _instructionPlayed = true;
+    await _instructionTts.stop();
+    await _instructionTts.speak('وصل كل كلمة بالصورة المناسبة.');
+  }
 
   void _onProgress(int count) {
     setState(() => _matched = count);
@@ -27,6 +51,12 @@ class _WordMatchViewState extends State<WordMatchView> {
       _matched = 0;
       _complete = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _instructionTts.stop();
+    super.dispose();
   }
 
   @override
