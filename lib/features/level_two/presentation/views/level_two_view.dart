@@ -30,6 +30,10 @@ class LevelTwoView extends StatefulWidget {
   State<LevelTwoView> createState() => _LevelTwoViewState();
 }
 
+const int _finalTestActivityIndex = 5;
+const bool kForceLevelTwoFinalTestUnlocked =
+    true; // TODO: set to false after testing
+
 class _LevelTwoViewState extends State<LevelTwoView> {
   UserProgressService? _progressService;
   double _progress = 0.0;
@@ -301,7 +305,11 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                   itemCount: _activities.length,
                   itemBuilder: (context, index) {
                     final activity = _activities[index];
-                    final isUnlocked = _unlockedLessons.contains(index);
+                    final forceUnlocked =
+                        kForceLevelTwoFinalTestUnlocked &&
+                        index == _finalTestActivityIndex;
+                    final isUnlocked =
+                        forceUnlocked || _unlockedLessons.contains(index);
                     final isCompleted = _completedActivities.contains(index);
 
                     return Padding(

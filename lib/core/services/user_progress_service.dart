@@ -10,6 +10,10 @@ class UserProgressService {
   static const String _keyLevel2Progress = 'level2_progress';
   static const String _keyLevel1Completed = 'level1_completed';
   static const String _keyLevel2Completed = 'level2_completed';
+  static const String _keyLevel1FinalTestCompleted =
+      'level1_final_test_completed';
+  static const String _keyLevel2FinalTestCompleted =
+      'level2_final_test_completed';
   static const String _keyUnlockedLetters = 'unlocked_letters';
   static const String _keyCompletedActivities = 'completed_activities';
   static const String _keyLevel1UnlockedLessons = 'level1_unlocked_lessons';
@@ -143,6 +147,22 @@ class UserProgressService {
 
   Future<void> setLevel2Completed(bool completed) async {
     await prefs.setBool(_keyLevel2Completed, completed);
+  }
+
+  bool isLevel1FinalTestCompleted() {
+    return prefs.getBool(_keyLevel1FinalTestCompleted) ?? false;
+  }
+
+  Future<void> setLevel1FinalTestCompleted(bool completed) async {
+    await prefs.setBool(_keyLevel1FinalTestCompleted, completed);
+  }
+
+  bool isLevel2FinalTestCompleted() {
+    return prefs.getBool(_keyLevel2FinalTestCompleted) ?? false;
+  }
+
+  Future<void> setLevel2FinalTestCompleted(bool completed) async {
+    await prefs.setBool(_keyLevel2FinalTestCompleted, completed);
   }
 
   // الحروف المفتوحة (قائمة من الأرقام)

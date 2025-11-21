@@ -8,6 +8,8 @@ import 'package:arabic_learning_app/core/utils/app_router.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/features/certificate/presentation/views/certificate_view.dart';
 
+const int _level2FinalTestIndex = 5;
+
 class LevelsSelectionView extends StatefulWidget {
   const LevelsSelectionView({super.key});
 
@@ -20,6 +22,8 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
   bool _level2Unlocked = false;
   double _level1Progress = 0.0;
   double _level2Progress = 0.0;
+  bool _level1FinalTestCompleted = false;
+  bool _level2FinalTestCompleted = false;
 
   @override
   void initState() {
@@ -33,6 +37,11 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
       _level2Unlocked = _progressService!.isLevel2Unlocked();
       _level1Progress = _progressService!.getLevel1Progress();
       _level2Progress = _progressService!.getLevel2Progress();
+      _level1FinalTestCompleted = _progressService!
+          .isLevel1FinalTestCompleted();
+      _level2FinalTestCompleted = _progressService!.isLevel2ActivityCompleted(
+        _level2FinalTestIndex,
+      );
     });
   }
 
@@ -109,7 +118,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                           Navigator.push(
                             context,
                             AnimatedRoute.slideScale(const LevelOneView()),
-                          );
+                          ).then((_) => _loadProgress());
                         },
                       ),
 
@@ -132,7 +141,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                                   AnimatedRoute.slideScale(
                                     const LevelTwoView(),
                                   ),
-                                );
+                                ).then((_) => _loadProgress());
                               }
                             : null,
                       ),
@@ -145,31 +154,56 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                   horizontal: 24.0,
                   vertical: 16,
                 ),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      AnimatedRoute.slideScale(const CertificateView()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 14,
-                      horizontal: 16,
-                    ),
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 4,
-                  ),
-                  icon: const Icon(Icons.workspace_premium_outlined),
-                  label: const Text(
-                    'عرض شهادة الاختبار',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                  ),
-                ),
+                child: _level1FinalTestCompleted && _level2FinalTestCompleted
+                    ? ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            AnimatedRoute.slideScale(const CertificateView()),
+                          ).then((_) => _loadProgress());
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 16,
+                          ),
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 4,
+                        ),
+                        icon: const Icon(Icons.workspace_premium_outlined),
+                        label: const Text(
+                          'عرض شهادة الاختبار',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white24, width: 1.5),
+                        ),
+                        child: Text(
+                          _buildCertificateMessage(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
               ),
             ],
           ),
@@ -422,5 +456,21 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
         ),
       ),
     );
+  }
+
+  String _buildCertificateMessage() {
+    final level1Done = _level1FinalTestCompleted;
+    final level2Done = _level2FinalTestCompleted;
+
+    if (!level1Done && !level2Done) {
+      return '🎖️ أكمل اختباري نهاية المستويين الأول والثاني لعرض شهادتك';
+    }
+    if (!level1Done) {
+      return '🎯 أكمل اختبار نهاية المستوى الأول للحصول على الشهادة';
+    }
+    if (!level2Done) {
+      return '🎯 أكمل اختبار نهاية المستوى الثاني لعرض شهادتك';
+    }
+    return '🎖️ اكمل الاختبارات لعرض الشهادة';
   }
 }

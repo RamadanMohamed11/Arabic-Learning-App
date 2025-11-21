@@ -3,7 +3,10 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/services/user_progress_service.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
+import 'package:arabic_learning_app/features/certificate/presentation/views/certificate_view.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/final_test_model.dart';
 
 class FinalTestView extends StatefulWidget {
@@ -14,6 +17,7 @@ class FinalTestView extends StatefulWidget {
 }
 
 class _FinalTestViewState extends State<FinalTestView> {
+  UserProgressService? _progressService;
   late final FlutterTts _tts;
   late final stt.SpeechToText _stt;
   bool _sttReady = false;
@@ -25,6 +29,8 @@ class _FinalTestViewState extends State<FinalTestView> {
   int _index = 0; // index within current section
   int _score = 0;
   bool _completed = false;
+  bool _passFlowHandled = false;
+  bool _certificateScheduled = false;
 
   // UI state
   int? _selectedOption; // for A
@@ -40,6 +46,17 @@ class _FinalTestViewState extends State<FinalTestView> {
     _stt = stt.SpeechToText();
     _initStt();
     _initRandomization();
+    _loadProgressService();
+  }
+
+  Future<void> _loadProgressService() async {
+    _progressService = await UserProgressService.getInstance();
+  }
+
+  Future<UserProgressService?> _getProgressService() async {
+    if (_progressService != null) return _progressService;
+    _progressService = await UserProgressService.getInstance();
+    return _progressService;
   }
 
   Future<void> _initTts() async {
@@ -736,6 +753,11 @@ class _FinalTestViewState extends State<FinalTestView> {
     final percentage = (_score / _total * 100).round();
     final isPassed = percentage >= 70;
 
+    if (isPassed && !_passFlowHandled) {
+      _passFlowHandled = true;
+      _handleSuccessfulCompletion();
+    }
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context, true);
@@ -812,10 +834,12 @@ class _FinalTestViewState extends State<FinalTestView> {
                             _index = 0;
                             _score = 0;
                             _completed = false;
+                            _passFlowHandled = false;
                             _checked = false;
                             _selectedOption = null;
                             _dictationCtrl.clear();
                             _spoken = '';
+                            _certificateScheduled = false;
                             _initRandomization();
                           });
                         },
@@ -849,5 +873,69 @@ class _FinalTestViewState extends State<FinalTestView> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleSuccessfulCompletion() async {
+    final service = await _getProgressService();
+
+    if (service != null) {
+      await service.setLevel2FinalTestCompleted(true);
+      final level1Done = service.isLevel1FinalTestCompleted();
+      if (level1Done) {
+        _scheduleCertificateDisplay();
+      } else {
+        _showCompleteOtherFinalDialog(
+          title: 'خطوة أخيرة للحصول على الشهادة',
+          message:
+              'أحسنت! يرجى إنهاء اختبار نهاية المستوى الأول لتتمكن من عرض الشهادة.',
+        );
+      }
+    } else {
+      _showCompleteOtherFinalDialog(
+        title: 'لا يمكن فتح الشهادة الآن',
+        message:
+            'لم نتمكن من التحقق من حالة الاختبارات. تأكد من نجاحك في اختبارات المستويين.',
+      );
+    }
+  }
+
+  void _scheduleCertificateDisplay() {
+    if (_certificateScheduled || !mounted) return;
+    _certificateScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        AnimatedRoute.slideScale(const CertificateView()),
+      );
+    });
+  }
+
+  void _showCompleteOtherFinalDialog({
+    required String title,
+    required String message,
+  }) {
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showDialog<void>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(title, textAlign: TextAlign.center),
+            content: Text(message, textAlign: TextAlign.center),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('حسناً'),
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
 }

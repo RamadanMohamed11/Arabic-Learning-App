@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
+import 'package:arabic_learning_app/features/certificate/presentation/views/certificate_view.dart';
 import 'package:arabic_learning_app/features/level_one/data/models/final_test_model.dart';
 import 'package:arabic_learning_app/features/level_one/presentation/widgets/image_to_character_question.dart';
 import 'package:arabic_learning_app/features/level_one/presentation/widgets/pronunciation_question.dart';
@@ -23,6 +25,7 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
   String? _selectedAnswer;
   bool _isAnswered = false;
   bool _isTestComplete = false;
+  bool _certificateScheduled = false;
 
   late List<FinalTestQuestion> _questions;
   late List<List<String>> _shuffledOptions;
@@ -50,6 +53,12 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
 
   Future<void> _loadProgressService() async {
     _progressService = await UserProgressService.getInstance();
+  }
+
+  Future<UserProgressService?> _getProgressService() async {
+    if (_progressService != null) return _progressService;
+    _progressService = await UserProgressService.getInstance();
+    return _progressService;
   }
 
   void _onAnswerSelected(String answer) {
@@ -97,19 +106,76 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
   }
 
   Future<void> _evaluateAndSaveResults() async {
-    if (_progressService == null) return;
-
     final percentage = (_score / _questions.length * 100).round();
     final isPassed = percentage >= 80;
 
-    if (isPassed) {
-      // Mark level 1 as complete
-      await _progressService!.setLevel1Completed(true);
-      // Set level 1 progress to 100%
-      await _progressService!.setLevel1Progress(100.0);
-      // Unlock level 2
-      await _progressService!.unlockLevel2();
+    if (!isPassed) return;
+
+    final service = await _getProgressService();
+
+    if (service != null) {
+      await service.setLevel1Completed(true);
+      await service.setLevel1Progress(100.0);
+      await service.unlockLevel2();
+      await service.setLevel1FinalTestCompleted(true);
+
+      final level2FinalDone = service.isLevel2FinalTestCompleted();
+      if (level2FinalDone) {
+        _scheduleCertificateDisplay();
+      } else {
+        _showCompleteOtherFinalDialog(
+          title: 'تابع رحلتك 🎯',
+          message:
+              'للحصول على الشهادة عليك إنهاء اختبار نهاية المستوى الثاني أيضاً.',
+        );
+      }
+    } else {
+      _showCompleteOtherFinalDialog(
+        title: 'بحاجة لإكمال الاختبار الآخر',
+        message:
+            'لم نتمكن من التحقق من حالة الاختبارات، رجاءً تأكد من إنهاء اختبارات المستويين قبل طلب الشهادة.',
+      );
     }
+  }
+
+  void _showCompleteOtherFinalDialog({
+    required String title,
+    required String message,
+  }) {
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showDialog<void>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(title, textAlign: TextAlign.center),
+            content: Text(message, textAlign: TextAlign.center),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('حسناً'),
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }
+
+  void _scheduleCertificateDisplay() {
+    if (_certificateScheduled || !mounted) return;
+    _certificateScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        AnimatedRoute.slideScale(const CertificateView()),
+      );
+    });
   }
 
   void _restartTest() {
@@ -119,6 +185,7 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
       _selectedAnswer = null;
       _isAnswered = false;
       _isTestComplete = false;
+      _certificateScheduled = false;
       _prepareQuestions();
     });
   }

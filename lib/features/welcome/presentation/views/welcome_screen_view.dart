@@ -1,9 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
-import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class WelcomeScreenView extends StatefulWidget {
   const WelcomeScreenView({super.key});
@@ -16,11 +19,15 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
     with SingleTickerProviderStateMixin {
   final TextEditingController _nameController = TextEditingController();
   final FlutterTts _flutterTts = FlutterTts();
+  final SpeechToText _speechToText = SpeechToText();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   bool _showNameInput = false;
   bool _isLoading = false;
+  bool _speechEnabled = false;
+  bool _isListening = false;
+  String? _speechErrorMessage;
 
   // ألوان هادئة ومريحة للعين - محدثة لتكون أكثر وضوحاً
   static const Color _softPrimary = Color(0xFF6BA3D8); // أزرق أكثر وضوحاً
@@ -32,6 +39,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
     super.initState();
     _initAnimation();
     _initTts();
+    _initSpeechToText();
     _playWelcomeAudio();
   }
 
@@ -55,6 +63,76 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
 
   Future<void> _initTts() async {
     await TtsConfig.configure(_flutterTts, speechRate: 0.35, pitch: 1.1);
+  }
+
+  Future<void> _initSpeechToText() async {
+    final available = await _speechToText.initialize(
+      onStatus: _handleSpeechStatus,
+      onError: _handleSpeechError,
+    );
+    if (mounted) {
+      setState(() {
+        _speechEnabled = available;
+      });
+    }
+  }
+
+  void _handleSpeechStatus(String status) {
+    if (!mounted) return;
+    setState(() {
+      _isListening = status == 'listening';
+    });
+  }
+
+  void _handleSpeechError(SpeechRecognitionError error) {
+    if (!mounted) return;
+    setState(() {
+      _isListening = false;
+      _speechErrorMessage = error.errorMsg;
+    });
+  }
+
+  Future<void> _startListening() async {
+    if (!_speechEnabled) {
+      await _initSpeechToText();
+      if (!_speechEnabled) return;
+    }
+    await _speechToText.stop();
+    await _flutterTts.stop();
+    setState(() {
+      _speechErrorMessage = null;
+      _isListening = true;
+    });
+    await _speechToText.listen(
+      onResult: _onSpeechResult,
+      localeId: 'ar-SA',
+      listenFor: const Duration(seconds: 10),
+      pauseFor: const Duration(seconds: 4),
+    );
+  }
+
+  Future<void> _stopListening() async {
+    await _speechToText.stop();
+    if (mounted) {
+      setState(() {
+        _isListening = false;
+      });
+    }
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    if (!mounted) return;
+    final recognized = result.recognizedWords.trim();
+    if (recognized.isEmpty) {
+      return;
+    }
+    setState(() {
+      _nameController.text = recognized;
+    });
+    if (result.finalResult) {
+      _stopListening();
+      _flutterTts.speak('تم تسجيل اسمك $recognized');
+    }
   }
 
   Future<void> _playWelcomeAudio() async {
@@ -110,6 +188,8 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
     _nameController.dispose();
     _animationController.dispose();
     _flutterTts.stop();
+    _speechToText.stop();
+    _speechToText.cancel();
     super.dispose();
   }
 
@@ -361,6 +441,8 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
           ),
           child: TextField(
             controller: _nameController,
+            readOnly: true,
+            enableInteractiveSelection: false,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 24,
@@ -368,7 +450,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
               color: _softText,
             ),
             decoration: InputDecoration(
-              hintText: 'اكْتُبْ اسْمَكَ هُنَا',
+              hintText: 'اضغط على الميكروفون وقل اسمك',
               hintStyle: TextStyle(
                 fontSize: 20,
                 color: _softText.withOpacity(0.3),
@@ -384,15 +466,20 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
                 vertical: 20,
               ),
             ),
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) {
-              FocusScope.of(context).unfocus();
-              _onContinue();
-            },
           ),
         ),
 
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
+
+        _SpeechMicButton(
+          isListening: _isListening,
+          speechEnabled: _speechEnabled,
+          speechErrorMessage: _speechErrorMessage,
+          onStartListening: _startListening,
+          onStopListening: _stopListening,
+        ),
+
+        const SizedBox(height: 24),
 
         // زر المتابعة
         _isLoading
@@ -473,5 +560,80 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
               ),
       ],
     );
+  }
+}
+
+class _SpeechMicButton extends StatelessWidget {
+  const _SpeechMicButton({
+    required this.isListening,
+    required this.speechEnabled,
+    required this.onStartListening,
+    required this.onStopListening,
+    this.speechErrorMessage,
+  });
+
+  final bool isListening;
+  final bool speechEnabled;
+  final VoidCallback onStartListening;
+  final VoidCallback onStopListening;
+  final String? speechErrorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color primary = _WelcomeScreenViewState._softPrimary;
+    final bool disabled = !speechEnabled && speechErrorMessage != null;
+
+    return Column(
+      children: [
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+            backgroundColor: disabled
+                ? Colors.grey.shade400
+                : (isListening ? Colors.redAccent : primary),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
+          ),
+          onPressed: disabled
+              ? null
+              : (isListening ? onStopListening : onStartListening),
+          icon: Icon(isListening ? Icons.stop : Icons.mic),
+          label: Text(
+            isListening
+                ? 'توقف'
+                : (speechEnabled ? 'قل اسمك الآن' : 'فعّل الميكروفون'),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _buildStatusMessage(disabled),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: disabled ? Colors.redAccent : primary.withOpacity(0.8),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _buildStatusMessage(bool disabled) {
+    if (speechErrorMessage != null) {
+      return speechErrorMessage!;
+    }
+    if (disabled) {
+      return 'تحقق من أذونات الميكروفون لديك.';
+    }
+    if (isListening) {
+      return 'نستمع إليك... قل اسمك بوضوح.';
+    }
+    if (!speechEnabled) {
+      return 'سنطلب إذن الميكروفون عند الضغط على الزر.';
+    }
+    return 'اضغط على الزر ثم قل اسمك بالعربية.';
   }
 }
