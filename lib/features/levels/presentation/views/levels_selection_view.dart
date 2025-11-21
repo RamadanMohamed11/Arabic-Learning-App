@@ -149,12 +149,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      AnimatedRoute.slideScale(
-                        const CertificateView(
-                          participantName: 'رمضان محمد',
-                          date: '18 نوفمبر 2025',
-                        ),
-                      ),
+                      AnimatedRoute.slideScale(const CertificateView()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

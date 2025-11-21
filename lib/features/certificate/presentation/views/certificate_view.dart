@@ -1,20 +1,72 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:flutter/material.dart';
 
-class CertificateView extends StatelessWidget {
-  const CertificateView({
-    super.key,
-    this.participantName = 'اسم الطالب',
-    this.date = '18 نوفمبر 2025',
-  });
+class CertificateView extends StatefulWidget {
+  const CertificateView({super.key, this.participantName, this.date});
 
-  final String participantName;
-  final String date;
+  final String? participantName;
+  final String? date;
+
+  @override
+  State<CertificateView> createState() => _CertificateViewState();
+}
+
+class _CertificateViewState extends State<CertificateView> {
+  late String _participantName;
+  late String _date;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCertificateData();
+  }
+
+  Future<void> _loadCertificateData() async {
+    final progressService = await UserProgressService.getInstance();
+    final savedName = progressService.getUserName();
+    if (!mounted) return;
+    setState(() {
+      _participantName = widget.participantName ?? savedName ?? 'طالبنا العزيز';
+      _date = widget.date ?? _formatToday(DateTime.now());
+      _isLoading = false;
+    });
+  }
+
+  String _formatToday(DateTime now) {
+    const months = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+    final monthName = months[now.month - 1];
+    return '${now.day} $monthName ${now.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: Color(0xFFF8F5E8),
+          body: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
     final size = MediaQuery.of(context).size;
     final cardHeight = math.max(size.height * 0.9, 720.0);
 
@@ -30,8 +82,8 @@ class CertificateView extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: cardHeight),
                 child: _CertificateCard(
-                  participantName: participantName,
-                  date: date,
+                  participantName: _participantName,
+                  date: _date,
                 ),
               ),
             ),
