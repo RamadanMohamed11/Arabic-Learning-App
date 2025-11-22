@@ -40,7 +40,6 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
     _initAnimation();
     _initTts();
     _initSpeechToText();
-    _playWelcomeAudio();
   }
 
   void _initAnimation() {
@@ -133,13 +132,6 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
       _stopListening();
       _flutterTts.speak('تم تسجيل اسمك $recognized');
     }
-  }
-
-  Future<void> _playWelcomeAudio() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    await _flutterTts.speak(
-      'مَرْحَباً بِكَ فِي خُطْوَتِكَ الأُولَى نَحْوَ التَّعَلُّمِ',
-    );
   }
 
   void _onStartJourney() {
