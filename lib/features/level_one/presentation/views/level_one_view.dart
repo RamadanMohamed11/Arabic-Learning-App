@@ -525,7 +525,7 @@ class _LevelOneViewState extends State<LevelOneView> {
   Widget _buildFinalTestCard() {
     // Final test unlocks when ALL revisions are completed
     // There are 7 revision groups (0-6)
-    final allRevisionsCompleted = _completedRevisions.length >= 0;
+    final allRevisionsCompleted = _completedRevisions.length >= 7;
 
     return GestureDetector(
       onTap: allRevisionsCompleted

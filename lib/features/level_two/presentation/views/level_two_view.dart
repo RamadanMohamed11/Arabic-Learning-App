@@ -31,8 +31,7 @@ class LevelTwoView extends StatefulWidget {
 }
 
 const int _finalTestActivityIndex = 5;
-const bool kForceLevelTwoFinalTestUnlocked =
-    true; // TODO: set to false after testing
+const bool kForceLevelTwoFinalTestUnlocked = false;
 
 class _LevelTwoViewState extends State<LevelTwoView> {
   UserProgressService? _progressService;
@@ -305,11 +304,18 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                   itemCount: _activities.length,
                   itemBuilder: (context, index) {
                     final activity = _activities[index];
+                    // Final test requires all 5 previous activities (0-4) to be completed
+                    final isFinalTest = index == _finalTestActivityIndex;
+                    final allPreviousCompleted = isFinalTest
+                        ? _completedActivities.containsAll([0, 1, 2, 3, 4])
+                        : true;
                     final forceUnlocked =
                         kForceLevelTwoFinalTestUnlocked &&
                         index == _finalTestActivityIndex;
                     final isUnlocked =
-                        forceUnlocked || _unlockedLessons.contains(index);
+                        forceUnlocked ||
+                        (_unlockedLessons.contains(index) &&
+                            allPreviousCompleted);
                     final isCompleted = _completedActivities.contains(index);
 
                     return Padding(
