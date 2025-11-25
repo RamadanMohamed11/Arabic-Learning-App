@@ -50,6 +50,16 @@ class _ImageNameViewState extends State<ImageNameView> {
     _instructionPlayed = true;
     await _tts.stop();
     await _tts.speak('انظر إلى الصورة واكتب اسمها الصحيح.');
+    // After instruction, speak the first image word
+    await Future.delayed(const Duration(milliseconds: 1500));
+    _speakCurrentImageWord();
+  }
+
+  Future<void> _speakCurrentImageWord() async {
+    final item = imageNameItems[_current];
+    final textToSpeak = item.ttsText ?? item.answer;
+    await _tts.stop();
+    await _tts.speak(textToSpeak);
   }
 
   Future<void> _speak(String text) async {
@@ -92,7 +102,6 @@ class _ImageNameViewState extends State<ImageNameView> {
     });
     if (correct) {
       FocusScope.of(context).unfocus();
-      _speak(item.answer);
     }
   }
 
@@ -103,6 +112,10 @@ class _ImageNameViewState extends State<ImageNameView> {
         _ctrl.clear();
         _checked = false;
         _lastCorrect = false;
+      });
+      // Speak the new image word after a brief delay
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _speakCurrentImageWord();
       });
     } else {
       setState(() => _complete = true);

@@ -429,7 +429,7 @@ class _FinalTestViewState extends State<FinalTestView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (!(isAnswered && isCorrect))
+            if (!isAnswered)
               ElevatedButton.icon(
                 onPressed: () {
                   setState(() {
@@ -454,7 +454,6 @@ class _FinalTestViewState extends State<FinalTestView> {
                 icon: const Icon(Icons.check),
                 label: const Text('تحقق'),
               ),
-            const SizedBox(width: 12),
             if (isAnswered)
               ElevatedButton.icon(
                 onPressed: _next,
@@ -474,18 +473,6 @@ class _FinalTestViewState extends State<FinalTestView> {
               ),
           ],
         ),
-        const SizedBox(height: 12),
-        if (isAnswered)
-          Text(
-            isCorrect
-                ? 'أحسنت! إجابة صحيحة.'
-                : 'الإجابة الصحيحة: ${q.options[q.correctIndex]}',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isCorrect ? AppColors.success : AppColors.error,
-            ),
-          ),
       ],
     );
   }
@@ -554,7 +541,7 @@ class _FinalTestViewState extends State<FinalTestView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (!(isAnswered && ok))
+            if (!isAnswered)
               ElevatedButton.icon(
                 onPressed: () async {
                   final correct = _speechMatches(_spoken, q.text);
@@ -578,7 +565,6 @@ class _FinalTestViewState extends State<FinalTestView> {
                 icon: const Icon(Icons.check),
                 label: const Text('تحقق'),
               ),
-            const SizedBox(width: 12),
             if (isAnswered)
               ElevatedButton.icon(
                 onPressed: _next,
@@ -598,16 +584,6 @@ class _FinalTestViewState extends State<FinalTestView> {
               ),
           ],
         ),
-        const SizedBox(height: 12),
-        if (isAnswered)
-          Text(
-            ok ? 'أحسنت! نطق صحيح.' : 'حاول مرة أخرى.',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: ok ? AppColors.success : AppColors.error,
-            ),
-          ),
       ],
     );
   }
@@ -673,7 +649,7 @@ class _FinalTestViewState extends State<FinalTestView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (!(isAnswered && ok))
+            if (!isAnswered)
               ElevatedButton.icon(
                 onPressed: () {
                   final user = _normalize(_dictationCtrl.text);
@@ -697,7 +673,6 @@ class _FinalTestViewState extends State<FinalTestView> {
                 icon: const Icon(Icons.check),
                 label: const Text('تحقق'),
               ),
-            const SizedBox(width: 12),
             if (isAnswered)
               ElevatedButton.icon(
                 onPressed: _next,
@@ -717,20 +692,6 @@ class _FinalTestViewState extends State<FinalTestView> {
               ),
           ],
         ),
-        const SizedBox(height: 12),
-        if (isAnswered)
-          Text(
-            _normalize(_dictationCtrl.text) == _normalize(q.text)
-                ? 'أحسنت! إجابة صحيحة.'
-                : 'الإجابة الصحيحة: "${q.text}"',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: _normalize(_dictationCtrl.text) == _normalize(q.text)
-                  ? AppColors.success
-                  : AppColors.error,
-            ),
-          ),
       ],
     );
   }
