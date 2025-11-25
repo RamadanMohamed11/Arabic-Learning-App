@@ -74,25 +74,25 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
     PlacementTestQuestion(
       type: 'pronunciation',
       question: 'انطق الكلمة التي تراها',
-      imagePath: '🌙 قمر',
+      imagePath: 'قمر',
       correctAnswer: 'قمر',
     ),
     PlacementTestQuestion(
       type: 'pronunciation',
       question: 'انطق الكلمة التي تراها',
-      imagePath: '☀️ شمس',
+      imagePath: 'شمس',
       correctAnswer: 'شمس',
     ),
     PlacementTestQuestion(
       type: 'pronunciation',
       question: 'انطق الكلمة التي تراها',
-      imagePath: '🌊 بحر',
+      imagePath: 'بحر',
       correctAnswer: 'بحر',
     ),
     PlacementTestQuestion(
       type: 'pronunciation',
       question: 'انطق الكلمة التي تراها',
-      imagePath: '🌳 شجرة',
+      imagePath: 'شجرة',
       correctAnswer: 'شجرة',
     ),
 
