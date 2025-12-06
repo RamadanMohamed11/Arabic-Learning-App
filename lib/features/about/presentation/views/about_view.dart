@@ -1,172 +1,178 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 
+class TeamMember {
+  final String name;
+  final String role;
+  final String roleEn;
+  final String description;
+  final IconData icon;
+  final String? imagePath;
+
+  const TeamMember({
+    required this.name,
+    required this.role,
+    required this.roleEn,
+    required this.description,
+    required this.icon,
+    this.imagePath,
+  });
+}
+
 class AboutView extends StatelessWidget {
   const AboutView({super.key});
+
+  static const List<TeamMember> _teamMembers = [
+    TeamMember(
+      name: 'أسماء فرغلي عبد المنعم',
+      role: 'كاتب المحتوى',
+      roleEn: 'Content Writer',
+      description:
+          'كتابة المحتوى التعليمي لبعض التمارين للمستوي الثاني داخل التطبيق، موضحة ما يتعلمه الطالب في كل تمرين.',
+      icon: Icons.edit_note,
+      imagePath: 'assets/images/team/أسماء.jpg',
+    ),
+    TeamMember(
+      name: 'أمنية أشرف عبد الفتاح',
+      role: 'كاتب تجربة المستخدم',
+      roleEn: 'UX Writer',
+      description:
+          'كتابة وتنظيم تجربة المستخدم داخل التطبيق، من اختبار تحديد المستوى إلى عرض النتائج والمستويات والمحتوى الداخلي، وصولًا إلى صفحة شهادة النجاح.',
+      icon: Icons.psychology,
+      imagePath: 'assets/images/team/أمنية.jpg',
+    ),
+    TeamMember(
+      name: 'برسيس بهيج',
+      role: 'كاتب المحتوى',
+      roleEn: 'Content Writer',
+      description:
+          'كتابة وتصميم المحتوى التعليمي الخاص بالمستوى الاول داخل التطبيق، بما يشمل الأنشطة التفاعلية وما يتعلمه الطالب داخل المستوى بالكامل.',
+      icon: Icons.menu_book,
+      imagePath: 'assets/images/team/برسيس.jpg',
+    ),
+    TeamMember(
+      name: 'حسين طارق دسوقي',
+      role: 'مجمع الأنشطة',
+      roleEn: 'Activity Collector',
+      description:
+          'جمع وتصنيف الأنشطة المختلفة داخل التطبيق وتنظيمها بطريقة تساعد المستخدم على التنقل والتعلم بسهولة.',
+      icon: Icons.folder_special,
+      imagePath: 'assets/images/team/حسين.jpg',
+    ),
+    TeamMember(
+      name: 'دينا صبري',
+      role: 'مصمم الهوية البصرية',
+      roleEn: 'Visual Identity Designer',
+      description:
+          'تنسيق الألوان الأساسية داخل واجهة التطبيق، بالإضافة إلى تصميم شعار التطبيق (اللوجو) بما يحقق هوية بصرية موحدة وجذّابة.',
+      icon: Icons.palette,
+      imagePath: 'assets/images/team/دينا.jpg',
+    ),
+    TeamMember(
+      name: 'مريم عاطف شكري شاكر',
+      role: 'مصمم المحتوى',
+      roleEn: 'Content Designer',
+      description:
+          'تصميم ورسم الحروف بالطريقة المناسبة التي تساعد المستخدم على تعلم الحروف وممارستها.',
+      icon: Icons.brush,
+      imagePath: 'assets/images/team/مريم.jpg',
+    ),
+    TeamMember(
+      name: 'منن هشام حمزة',
+      role: 'مصمم محتوى',
+      roleEn: 'Content Designer',
+      description:
+          'تصميم ورسم الحروف ومواضيع الحروف بالطريقة المناسبة التي تساعد المستخدم على تعلم الحروف وممارستها.',
+      icon: Icons.draw,
+      imagePath: 'assets/images/team/منن.jpg',
+    ),
+    TeamMember(
+      name: 'مي سيد',
+      role: 'مصمم شعار التطبيق',
+      roleEn: 'App Logo Designer',
+      description:
+          'تصميم شعار التطبيق (اللوجو) بالشكل المناسب لفكرة المشروع، بما يعبر عن هدف التطبيق ويعزز الهوية البصرية الخاصة به.',
+      icon: Icons.auto_awesome,
+      imagePath: 'assets/images/team/مي.jpg',
+    ),
+    TeamMember(
+      name: 'هبة شاكر',
+      role: 'مصمم محتوى الاختبارات',
+      roleEn: 'Test Content Creator',
+      description:
+          'تصميم محتوى الاختبارات داخل التطبيق وإنشاء بنك الأسئلة لتقييم مستوى الطالب وتحديد تقدمه داخل المستويات المختلفة.',
+      icon: Icons.quiz,
+      imagePath: 'assets/images/team/هبة.jpg',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         centerTitle: true,
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: const Text(
-            'فريق العمل وأصحاب الفكرة',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: const Text(
+          'فريق العمل',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+            fontSize: 22,
           ),
         ),
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.background,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.primary.withOpacity(0.1), AppColors.background],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // App Icon and Title
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Title
+              Center(
+                child: const Text(
+                  'طلاب كلية تربية قسم STEM \n جامعة أسيوط الفرقة الثالثة\nجروب (5)',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                    height: 1.5,
                   ),
-                  child: const Column(
-                    children: [
-                      Icon(Icons.school, size: 80, color: AppColors.primary),
-                      SizedBox(height: 16),
-                      Text(
-                        'تطبيق تعلم الحروف العربية',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'تطبيق تعليمي تفاعلي لتعلم الحروف العربية',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                  textAlign: TextAlign.center,
                 ),
+              ),
 
-                const SizedBox(height: 30),
+              const SizedBox(height: 24),
 
-                // Team Section
-                Container(
+              // Team Members List
+              ...List.generate(_teamMembers.length, (index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: _buildTeamMemberCard(_teamMembers[index]),
+                );
+              }),
+
+              const SizedBox(height: 20),
+
+              // Footer
+              Center(
+                child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
                     children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.people,
-                            color: AppColors.primary,
-                            size: 28,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'فريق العمل',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Math Team
-                      _buildTeamSection(
-                        'قسم الرياضيات',
-                        Icons.calculate,
-                        AppColors.secondary,
-                        ['أسماء فرغلي', 'منن هشام', 'مريم عاطف'],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Chemistry Team
-                      _buildTeamSection(
-                        'قسم الكيمياء',
-                        Icons.science,
-                        AppColors.accent,
-                        ['أمنية أشرف', 'مي سيد', 'برسيس بهيج', 'حسين طارق'],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Biology Team
-                      _buildTeamSection(
-                        'قسم الأحياء',
-                        Icons.biotech,
-                        AppColors.primary,
-                        ['هبة شاكر', 'دينا صبري'],
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                const SizedBox(height: 30),
-
-                // Footer
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: const Column(
-                    children: [
-                      Icon(Icons.favorite, color: Colors.red, size: 32),
-                      SizedBox(height: 8),
-                      Text(
+                      Icon(Icons.favorite, color: AppColors.primary, size: 32),
+                      const SizedBox(height: 12),
+                      const Text(
                         'صُنع بحب لتعليم الأطفال ومحو الأمية',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey,
+                          color: AppColors.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
@@ -174,68 +180,115 @@ class AboutView extends StatelessWidget {
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTeamSection(
-    String title,
-    IconData icon,
-    Color color,
-    List<String> members,
-  ) {
+  Widget _buildTeamMemberCard(TeamMember member) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: color.withOpacity(0.3), width: 2),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 24),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-            ],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          const SizedBox(height: 12),
-          ...members.map(
-            (member) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.person, color: color, size: 18),
-                  const SizedBox(width: 8),
-                  Text(
-                    member,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Avatar - Image or Icon
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              gradient: member.imagePath == null
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.cream,
+                        AppColors.mintGreen.withOpacity(0.3),
+                      ],
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: member.imagePath != null
+                ? Image.asset(
+                    member.imagePath!,
+                    fit: BoxFit.cover,
+                    width: 70,
+                    height: 70,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.cream,
+                              AppColors.mintGreen.withOpacity(0.3),
+                            ],
+                          ),
+                        ),
+                        child: Icon(
+                          member.icon,
+                          size: 32,
+                          color: AppColors.primary,
+                        ),
+                      );
+                    },
+                  )
+                : Icon(member.icon, size: 32, color: AppColors.primary),
+          ),
+          const SizedBox(width: 16),
+          // Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  member.name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${member.role} | ${member.roleEn}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.secondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  member.description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-
 }

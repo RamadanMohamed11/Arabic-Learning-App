@@ -10,10 +10,7 @@ class ContactUsView extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'تواصل معنا',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: AppColors.primary,
         elevation: 0,
@@ -24,10 +21,7 @@ class ContactUsView extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.primary.withOpacity(0.08),
-              AppColors.background,
-            ],
+            colors: [AppColors.primary.withOpacity(0.08), AppColors.background],
           ),
         ),
         child: SafeArea(
@@ -54,7 +48,11 @@ class ContactUsView extends StatelessWidget {
                       const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.contact_mail, color: AppColors.primary, size: 28),
+                          Icon(
+                            Icons.contact_mail,
+                            color: AppColors.primary,
+                            size: 28,
+                          ),
                           SizedBox(width: 8),
                           Text(
                             'تواصل معنا',
@@ -70,13 +68,7 @@ class ContactUsView extends StatelessWidget {
                       _ContactItem(
                         icon: Icons.email,
                         label: 'البريد الإلكتروني',
-                        value: 'contact@arabiclearning.com',
-                      ),
-                      const SizedBox(height: 12),
-                      _ContactItem(
-                        icon: Icons.phone,
-                        label: 'الهاتف',
-                        value: '+20 123 456 7890',
+                        value: 'Albdayatttbyq@gmail.com',
                       ),
                     ],
                   ),
@@ -100,8 +92,11 @@ class ContactUsView extends StatelessWidget {
                     ],
                   ),
                   child: const Text(
-                    'يسعدنا تواصلكم للاستفسارات والمقترحات والشراكات. سنرد عليكم في أقرب وقت ممكن.',
-                    style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                    'يسعدنا تواصلكم للاستفسارات والمقترحات. سنرد عليكم في أقرب وقت ممكن.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.textPrimary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -118,7 +113,11 @@ class _ContactItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _ContactItem({required this.icon, required this.label, required this.value});
+  const _ContactItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
