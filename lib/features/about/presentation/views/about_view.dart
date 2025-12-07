@@ -203,91 +203,100 @@ class AboutView extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Avatar - Image or Icon
-          Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              gradient: member.imagePath == null
-                  ? LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.cream,
-                        AppColors.mintGreen.withOpacity(0.3),
-                      ],
-                    )
-                  : null,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: member.imagePath != null
-                ? Image.asset(
-                    member.imagePath!,
-                    fit: BoxFit.cover,
-                    width: 70,
-                    height: 70,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppColors.cream,
-                              AppColors.mintGreen.withOpacity(0.3),
-                            ],
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Avatar - Image or Icon (full height)
+            Container(
+              width: 90,
+              decoration: BoxDecoration(
+                gradient: member.imagePath == null
+                    ? LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.cream,
+                          AppColors.mintGreen.withOpacity(0.3),
+                        ],
+                      )
+                    : null,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: member.imagePath != null
+                  ? Image.asset(
+                      member.imagePath!,
+                      fit: BoxFit.cover,
+                      width: 90,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColors.cream,
+                                AppColors.mintGreen.withOpacity(0.3),
+                              ],
+                            ),
                           ),
-                        ),
-                        child: Icon(
-                          member.icon,
-                          size: 32,
-                          color: AppColors.primary,
-                        ),
-                      );
-                    },
-                  )
-                : Icon(member.icon, size: 32, color: AppColors.primary),
-          ),
-          const SizedBox(width: 16),
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  member.name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${member.role} | ${member.roleEn}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.secondary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  member.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                    height: 1.5,
-                  ),
-                ),
-              ],
+                          child: Center(
+                            child: Icon(
+                              member.icon,
+                              size: 32,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Icon(
+                        member.icon,
+                        size: 32,
+                        color: AppColors.primary,
+                      ),
+                    ),
             ),
-          ),
-        ],
+            const SizedBox(width: 16),
+            // Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    member.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${member.role} | ${member.roleEn}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.secondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    member.description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/models/letter_shapes.dart';
+import 'package:arabic_learning_app/core/data/letter_names.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/features/level_one/presentation/views/letter_test_selection_view.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
@@ -19,6 +20,7 @@ class LetterShapesView extends StatefulWidget {
 class _LetterShapesViewState extends State<LetterShapesView> {
   final FlutterTts _flutterTts = FlutterTts();
   LetterShapes? letterShapes;
+  LetterName? _letterName;
   String exampleWord = '';
   bool _isSpeaking = false;
   int _letterIndex = 0;
@@ -28,6 +30,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
     super.initState();
     _initTts();
     letterShapes = ArabicLetterShapes.getShapes(widget.letter);
+    _letterName = getLetterName(widget.letter);
     // Get the word with tashkeel from arabicLetters list
     final letterData = arabicLetters.firstWhere(
       (l) => l.letter == widget.letter,
@@ -154,7 +157,9 @@ class _LetterShapesViewState extends State<LetterShapesView> {
               ),
               const SizedBox(width: 16),
               IconButton(
-                onPressed: () => _speak(letterShapes!.isolated),
+                onPressed: () => _speak(
+                  _letterName?.nameWithDiacritics ?? letterShapes!.name,
+                ),
                 icon: Icon(
                   _isSpeaking ? Icons.volume_off : Icons.volume_up,
                   color: Colors.white,
@@ -242,7 +247,8 @@ class _LetterShapesViewState extends State<LetterShapesView> {
     IconData icon,
   ) {
     return GestureDetector(
-      onTap: () => _speak(shape),
+      onTap: () =>
+          _speak(_letterName?.nameWithDiacritics ?? letterShapes!.name),
       child: Container(
         height: 160,
         decoration: BoxDecoration(
