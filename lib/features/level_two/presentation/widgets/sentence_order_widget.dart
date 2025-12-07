@@ -57,14 +57,15 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
     _isCorrect = false;
     _showFeedback = false;
     setState(() {});
+    // Speak the sentence automatically when question loads
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) _speakSentence();
+    });
   }
 
   Future<void> _initTts() async {
     _flutterTts = FlutterTts();
-    await TtsConfig.configure(
-      _flutterTts,
-      speechRate: 0.5,
-    );
+    await TtsConfig.configure(_flutterTts, speechRate: 0.5);
   }
 
   Future<void> _speakSentence() async {
@@ -128,6 +129,27 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
     final words = widget.question.words;
     return Column(
       children: [
+        // Speaker button to replay sentence
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: ElevatedButton.icon(
+            onPressed: _speakSentence,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber.shade100,
+              foregroundColor: Colors.amber.shade800,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              elevation: 2,
+            ),
+            icon: const Icon(Icons.volume_up, size: 28),
+            label: const Text(
+              'استمع للجملة 🔊',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(

@@ -32,6 +32,11 @@ class _LevelOneViewState extends State<LevelOneView> {
 
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
+
+    // Auto-correct any stale unlock data from before the fix was applied
+    // This ensures letters only stay unlocked if all 3 revision tests are completed
+    await _progressService!.validateAndCorrectUnlocks();
+
     setState(() {
       _unlockedLetters = _progressService!.getUnlockedLetters();
       _unlockedLessons = _progressService!.getLevel1UnlockedLessons();
@@ -338,8 +343,28 @@ class _LevelOneViewState extends State<LevelOneView> {
     // Revision test unlocks AFTER completing the 4 letters it reviews
     // Review 0 tests letters 0-3, so it unlocks when lesson 1 is unlocked
     // Review 1 tests letters 4-7, so it unlocks when lesson 2 is unlocked
-    final requiredLessonIndex = reviewIndex + 1;
-    final isUnlocked = _unlockedLessons.contains(requiredLessonIndex);
+    // Review 6 (last one) tests letters 24-27, unlocks when all 4 letters are completed
+    bool isUnlocked;
+
+    if (reviewIndex < 6) {
+      // For revisions 0-5, unlock when next lesson is unlocked
+      final requiredLessonIndex = reviewIndex + 1;
+      isUnlocked = _unlockedLessons.contains(requiredLessonIndex);
+    } else {
+      // For last revision (6), unlock when all 4 letters (24-27) are completed
+      // Check if all letters in this group have completed exercises
+      isUnlocked = true;
+      for (int i = 24; i <= 27; i++) {
+        final tracingDone =
+            _progressService?.isActivityCompleted(i, 0) ?? false;
+        final pronunciationDone =
+            _progressService?.isActivityCompleted(i, 1) ?? false;
+        if (!tracingDone || !pronunciationDone) {
+          isUnlocked = false;
+          break;
+        }
+      }
+    }
 
     return GestureDetector(
       onTap: isUnlocked

@@ -188,19 +188,23 @@ class _RevisionTestViewState extends State<RevisionTestView> {
     return arabicLetters.indexOf(letter);
   }
 
-  /// فتح الحرف التالي إذا كانت النتيجة 100%
+  /// حفظ نتيجة اختبار الاستماع (بدون فتح الحرف التالي)
+  /// فتح الحرف التالي يتم فقط من revision_test_selection_view بعد إكمال جميع الاختبارات الثلاثة
   Future<void> _checkAndUnlockNextLetters() async {
     if (_progressService == null) return;
 
     // التحقق من أن الإجابات كلها صحيحة
     final isPerfectScore = _score == _testGroup.questions.length;
 
-    // إذا كان الاختبار منفصل، حفظ النتيجة للاستماع فقط
+    // إذا كان الاختبار منفصل (من شاشة اختيار الاختبارات)، حفظ النتيجة للاستماع فقط
+    // لا نفتح الحرف التالي هنا - هذا يتم في revision_test_selection_view
     if (widget.isStandalone && isPerfectScore) {
       await _progressService!.completeRevisionListening(widget.groupNumber);
+      // لا نفتح الحرف هنا! فقط نحفظ أن الاستماع تم
     }
 
-    if (isPerfectScore) {
+    // إذا كان الاختبار متكامل (ليس منفصل)، نفتح الحرف بعد إكمال الكتابة
+    if (!widget.isStandalone && isPerfectScore) {
       // Mark this revision as completed
       await _progressService!.completeRevision(widget.groupNumber);
 
@@ -627,7 +631,9 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                 const SizedBox(height: 16),
                 Text(
                   isPerfectScore
-                      ? 'إجابات مثالية! تم فتح الحرف التالي 🎉'
+                      ? (widget.isStandalone
+                            ? 'إجابات مثالية! تم إكمال اختبار الاستماع ✅'
+                            : 'إجابات مثالية! تم فتح الحرف التالي 🎉')
                       : isPassed
                       ? 'أحسنت! لقد أتقنت هذه المجموعة'
                       : 'استمر في التدريب لتحسين نتيجتك',
@@ -706,8 +712,10 @@ class _RevisionTestViewState extends State<RevisionTestView> {
 
                 const SizedBox(height: 24),
 
-                // Show unlocked letters if perfect score
-                if (isPerfectScore && widget.groupNumber < 6)
+                // Show unlocked letters if perfect score (only in integrated mode, not standalone)
+                if (isPerfectScore &&
+                    widget.groupNumber < 6 &&
+                    !widget.isStandalone)
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(

@@ -430,6 +430,97 @@ class UserProgressService {
     return getRevisionPronunciationCompleted().contains(groupNumber);
   }
 
+  /// Validates unlock status and corrects any inconsistencies
+  /// This fixes cases where letters were unlocked before completing all 3 revision tests
+  /// while preserving individual letter progression within groups
+  Future<void> validateAndCorrectUnlocks() async {
+    final correctedUnlocked = <int>{0}; // Letter 0 is always unlocked
+
+    // Determine the highest group that has all 3 revision tests completed
+    int highestCompletedRevisionGroup = -1;
+    for (int group = 0; group < 7; group++) {
+      final listeningDone = isRevisionListeningCompleted(group);
+      final writingDone = isRevisionWritingCompleted(group);
+      final pronunciationDone = isRevisionPronunciationCompleted(group);
+
+      if (listeningDone && writingDone && pronunciationDone) {
+        highestCompletedRevisionGroup = group;
+      } else {
+        break; // Groups must be completed in order
+      }
+    }
+
+    // Only letter 0 (ا) is unlocked at the start
+    // Other letters unlock through individual exercise completion or revision completion
+
+    // For each completed revision group, unlock all letters in that group + first of next
+    for (int group = 0; group <= highestCompletedRevisionGroup; group++) {
+      // Unlock all letters in this group
+      for (int i = group * 4; i < (group + 1) * 4 && i < 28; i++) {
+        correctedUnlocked.add(i);
+      }
+      // Unlock first letter of next group
+      final nextGroupFirstLetter = (group + 1) * 4;
+      if (nextGroupFirstLetter < 28) {
+        correctedUnlocked.add(nextGroupFirstLetter);
+      }
+    }
+
+    // Now check for individual letter progression within the current group
+    // If a letter's tracing+pronunciation is completed, the next letter should be unlocked
+    final completedActivities = getCompletedActivities();
+
+    for (int letterIndex = 0; letterIndex < 28; letterIndex++) {
+      // Check if this letter is in an accessible group (completed revision or group 0)
+      final letterGroup = letterIndex ~/ 4;
+      final isGroupAccessible =
+          letterGroup == 0 || letterGroup <= highestCompletedRevisionGroup + 1;
+
+      if (!isGroupAccessible) continue;
+
+      // Check if letter is unlocked and has completed both exercises
+      if (correctedUnlocked.contains(letterIndex)) {
+        final tracingDone = completedActivities.contains('${letterIndex}_0');
+        final pronunciationDone = completedActivities.contains(
+          '${letterIndex}_1',
+        );
+
+        if (tracingDone && pronunciationDone) {
+          // This letter is complete, unlock the next one if it's within the same or next accessible group
+          final nextLetterIndex = letterIndex + 1;
+          if (nextLetterIndex < 28) {
+            final nextLetterGroup = nextLetterIndex ~/ 4;
+            // Only unlock next letter if it's within the accessible range
+            if (nextLetterGroup <= highestCompletedRevisionGroup + 1 ||
+                nextLetterGroup == 0) {
+              correctedUnlocked.add(nextLetterIndex);
+            }
+          }
+        }
+      }
+    }
+
+    // Save the corrected unlocked letters
+    final sortedUnlocked = correctedUnlocked.toList()..sort();
+    await prefs.setStringList(
+      _keyUnlockedLetters,
+      sortedUnlocked.map((e) => e.toString()).toList(),
+    );
+
+    // Update progress bar based on COMPLETED letters, not unlocked
+    // A letter is complete when both tracing (activity 0) and pronunciation (activity 1) are done
+    int completedLetterCount = 0;
+    for (int i = 0; i < 28; i++) {
+      final tracingDone = completedActivities.contains('${i}_0');
+      final pronunciationDone = completedActivities.contains('${i}_1');
+      if (tracingDone && pronunciationDone) {
+        completedLetterCount++;
+      }
+    }
+    final progress = (completedLetterCount / 28) * 100;
+    await setLevel1Progress(progress);
+  }
+
   // إعداد المستويات بعد نجاح اختبار تحديد المستوى
   Future<void> setupLevelsAfterPlacementTest({required bool passed}) async {
     if (passed) {
@@ -475,6 +566,11 @@ class UserProgressService {
       await prefs.setStringList(_keyUnlockedLetters, ['0']);
       await prefs.setStringList(_keyCompletedActivities, []);
       await prefs.setStringList(_keyLevel1UnlockedLessons, ['0']);
+      // إعادة تعيين بيانات المراجعة أيضًا
+      await prefs.setStringList(_keyCompletedRevisions, []);
+      await prefs.setStringList(_keyRevisionListening, []);
+      await prefs.setStringList(_keyRevisionWriting, []);
+      await prefs.setStringList(_keyRevisionPronunciation, []);
     } else if (level == 2) {
       await prefs.setDouble(_keyLevel2Progress, 0.0);
       await prefs.setBool(_keyLevel2Completed, false);

@@ -23,7 +23,7 @@ const List<LetterName> letterNames = [
   LetterName(letter: 'د', name: 'دال', nameWithDiacritics: 'دَال'),
   LetterName(letter: 'ذ', name: 'ذال', nameWithDiacritics: 'ذَال'),
   LetterName(letter: 'ر', name: 'راء', nameWithDiacritics: 'رَاء'),
-  LetterName(letter: 'ز', name: 'زاي', nameWithDiacritics: 'زَاي'),
+  LetterName(letter: 'ز', name: 'زين', nameWithDiacritics: 'زَين'),
   LetterName(letter: 'س', name: 'سين', nameWithDiacritics: 'سِين'),
   LetterName(letter: 'ش', name: 'شين', nameWithDiacritics: 'شِين'),
   LetterName(letter: 'ص', name: 'صاد', nameWithDiacritics: 'صَاد'),

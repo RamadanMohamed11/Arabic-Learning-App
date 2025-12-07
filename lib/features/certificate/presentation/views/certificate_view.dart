@@ -289,7 +289,7 @@ class _DescriptionSection extends StatelessWidget {
             children: [
               TextSpan(text: 'تقديراً لتميزه في دروس تطبيق '),
               TextSpan(
-                text: 'الأمل',
+                text: 'البداية',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -361,7 +361,7 @@ class _SignatureArea extends StatelessWidget {
     return Column(
       children: const [
         SizedBox(height: 16),
-        SignatureBlock(name: 'فريق الأمل'),
+        SignatureBlock(name: 'فريق البداية'),
       ],
     );
   }

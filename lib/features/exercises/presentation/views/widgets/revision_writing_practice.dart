@@ -38,8 +38,7 @@ class _RevisionWritingPracticeState extends State<RevisionWritingPractice> {
         _currentLetterCompleted = false;
       });
     } else {
-      // All letters completed
-      Navigator.pop(context);
+      // All letters completed - onComplete callback handles navigation
       widget.onComplete();
     }
   }

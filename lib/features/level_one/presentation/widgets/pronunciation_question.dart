@@ -115,7 +115,42 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
       await _speechToText.listen(
         onResult: (result) {
           if (mounted) {
-            setState(() => _recognizedWords = result.recognizedWords);
+            String recognizedText = result.recognizedWords;
+            String currentLetter = widget.question.correctAnswer;
+            String normalized = recognizedText
+                .toLowerCase()
+                .trim()
+                .replaceAll(RegExp(r'[\u064b-\u065f]'), '')
+                .replaceAll('ة', 'ه')
+                .replaceAll(RegExp(r'[أإآ]'), 'ا');
+
+            // Convert speech misinterpretations to correct letter names
+            if (currentLetter == 'ت') {
+              if (normalized == 'كائن' ||
+                  normalized.contains('كائن') ||
+                  normalized == 'تائن' ||
+                  normalized.contains('تائن') ||
+                  normalized == 'تاءن' ||
+                  normalized.contains('تاءن')) {
+                recognizedText = 'تاء';
+              }
+            } else if (currentLetter == 'ب') {
+              if (normalized == 'بائن' ||
+                  normalized.contains('بائن') ||
+                  normalized == 'باءن' ||
+                  normalized.contains('باءن')) {
+                recognizedText = 'باء';
+              }
+            } else if (currentLetter == 'ث') {
+              if (normalized == 'ساء' ||
+                  normalized.contains('ساء') ||
+                  normalized == 'ثائن' ||
+                  normalized.contains('ثائن')) {
+                recognizedText = 'ثاء';
+              }
+            }
+
+            setState(() => _recognizedWords = recognizedText);
             if (result.finalResult) {
               _stopListening();
               _checkPronunciation();
@@ -184,6 +219,88 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
     if (cleanRecognized.contains(cleanTarget) ||
         cleanTarget.contains(cleanRecognized)) {
       return true;
+    }
+
+    // Synonym groups for commonly confused letters
+    final thSeGroup = {'ثاء', 'ساء'};
+    final zDhGroup = {'ذال', 'زال', 'زاي', 'زين'};
+
+    // Accept letter names with common speech recognition misinterpretations
+    // When saying تاءٍ (with tanween), speech engine often recognizes it as تائن, كائن, etc.
+    final taGroup = {'تاء', 'تا', 'ت', 'تائن', 'تاءن', 'كائن'};
+    final baGroup = {'باء', 'با', 'ب', 'بائن', 'باءن'};
+    final thaGroup = {'ثاء', 'ثا', 'ث', 'ثائن', 'ثاءن', 'ساء', 'سائن'};
+    final haGroup = {'هاء', 'ها', 'ه', 'هائن', 'هاءن'};
+    final yaGroup = {'ياء', 'يا', 'ي', 'يائن', 'ياءن'};
+    final raGroup = {'راء', 'را', 'ر', 'رائن', 'راءن'};
+    final zaGroup = {'زاي', 'زا', 'ز', 'زاين'};
+    final daGroup = {'دال', 'دا', 'د'};
+    final faGroup = {'فاء', 'فا', 'ف', 'فائن', 'فاءن'};
+    final waGroup = {'واو', 'وا', 'و'};
+    final jimGroup = {'جيم', 'ج'};
+    final haSmallGroup = {'حاء', 'حا', 'ح', 'حائن', 'حاءن'};
+    final khaGroup = {'خاء', 'خا', 'خ', 'خائن', 'خاءن'};
+
+    if (thSeGroup.contains(cleanTarget) &&
+        thSeGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (zDhGroup.contains(cleanTarget) && zDhGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (taGroup.contains(cleanTarget) && taGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (baGroup.contains(cleanTarget) && baGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (thaGroup.contains(cleanTarget) && thaGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (haGroup.contains(cleanTarget) && haGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (yaGroup.contains(cleanTarget) && yaGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (raGroup.contains(cleanTarget) && raGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (zaGroup.contains(cleanTarget) && zaGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (daGroup.contains(cleanTarget) && daGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (faGroup.contains(cleanTarget) && faGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (waGroup.contains(cleanTarget) && waGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (jimGroup.contains(cleanTarget) && jimGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (haSmallGroup.contains(cleanTarget) &&
+        haSmallGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (khaGroup.contains(cleanTarget) && khaGroup.contains(cleanRecognized)) {
+      return true;
+    }
+
+    // Special check: if first character matches and recognized ends with common misinterpretation patterns
+    if (cleanTarget.isNotEmpty && cleanRecognized.isNotEmpty) {
+      String targetFirstChar = cleanTarget[0];
+      String recognizedFirstChar = cleanRecognized[0];
+
+      if (targetFirstChar == recognizedFirstChar) {
+        if (cleanRecognized.endsWith('ائن') ||
+            cleanRecognized.endsWith('اءن') ||
+            cleanRecognized.endsWith('اين')) {
+          return true;
+        }
+      }
     }
 
     return false;

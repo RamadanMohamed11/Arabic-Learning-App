@@ -1,6 +1,7 @@
 import 'package:arabic_learning_app/core/utils/app_router.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
@@ -9,6 +10,12 @@ void main() async {
   // 🔥 DEV ONLY: Reset all data on app restart - Remove this line for production
   // final progressService = await UserProgressService.getInstance();
   // await progressService.resetAll();
+
+  // Lock orientation to portrait
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   runApp(const ArabicLearningApp());
 }

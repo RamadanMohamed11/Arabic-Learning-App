@@ -480,94 +480,113 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('🎯', style: TextStyle(fontSize: 80)),
-              const SizedBox(height: 24),
-              const Text(
-                'اختبار تحديد المستوى',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'سنقيم مستواك في اللغة العربية من خلال 10 أسئلة',
-                style: TextStyle(fontSize: 18, color: Colors.white70),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight:
+                      constraints.maxHeight - 48.0, // 48 = padding (24 * 2)
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildSkillItem('✍️', 'الكتابة', 'اسمع واكتب'),
+                    const Text('🎯', style: TextStyle(fontSize: 80)),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'اختبار تحديد المستوى',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 16),
-                    _buildSkillItem('🗣️', 'النطق', 'اقرأ وانطق'),
+                    const Text(
+                      'سنقيم مستواك في اللغة العربية من خلال 10 أسئلة',
+                      style: TextStyle(fontSize: 18, color: Colors.white70),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildSkillItem('✍️', 'الكتابة', 'اسمع واكتب'),
+                          const SizedBox(height: 16),
+                          _buildSkillItem('🗣️', 'النطق', 'اقرأ وانطق'),
+                          const SizedBox(height: 16),
+                          _buildSkillItem('👂', 'الاستماع', 'اسمع واختر'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: _startTest,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 48,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        'ابدأ الاختبار',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 16),
-                    _buildSkillItem('👂', 'الاستماع', 'اسمع واختر'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: _testTTS,
+                          child: const Text(
+                            'اختبار الصوت',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        TextButton.icon(
+                          onPressed: () {
+                            context.push(AppRouter.kAboutView);
+                          },
+                          icon: const Icon(
+                            Icons.info_outline,
+                            color: Colors.white70,
+                            size: 18,
+                          ),
+                          label: const Text(
+                            'حول التطبيق',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: _startTest,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 48,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text(
-                  'ابدأ الاختبار',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: _testTTS,
-                    child: const Text(
-                      'اختبار الصوت',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  TextButton.icon(
-                    onPressed: () {
-                      context.push(AppRouter.kAboutView);
-                    },
-                    icon: const Icon(
-                      Icons.info_outline,
-                      color: Colors.white70,
-                      size: 18,
-                    ),
-                    label: const Text(
-                      'حول التطبيق',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -952,94 +971,113 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(passed ? '🎉' : '💪', style: const TextStyle(fontSize: 100)),
-              const SizedBox(height: 24),
-              Text(
-                passed ? 'أحسنت!' : 'جيد!',
-                style: const TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'حصلت على $_score من ${_questions.length}',
-                style: const TextStyle(fontSize: 24, color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${percentage.toStringAsFixed(0)}%',
-                style: const TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 40),
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight:
+                      constraints.maxHeight - 48.0, // 48 = padding (24 * 2)
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'مستواك:',
-                      style: TextStyle(fontSize: 20, color: Colors.white70),
-                    ),
-                    const SizedBox(height: 8),
                     Text(
-                      passed ? 'المستوى الثاني' : 'المستوى الأول',
+                      passed ? '🎉' : '💪',
+                      style: const TextStyle(fontSize: 100),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      passed ? 'أحسنت!' : 'جيد!',
                       style: const TextStyle(
-                        fontSize: 32,
+                        fontSize: 40,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      passed
-                          ? 'يمكنك البدء من المستوى الثاني مباشرة!'
-                          : 'سنبدأ معك من الأساسيات',
+                      'حصلت على $_score من ${_questions.length}',
+                      style: const TextStyle(fontSize: 24, color: Colors.white),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${percentage.toStringAsFixed(0)}%',
                       style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'مستواك:',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white70,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            passed ? 'المستوى الثاني' : 'المستوى الأول',
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            passed
+                                ? 'يمكنك البدء من المستوى الثاني مباشرة!'
+                                : 'سنبدأ معك من الأساسيات',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.white70,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: _goToLevels,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: passed
+                            ? AppColors.success
+                            : AppColors.secondary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 48,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        'ابدأ التعلم',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: _goToLevels,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: passed
-                      ? AppColors.success
-                      : AppColors.secondary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 48,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text(
-                  'ابدأ التعلم',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

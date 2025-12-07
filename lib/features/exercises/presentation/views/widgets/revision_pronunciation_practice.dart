@@ -34,6 +34,7 @@ class _RevisionPronunciationPracticeState
   bool _isSpeaking = false;
   int _currentLetterIndex = 0;
   bool _currentLetterCompleted = false;
+  bool _hasSpokenCorrection = false; // Track if correction TTS has been spoken
 
   List<LetterName?> _letterNames = [];
   List<bool> _completedLetters = [];
@@ -60,9 +61,10 @@ class _RevisionPronunciationPracticeState
                 _feedbackColor = Colors.blue;
               }
             });
-            // Speak the correct letter name
+            // Speak the correct letter name (only once)
             final letterName = _letterNames[_currentLetterIndex];
-            if (letterName != null) {
+            if (letterName != null && !_hasSpokenCorrection) {
+              _hasSpokenCorrection = true;
               Future.delayed(const Duration(milliseconds: 500), () {
                 _speak(letterName.nameWithDiacritics);
               });
@@ -78,10 +80,11 @@ class _RevisionPronunciationPracticeState
                 _feedbackColor = Colors.blue;
               }
             });
-            // Speak the correct letter name
-            if (_recognizedWords.isEmpty) {
+            // Speak the correct letter name (only once)
+            if (_recognizedWords.isEmpty && !_hasSpokenCorrection) {
               final letterName = _letterNames[_currentLetterIndex];
               if (letterName != null) {
+                _hasSpokenCorrection = true;
                 Future.delayed(const Duration(milliseconds: 500), () {
                   _speak(letterName.nameWithDiacritics);
                 });
@@ -134,6 +137,7 @@ class _RevisionPronunciationPracticeState
         _recognizedWords = '';
         _feedbackMessage = '...جارٍ الاستماع';
         _feedbackColor = Colors.blue;
+        _hasSpokenCorrection = false; // Reset flag for new attempt
       });
 
       await _speechToText.listen(
@@ -149,9 +153,10 @@ class _RevisionPronunciationPracticeState
           _feedbackMessage = 'استمع للنطق الصحيح 🔊';
           _feedbackColor = Colors.blue;
         });
-        // Speak the correct letter name
+        // Speak the correct letter name (only once)
         final letterName = _letterNames[_currentLetterIndex];
-        if (letterName != null) {
+        if (letterName != null && !_hasSpokenCorrection) {
+          _hasSpokenCorrection = true;
           Future.delayed(const Duration(milliseconds: 500), () {
             _speak(letterName.nameWithDiacritics);
           });
@@ -174,7 +179,14 @@ class _RevisionPronunciationPracticeState
         // Special case handling for commonly confused letters
         if (currentLetter == 'ث') {
           String normalized = _normalizeWord(originalRecognized);
-          if (normalized == 'ساء' || normalized.contains('ساء')) {
+          if (normalized == 'ساء' ||
+              normalized.contains('ساء') ||
+              normalized == 'ثائن' ||
+              normalized.contains('ثائن') ||
+              normalized == 'ثاءن' ||
+              normalized.contains('ثاءن') ||
+              normalized == 'سائن' ||
+              normalized.contains('سائن')) {
             _recognizedWords = 'ثاء';
           } else {
             _recognizedWords = originalRecognized;
@@ -207,6 +219,30 @@ class _RevisionPronunciationPracticeState
             _recognizedWords = 'زاي';
           } else if (normalized == 'زين' || normalized.contains('زين')) {
             _recognizedWords = 'زاي';
+          } else {
+            _recognizedWords = originalRecognized;
+          }
+        } else if (currentLetter == 'ت') {
+          // If user says تاء but speech engine recognizes as كائن, تائن, etc., display تاء
+          String normalized = _normalizeWord(originalRecognized);
+          if (normalized == 'كائن' ||
+              normalized.contains('كائن') ||
+              normalized == 'تائن' ||
+              normalized.contains('تائن') ||
+              normalized == 'تاءن' ||
+              normalized.contains('تاءن')) {
+            _recognizedWords = 'تاء';
+          } else {
+            _recognizedWords = originalRecognized;
+          }
+        } else if (currentLetter == 'ب') {
+          // If user says باء but speech engine recognizes as بائن, etc., display باء
+          String normalized = _normalizeWord(originalRecognized);
+          if (normalized == 'بائن' ||
+              normalized.contains('بائن') ||
+              normalized == 'باءن' ||
+              normalized.contains('باءن')) {
+            _recognizedWords = 'باء';
           } else {
             _recognizedWords = originalRecognized;
           }
@@ -248,9 +284,13 @@ class _RevisionPronunciationPracticeState
         _feedbackColor = Colors.red;
       });
 
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _speak(letterName.nameWithDiacritics);
-      });
+      // Speak the correct letter name (only once)
+      if (!_hasSpokenCorrection) {
+        _hasSpokenCorrection = true;
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _speak(letterName.nameWithDiacritics);
+        });
+      }
     }
   }
 
@@ -265,8 +305,25 @@ class _RevisionPronunciationPracticeState
       return true;
     }
 
+    // Synonym groups for commonly confused letters
     final thSeGroup = {'ثاء', 'ساء'};
     final zDhGroup = {'ذال', 'زال', 'زاي', 'زين'};
+
+    // Accept letter names with common speech recognition misinterpretations
+    // When saying تاءٍ (with tanween), speech engine often recognizes it as تائن, كائن, etc.
+    final taGroup = {'تاء', 'تا', 'ت', 'تائن', 'تاءن', 'كائن'};
+    final baGroup = {'باء', 'با', 'ب', 'بائن', 'باءن'};
+    final thaGroup = {'ثاء', 'ثا', 'ث', 'ثائن', 'ثاءن', 'ساء', 'سائن'};
+    final haGroup = {'هاء', 'ها', 'ه', 'هائن', 'هاءن'};
+    final yaGroup = {'ياء', 'يا', 'ي', 'يائن', 'ياءن'};
+    final raGroup = {'راء', 'را', 'ر', 'رائن', 'راءن'};
+    final zaGroup = {'زاي', 'زا', 'ز', 'زاين'};
+    final daGroup = {'دال', 'دا', 'د'};
+    final faGroup = {'فاء', 'فا', 'ف', 'فائن', 'فاءن'};
+    final waGroup = {'واو', 'وا', 'و'};
+    final jimGroup = {'جيم', 'ج'};
+    final haSmallGroup = {'حاء', 'حا', 'ح', 'حائن', 'حاءن'};
+    final khaGroup = {'خاء', 'خا', 'خ', 'خائن', 'خاءن'};
 
     if (thSeGroup.contains(cleanTarget) &&
         thSeGroup.contains(cleanRecognized)) {
@@ -274,6 +331,60 @@ class _RevisionPronunciationPracticeState
     }
     if (zDhGroup.contains(cleanTarget) && zDhGroup.contains(cleanRecognized)) {
       return true;
+    }
+    if (taGroup.contains(cleanTarget) && taGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (baGroup.contains(cleanTarget) && baGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (thaGroup.contains(cleanTarget) && thaGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (haGroup.contains(cleanTarget) && haGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (yaGroup.contains(cleanTarget) && yaGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (raGroup.contains(cleanTarget) && raGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (zaGroup.contains(cleanTarget) && zaGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (daGroup.contains(cleanTarget) && daGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (faGroup.contains(cleanTarget) && faGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (waGroup.contains(cleanTarget) && waGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (jimGroup.contains(cleanTarget) && jimGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (haSmallGroup.contains(cleanTarget) &&
+        haSmallGroup.contains(cleanRecognized)) {
+      return true;
+    }
+    if (khaGroup.contains(cleanTarget) && khaGroup.contains(cleanRecognized)) {
+      return true;
+    }
+
+    // Special check: if first character matches and recognized ends with common misinterpretation patterns
+    if (cleanTarget.isNotEmpty && cleanRecognized.isNotEmpty) {
+      String targetFirstChar = cleanTarget[0];
+      String recognizedFirstChar = cleanRecognized[0];
+
+      if (targetFirstChar == recognizedFirstChar) {
+        if (cleanRecognized.endsWith('ائن') ||
+            cleanRecognized.endsWith('اءن') ||
+            cleanRecognized.endsWith('اين')) {
+          return true;
+        }
+      }
     }
 
     return false;
@@ -309,8 +420,7 @@ class _RevisionPronunciationPracticeState
         _feedbackColor = Colors.grey;
       });
     } else {
-      // All letters completed
-      Navigator.pop(context);
+      // All letters completed - onComplete callback handles navigation
       widget.onComplete();
     }
   }
