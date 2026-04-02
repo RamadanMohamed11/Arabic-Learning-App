@@ -9,12 +9,18 @@ import 'package:arabic_learning_app/features/about/presentation/views/app_info_v
 import 'package:arabic_learning_app/features/about/presentation/views/contact_us_view.dart';
 import 'package:arabic_learning_app/features/welcome/presentation/views/welcome_screen_view.dart';
 import 'package:arabic_learning_app/features/certificate/presentation/views/certificate_view.dart';
+import 'package:arabic_learning_app/features/home/presentation/views/home_subject_selection_view.dart';
+import 'package:arabic_learning_app/features/math/presentation/views/math_view.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/core/utils/page_transitions.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 abstract class AppRouter {
-  static const String kWelcomeScreenView = '/';
+  static const String kHomeSubjectSelectionView = '/';
+  static const String kMathView = '/math';
+  static const String kArabicStartRoute = '/arabic_start';
+  static const String kWelcomeScreenView = '/welcome';
   static const String kPlacementTestView = '/placement_test';
   static const String kLevelsSelectionView = '/levels_selection';
   static const String kAlphabetView = '/alphabet_view';
@@ -27,33 +33,64 @@ abstract class AppRouter {
   static const String kCertificateView = '/certificate_view';
 
   static final GoRouter routes = GoRouter(
-    initialLocation: kWelcomeScreenView,
+    initialLocation: kHomeSubjectSelectionView,
     redirect: (context, state) async {
       final progressService = await UserProgressService.getInstance();
 
-      // إذا لم يشاهد شاشة الترحيب بعد، اذهب لها
+      if (state.matchedLocation == kHomeSubjectSelectionView ||
+          state.matchedLocation == kMathView) {
+        return null;
+      }
+
+      if (state.matchedLocation == kArabicStartRoute) {
+        if (!progressService.hasSeenWelcomeScreen()) {
+          return kWelcomeScreenView;
+        }
+        if (progressService.isFirstTime()) {
+          return kPlacementTestView;
+        }
+        return kLevelsSelectionView;
+      }
+
+      if (state.matchedLocation == kWelcomeScreenView) {
+        if (progressService.hasSeenWelcomeScreen() && progressService.isFirstTime()) {
+          return kPlacementTestView;
+        }
+        if (!progressService.isFirstTime()) {
+          return kLevelsSelectionView;
+        }
+      }
+
+      if (state.matchedLocation == kPlacementTestView && !progressService.isFirstTime()) {
+        return kLevelsSelectionView;
+      }
+
       if (!progressService.hasSeenWelcomeScreen() &&
           state.matchedLocation != kWelcomeScreenView) {
         return kWelcomeScreenView;
       }
 
-      // إذا شاهد شاشة الترحيب وفي أول مرة، اذهب لاختبار تحديد المستوى
-      if (progressService.hasSeenWelcomeScreen() &&
-          progressService.isFirstTime() &&
-          state.matchedLocation == kWelcomeScreenView) {
-        return kPlacementTestView;
-      }
-
-      // إذا لم تكن أول مرة وفي صفحة الترحيب أو الاختبار، اذهب للمستويات
-      if (!progressService.isFirstTime() &&
-          (state.matchedLocation == kWelcomeScreenView ||
-              state.matchedLocation == kPlacementTestView)) {
-        return kLevelsSelectionView;
-      }
-
       return null;
     },
     routes: [
+      GoRoute(
+        path: kHomeSubjectSelectionView,
+        pageBuilder: (context, state) => PageTransitions.fadeScale(
+          child: const HomeSubjectSelectionView(),
+          state: state,
+        ),
+      ),
+      GoRoute(
+        path: kArabicStartRoute,
+        builder: (context, state) => const Scaffold(), // Redirected automatically
+      ),
+      GoRoute(
+        path: kMathView,
+        pageBuilder: (context, state) => PageTransitions.fadeScale(
+          child: const MathView(),
+          state: state,
+        ),
+      ),
       GoRoute(
         path: kWelcomeScreenView,
         pageBuilder: (context, state) => PageTransitions.fadeScale(

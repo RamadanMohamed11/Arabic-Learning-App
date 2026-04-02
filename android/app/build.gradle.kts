@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,10 +8,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.ramadan.arabic_learning_app"
     compileSdk = 36  // Required by plugins (audioplayers, path_provider, shared_preferences, speech_to_text)
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -23,8 +32,8 @@ android {
         applicationId = "com.ramadan.arabic_learning_app"
         minSdk = flutter.minSdkVersion  // Android 5.0 - covers 99%+ of devices
         targetSdk = 36  // Match compileSdk for plugin compatibility
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
         
         // Enable multidex for better compatibility
         multiDexEnabled = true
@@ -36,17 +45,26 @@ android {
         // Flutter handles architecture splitting automatically
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            storeFile = keystoreProperties.getProperty("storeFile")?.let { file(it) }
+            storePassword = keystoreProperties.getProperty("storePassword")
+        }
+    }
+
     buildTypes {
         release {
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Signing with the release keys
+            signingConfig = signingConfigs.getByName("release")
             
-            // Disable minify and shrinking for better compatibility
-            isMinifyEnabled = false
-            isShrinkResources = false
+            // Enable minify and shrinking for optimization and smaller size (R8/Proguard)
+            isMinifyEnabled = true
+            isShrinkResources = true
             isDebuggable = false
             
-            // Proguard rules for better compatibility
+            // Proguard rules for better compatibility and obfuscation mapping
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

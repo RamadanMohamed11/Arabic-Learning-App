@@ -1,0 +1,282 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
+import 'package:arabic_learning_app/core/utils/app_router.dart';
+import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/services/math_progress_service.dart';
+import 'package:arabic_learning_app/features/math/data/math_data.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
+import 'math_level_numbers_view.dart';
+
+class MathView extends StatefulWidget {
+  const MathView({super.key});
+
+  @override
+  State<MathView> createState() => _MathViewState();
+}
+
+class _MathViewState extends State<MathView> {
+  MathProgressService? _progressService;
+  bool _isLoading = true;
+  final FlutterTts _flutterTts = FlutterTts();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    _progressService = await MathProgressService.getInstance();
+    if (_isLoading) {
+      _initTts();
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _initTts() async {
+    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await _flutterTts.speak(
+        'أهلاً بك في الرياضيات! اختر المستوى الذي تريد تعلمه',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop();
+    super.dispose();
+  }
+
+  bool _isLevelUnlocked(int level) {
+    if (_progressService == null) return false;
+    if (level == 1) return _progressService!.isLevel1Unlocked();
+    if (level == 2) return _progressService!.isLevel2Unlocked();
+    if (level == 3) return _progressService!.isLevel3Unlocked();
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color(0xFFE0F7FA), // Light cyan
+              Color(0xFFB2EBF2),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                  children: [
+                    _buildHeader(context),
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: constraints.maxHeight,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  for (var item in mathLevels) ...[
+                                    _buildLevelCard(
+                                      context,
+                                      title: item.title,
+                                      description: item.description,
+                                      colors: item.level == 1
+                                          ? AppColors.level1
+                                          : item.level == 2
+                                          ? AppColors.level2
+                                          : AppColors.primaryGradient,
+                                      isUnlocked: _isLevelUnlocked(item.level),
+                                      icon: item.level == 1
+                                          ? Icons.looks_one
+                                          : item.level == 2
+                                          ? Icons.looks_two
+                                          : Icons.looks_3,
+                                      onTap: () async {
+                                        await Navigator.push(
+                                          context,
+                                          AnimatedRoute.fadeScale(
+                                            MathLevelNumbersView(level: item),
+                                          ),
+                                        );
+                                        _loadProgress();
+                                      },
+                                    ),
+                                    const SizedBox(height: 24),
+                                  ],
+                                  const SizedBox(height: 40),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            onPressed: () {
+              context.go(AppRouter.kHomeSubjectSelectionView);
+            },
+            icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          ),
+          const Text(
+            'اختر المستوى',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(width: 48), // Balance for centering
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLevelCard(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required List<Color> colors,
+    required bool isUnlocked,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: isUnlocked ? onTap : null,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 24),
+        constraints: const BoxConstraints(minHeight: 160),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isUnlocked
+                ? colors
+                : [Colors.grey.shade400, Colors.grey.shade600],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: isUnlocked
+                  ? colors[0].withOpacity(0.4)
+                  : Colors.grey.withOpacity(0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Floating background icon
+            Positioned(
+              right: -20,
+              bottom: -20,
+              child: Icon(
+                icon,
+                size: 150,
+                color: Colors.white.withOpacity(0.15),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isUnlocked ? icon : Icons.lock,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isUnlocked)
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
