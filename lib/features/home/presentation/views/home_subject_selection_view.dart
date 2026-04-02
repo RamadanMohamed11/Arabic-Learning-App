@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
 
 class HomeSubjectSelectionView extends StatefulWidget {
@@ -17,30 +16,31 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  final FlutterTts _flutterTts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1000));
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
     );
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     _controller.forward();
     _initTts();
   }
 
   Future<void> _initTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
     // Small delay to let the screen animate in first
     await Future.delayed(const Duration(milliseconds: 600));
     if (mounted) {
-      await _flutterTts.speak(
+      await AppTtsService.instance.speak(
         'ماذا تريد أن تتعلم اليوم؟ اختر اللغة العربية أو الرياضيات',
       );
     }
@@ -48,7 +48,6 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
 
   @override
   void dispose() {
-    _flutterTts.stop();
     _controller.dispose();
     super.dispose();
   }
@@ -63,8 +62,10 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
           child: SlideTransition(
             position: _slideAnimation,
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -82,10 +83,7 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
                   const Text(
                     'اختر المادة التعليمية لتبدأ رحلتك',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black54,
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.black54),
                   ),
                   const SizedBox(height: 48),
                   Expanded(
@@ -98,7 +96,7 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
                           iconString: 'أ ب ت',
                           gradientColors: const [
                             Color(0xFF6BA3D8),
-                            Color(0xFFA78BFA)
+                            Color(0xFFA78BFA),
                           ],
                           onTap: () {
                             context.push(AppRouter.kArabicStartRoute);
@@ -111,7 +109,7 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
                           iconString: '1 + 2',
                           gradientColors: const [
                             Color(0xFF38B2AC),
-                            Color(0xFF3182CE)
+                            Color(0xFF3182CE),
                           ],
                           onTap: () {
                             context.push(AppRouter.kMathView);
@@ -166,8 +164,10 @@ class _SubjectCard extends StatelessWidget {
           splashColor: Colors.white.withOpacity(0.3),
           highlightColor: Colors.white.withOpacity(0.1),
           child: Ink(
-            padding:
-                const EdgeInsets.symmetric(vertical: 40.0, horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 40.0,
+              horizontal: 24.0,
+            ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,

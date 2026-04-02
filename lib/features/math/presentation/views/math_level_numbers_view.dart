@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/services/math_progress_service.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_level_model.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
-import 'math_number_activities_view.dart';
+import 'svg_number_tracing_view.dart';
 
 class MathLevelNumbersView extends StatefulWidget {
   final MathLevelModel level;
@@ -18,7 +17,6 @@ class MathLevelNumbersView extends StatefulWidget {
 
 class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
   MathProgressService? _progressService;
-  final FlutterTts _flutterTts = FlutterTts();
   bool _ttsInitialized = false;
 
   @override
@@ -37,10 +35,9 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
   }
 
   Future<void> _initTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
     await Future.delayed(const Duration(milliseconds: 400));
     if (mounted) {
-      await _flutterTts.speak(
+      await AppTtsService.instance.speak(
         '${widget.level.title}. اختر الرقم الذي تريد تعلمه',
       );
     }
@@ -48,7 +45,6 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
 
   @override
   void dispose() {
-    _flutterTts.stop();
     super.dispose();
   }
 
@@ -212,13 +208,20 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
     bool isUnlocked,
     List<Color> colors,
   ) {
+    final isCompleted =
+        _progressService?.isNumberCompleted(
+          widget.level.level,
+          numberModel.number,
+        ) ??
+        false;
+
     return GestureDetector(
       onTap: isUnlocked
           ? () async {
               await Navigator.push(
                 context,
                 AnimatedRoute.slideRight(
-                  MathNumberActivitiesView(
+                  SvgNumberTracingView(
                     numberModel: numberModel,
                     levelModel: widget.level,
                   ),
@@ -227,52 +230,76 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
               _loadProgress();
             }
           : null,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isUnlocked
-                ? colors
-                : [Colors.grey.shade300, Colors.grey.shade400],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: isUnlocked
-                  ? colors[0].withOpacity(0.3)
-                  : Colors.grey.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isUnlocked
+                    ? (isCompleted
+                        ? [Colors.green.shade400, Colors.green.shade600]
+                        : colors)
+                    : [Colors.grey.shade300, Colors.grey.shade400],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: isUnlocked
+                      ? colors[0].withOpacity(0.3)
+                      : Colors.grey.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isUnlocked) ...[
-              Text(
-                numberModel.label,
-                style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isUnlocked) ...[
+                  Text(
+                    numberModel.label,
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ] else ...[
+                  const Icon(Icons.lock, size: 30, color: Colors.white70),
+                  const SizedBox(height: 4),
+                  Text(
+                    numberModel.label,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (isCompleted)
+            Positioned(
+              top: 4,
+              left: 4,
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: const BoxDecoration(
                   color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 18,
                 ),
               ),
-            ] else ...[
-              const Icon(Icons.lock, size: 30, color: Colors.white70),
-              const SizedBox(height: 4),
-              Text(
-                numberModel.label,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.5),
-                ),
-              ),
-            ],
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

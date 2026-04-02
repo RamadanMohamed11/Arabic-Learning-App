@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/level_one/presentation/views/level_one_view.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/level_two_view.dart';
@@ -26,7 +25,6 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
   double _level2Progress = 0.0;
   bool _level1FinalTestCompleted = false;
   bool _level2FinalTestCompleted = false;
-  final FlutterTts _flutterTts = FlutterTts();
   bool _ttsInitialized = false;
 
   @override
@@ -54,16 +52,16 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
   }
 
   Future<void> _initTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
     await Future.delayed(const Duration(milliseconds: 500));
     if (mounted) {
-      await _flutterTts.speak('اختر المستوى الذي تريد تعلمه في اللغة العربية');
+      await AppTtsService.instance.speak(
+        'اختر المستوى الذي تريد تعلمه في اللغة العربية',
+      );
     }
   }
 
   @override
   void dispose() {
-    _flutterTts.stop();
     super.dispose();
   }
 

@@ -1,8 +1,7 @@
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -18,12 +17,10 @@ class WelcomeScreenView extends StatefulWidget {
 class _WelcomeScreenViewState extends State<WelcomeScreenView>
     with SingleTickerProviderStateMixin {
   final TextEditingController _nameController = TextEditingController();
-  final FlutterTts _flutterTts = FlutterTts();
   final SpeechToText _speechToText = SpeechToText();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  bool _showNameInput = false;
   bool _isLoading = false;
   bool _speechEnabled = false;
   bool _isListening = false;
@@ -38,8 +35,15 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
   void initState() {
     super.initState();
     _initAnimation();
-    _initTts();
     _initSpeechToText();
+    _greetUser();
+  }
+
+  Future<void> _greetUser() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      AppTtsService.instance.speak('مَا اسْمُكَ؟');
+    }
   }
 
   void _initAnimation() {
@@ -58,10 +62,6 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
         );
 
     _animationController.forward();
-  }
-
-  Future<void> _initTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.35, pitch: 1.1);
   }
 
   Future<void> _initSpeechToText() async {
@@ -97,7 +97,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
       if (!_speechEnabled) return;
     }
     await _speechToText.stop();
-    await _flutterTts.stop();
+    await AppTtsService.instance.stop();
     setState(() {
       _speechErrorMessage = null;
       _isListening = true;
@@ -130,22 +130,17 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
     });
     if (result.finalResult) {
       _stopListening();
-      _flutterTts.speak('تم تسجيل اسمك $recognized');
+      AppTtsService.instance.speak('تم تسجيل اسمك $recognized');
     }
   }
 
-  void _onStartJourney() {
-    setState(() {
-      _showNameInput = true;
-    });
-    _flutterTts.speak('مَا اسْمُكَ؟');
-  }
+
 
   Future<void> _onContinue() async {
     final name = _nameController.text.trim();
 
     if (name.isEmpty) {
-      _flutterTts.speak('مِنْ فَضْلِكَ أَدْخِلْ اسْمَكَ');
+      AppTtsService.instance.speak('مِنْ فَضْلِكَ أَدْخِلْ اسْمَكَ');
       return;
     }
 
@@ -164,14 +159,14 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
     await progressService.saveUserName(name);
 
     // تشغيل صوت ترحيب شخصي
-    await _flutterTts.speak('أَهْلاً $name، سَعِيدٌ بِلِقَائِكَ');
+    await AppTtsService.instance.speak('أَهْلاً $name، سَعِيدٌ بِلِقَائِكَ');
 
     // انتظار كافي حتى ينتهي الصوت (حوالي 3-4 ثواني للجملة)
-    await Future.delayed(const Duration(milliseconds: 4000));
+    await Future.delayed(const Duration(milliseconds: 3500));
 
     if (mounted) {
-      // الانتقال إلى اختبار تحديد المستوى
-      context.go(AppRouter.kPlacementTestView);
+      // الانتقال إلى الشاشة الرئيسية لاختيار المادة
+      context.go(AppRouter.kHomeSubjectSelectionView);
     }
   }
 
@@ -179,7 +174,6 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
   void dispose() {
     _nameController.dispose();
     _animationController.dispose();
-    _flutterTts.stop();
     _speechToText.stop();
     _speechToText.cancel();
     super.dispose();
@@ -226,11 +220,8 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
 
                         const SizedBox(height: 48),
 
-                        // زر البدء أو إدخال الاسم
-                        if (!_showNameInput)
-                          _buildStartButton()
-                        else
-                          _buildNameInput(),
+                        // إدخال الاسم مباشر
+                        _buildNameInput(),
                       ],
                     ),
                   ),
@@ -303,7 +294,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
         ),
         const SizedBox(height: 24),
         Text(
-          'رِحْلَةٌ مُمْتِعَةٌ لِتَعَلُّمِ اللُّغَةِ العَرَبِيَّةِ',
+          'رِحْلَةٌ مُمْتِعَةٌ فِي عَالَمِ الْحُرُوفِ وَالأَرْقَامِ',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 18,
@@ -315,73 +306,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
     );
   }
 
-  Widget _buildStartButton() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [_softPrimary, _softSecondary],
-        ),
-        boxShadow: [
-          // تأثير توهج خارجي قوي
-          BoxShadow(
-            color: _softPrimary.withOpacity(0.6),
-            blurRadius: 30,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: _softSecondary.withOpacity(0.5),
-            blurRadius: 40,
-            spreadRadius: 0,
-            offset: const Offset(0, 12),
-          ),
-          // ظل إضافي للعمق
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _onStartJourney,
-          borderRadius: BorderRadius.circular(20),
-          splashColor: Colors.white.withOpacity(0.3),
-          highlightColor: Colors.white.withOpacity(0.1),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'ابْدَأْ رِحْلَتَكَ الآنَ',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withOpacity(0.3),
-                        offset: const Offset(0, 2),
-                        blurRadius: 4,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Icon(Icons.arrow_forward, color: Colors.white, size: 28),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildNameInput() {
     return Column(
@@ -412,6 +337,14 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
                   color: _softText,
                 ),
               ),
+              const SizedBox(height: 8),
+              Text(
+                'سَنُخَصِّصُ رِحْلَتَكَ التَّعْلِيمِيَّةَ بِاسْمِكَ',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: _softText.withOpacity(0.7),
+                ),
+              ),
             ],
           ),
         ),
@@ -433,8 +366,6 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
           ),
           child: TextField(
             controller: _nameController,
-            readOnly: true,
-            enableInteractiveSelection: false,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 24,
@@ -442,7 +373,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
               color: _softText,
             ),
             decoration: InputDecoration(
-              hintText: 'اضغط على الميكروفون وقل اسمك',
+              hintText: 'أدخل اسمك أو استخدم الميكروفون',
               hintStyle: TextStyle(
                 fontSize: 20,
                 color: _softText.withOpacity(0.3),

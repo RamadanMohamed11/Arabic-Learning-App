@@ -37,37 +37,33 @@ abstract class AppRouter {
     redirect: (context, state) async {
       final progressService = await UserProgressService.getInstance();
 
+      // Enforce welcome screen (name collection) for all new users globally
+      if (!progressService.hasSeenWelcomeScreen() &&
+          state.matchedLocation != kWelcomeScreenView) {
+        return kWelcomeScreenView;
+      }
+
+      if (state.matchedLocation == kWelcomeScreenView) {
+        if (progressService.hasSeenWelcomeScreen()) {
+          return kHomeSubjectSelectionView;
+        }
+      }
+
       if (state.matchedLocation == kHomeSubjectSelectionView ||
           state.matchedLocation == kMathView) {
         return null;
       }
 
       if (state.matchedLocation == kArabicStartRoute) {
-        if (!progressService.hasSeenWelcomeScreen()) {
-          return kWelcomeScreenView;
-        }
         if (progressService.isFirstTime()) {
           return kPlacementTestView;
         }
         return kLevelsSelectionView;
       }
 
-      if (state.matchedLocation == kWelcomeScreenView) {
-        if (progressService.hasSeenWelcomeScreen() && progressService.isFirstTime()) {
-          return kPlacementTestView;
-        }
-        if (!progressService.isFirstTime()) {
-          return kLevelsSelectionView;
-        }
-      }
-
-      if (state.matchedLocation == kPlacementTestView && !progressService.isFirstTime()) {
+      if (state.matchedLocation == kPlacementTestView &&
+          !progressService.isFirstTime()) {
         return kLevelsSelectionView;
-      }
-
-      if (!progressService.hasSeenWelcomeScreen() &&
-          state.matchedLocation != kWelcomeScreenView) {
-        return kWelcomeScreenView;
       }
 
       return null;
@@ -82,14 +78,13 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kArabicStartRoute,
-        builder: (context, state) => const Scaffold(), // Redirected automatically
+        builder: (context, state) =>
+            const Scaffold(), // Redirected automatically
       ),
       GoRoute(
         path: kMathView,
-        pageBuilder: (context, state) => PageTransitions.fadeScale(
-          child: const MathView(),
-          state: state,
-        ),
+        pageBuilder: (context, state) =>
+            PageTransitions.fadeScale(child: const MathView(), state: state),
       ),
       GoRoute(
         path: kWelcomeScreenView,

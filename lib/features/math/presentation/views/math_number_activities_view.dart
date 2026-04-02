@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/services/math_progress_service.dart';
+import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_number_model.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_level_model.dart';
+import 'package:arabic_learning_app/features/math/presentation/views/svg_number_tracing_view.dart';
 
 class MathNumberActivitiesView extends StatefulWidget {
   final MathNumberModel numberModel;
@@ -24,18 +25,38 @@ class MathNumberActivitiesView extends StatefulWidget {
 class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
   MathProgressService? _progressService;
   bool _isLoading = true;
-  final FlutterTts _flutterTts = FlutterTts();
 
+  /// Activity definitions.
+  /// id 1 (التتبع) is the only implemented activity so far (SVG tracing).
   final List<Map<String, dynamic>> _activities = [
-    {'id': 0, 'title': 'التعلم', 'icon': Icons.menu_book, 'color': Colors.blue},
-    {'id': 1, 'title': 'التتبع', 'icon': Icons.edit, 'color': Colors.purple},
+    {
+      'id': 0,
+      'title': 'التعلم',
+      'icon': Icons.menu_book,
+      'color': Colors.blue,
+      'implemented': false,
+    },
+    {
+      'id': 1,
+      'title': 'التتبع',
+      'icon': Icons.edit,
+      'color': Colors.purple,
+      'implemented': true,
+    },
     {
       'id': 2,
       'title': 'الاستماع',
       'icon': Icons.headset,
       'color': Colors.orange,
+      'implemented': false,
     },
-    {'id': 3, 'title': 'العد', 'icon': Icons.calculate, 'color': Colors.green},
+    {
+      'id': 3,
+      'title': 'العد',
+      'icon': Icons.calculate,
+      'color': Colors.green,
+      'implemented': false,
+    },
   ];
 
   @override
@@ -49,16 +70,17 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
     if (_isLoading) {
       _initTts();
     }
-    setState(() {
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _initTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
     await Future.delayed(const Duration(milliseconds: 400));
     if (mounted) {
-      await _flutterTts.speak(
+      await AppTtsService.instance.speak(
         'الرقم ${widget.numberModel.label}. أكمل جميع الأنشطة للانتقال للرقم التالي',
       );
     }
@@ -66,53 +88,43 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
 
   @override
   void dispose() {
-    _flutterTts.stop();
     super.dispose();
   }
 
-  Future<void> _completeActivity(int activityId) async {
-    if (_progressService == null) return;
+  /// Navigate to the appropriate activity screen
+  Future<void> _openActivity(Map<String, dynamic> activity) async {
+    final activityId = activity['id'] as int;
 
-    await _progressService!.completeActivity(
-      widget.levelModel.level,
-      widget.numberModel.number,
-      activityId,
-    );
-
-    // Check if all activities for this number are completed
-    if (_progressService!.isNumberCompleted(
-      widget.levelModel.level,
-      widget.numberModel.number,
-      totalActivities: 4,
-    )) {
-      _unlockNextNumber();
-    }
-
-    _loadProgress();
-  }
-
-  Future<void> _unlockNextNumber() async {
-    // Find the current index of this number in the level
-    final currentIdx = widget.levelModel.numbers.indexWhere(
-      (n) => n.number == widget.numberModel.number,
-    );
-
-    if (currentIdx != -1) {
-      if (currentIdx + 1 < widget.levelModel.numbers.length) {
-        // Unlock next number in the same level
-        final nextNumber = widget.levelModel.numbers[currentIdx + 1].number;
-        await _progressService!.unlockNumber(widget.levelModel.level, nextNumber);
-      } else {
-        // All numbers in this level completed! Unlock next level
-        if (widget.levelModel.level == 1) {
-          await _progressService!.setLevel1Completed(true);
-        } else if (widget.levelModel.level == 2) {
-          await _progressService!.setLevel2Completed(true);
-        } else if (widget.levelModel.level == 3) {
-          await _progressService!.setLevel3Completed(true);
-        }
+    if (activityId == 1) {
+      // التتبع — SVG Number Tracing (only for numbers 1-10)
+      if (widget.numberModel.number >= 1 && widget.numberModel.number <= 10) {
+        await Navigator.push(
+          context,
+          AnimatedRoute.fadeScale(
+            SvgNumberTracingView(
+              numberModel: widget.numberModel,
+              levelModel: widget.levelModel,
+            ),
+          ),
+        );
+        // Refresh progress after returning
+        _progressService = await MathProgressService.getInstance();
+        if (mounted) setState(() {});
       }
     }
+    // Other activities not yet implemented
+  }
+
+  /// Check if activity is available (implemented and applicable to this number)
+  bool _isActivityAvailable(Map<String, dynamic> activity) {
+    if (activity['implemented'] != true) return false;
+
+    final activityId = activity['id'] as int;
+    if (activityId == 1) {
+      // Tracing only available for numbers 1-10 (SVGs exist only for these)
+      return widget.numberModel.number >= 1 && widget.numberModel.number <= 10;
+    }
+    return true;
   }
 
   @override
@@ -129,6 +141,7 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
             : widget.levelModel.level == 2
             ? AppColors.level2[0]
             : AppColors.primaryGradient[0],
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -150,8 +163,9 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
                     widget.numberModel.number,
                     activity['id'],
                   );
+                  final isAvailable = _isActivityAvailable(activity);
 
-                  return _buildActivityCard(activity, isCompleted);
+                  return _buildActivityCard(activity, isCompleted, isAvailable);
                 },
               ),
             ),
@@ -161,57 +175,87 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
     );
   }
 
-  Widget _buildActivityCard(Map<String, dynamic> activity, bool isCompleted) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            offset: const Offset(0, 5),
-            blurRadius: 10,
-          ),
-        ],
-        border: Border.all(
-          color: isCompleted ? Colors.green : Colors.transparent,
-          width: 2,
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(activity['icon'], size: 48, color: activity['color']),
-          const SizedBox(height: 12),
-          Text(
-            activity['title'],
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          if (isCompleted)
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle, color: Colors.green),
-                SizedBox(width: 4),
-                Text('مكتمل', style: TextStyle(color: Colors.green)),
-              ],
-            )
-          else
-            ElevatedButton(
-              onPressed: () => _completeActivity(activity['id']),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: activity['color'],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
-                'Complete (Test)',
-                style: TextStyle(color: Colors.white),
-              ),
+  Widget _buildActivityCard(
+    Map<String, dynamic> activity,
+    bool isCompleted,
+    bool isAvailable,
+  ) {
+    return GestureDetector(
+      onTap: isAvailable && !isCompleted
+          ? () => _openActivity(activity)
+          : isCompleted
+          ? () =>
+                _openActivity(activity) // allow replay
+          : null,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              offset: const Offset(0, 5),
+              blurRadius: 10,
             ),
-        ],
+          ],
+          border: Border.all(
+            color: isCompleted
+                ? Colors.green
+                : isAvailable
+                ? (activity['color'] as Color).withOpacity(0.3)
+                : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(activity['icon'], size: 48, color: activity['color']),
+            const SizedBox(height: 12),
+            Text(
+              activity['title'],
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            if (isCompleted)
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green),
+                  SizedBox(width: 4),
+                  Text('مكتمل', style: TextStyle(color: Colors.green)),
+                ],
+              )
+            else if (isAvailable)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.play_circle_fill,
+                    color: activity['color'],
+                    size: 22,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'ابدأ',
+                    style: TextStyle(
+                      color: activity['color'],
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+            else
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock_clock, color: Colors.grey),
+                  SizedBox(width: 4),
+                  Text('قريباً', style: TextStyle(color: Colors.grey)),
+                ],
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/services/math_progress_service.dart';
 import 'package:arabic_learning_app/features/math/data/math_data.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
@@ -19,7 +18,6 @@ class MathView extends StatefulWidget {
 class _MathViewState extends State<MathView> {
   MathProgressService? _progressService;
   bool _isLoading = true;
-  final FlutterTts _flutterTts = FlutterTts();
 
   @override
   void initState() {
@@ -38,10 +36,9 @@ class _MathViewState extends State<MathView> {
   }
 
   Future<void> _initTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
     await Future.delayed(const Duration(milliseconds: 500));
     if (mounted) {
-      await _flutterTts.speak(
+      await AppTtsService.instance.speak(
         'أهلاً بك في الرياضيات! اختر المستوى الذي تريد تعلمه',
       );
     }
@@ -49,7 +46,6 @@ class _MathViewState extends State<MathView> {
 
   @override
   void dispose() {
-    _flutterTts.stop();
     super.dispose();
   }
 
