@@ -134,8 +134,6 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
     }
   }
 
-
-
   Future<void> _onContinue() async {
     final name = _nameController.text.trim();
 
@@ -305,8 +303,6 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
       ],
     );
   }
-
-
 
   Widget _buildNameInput() {
     return Column(

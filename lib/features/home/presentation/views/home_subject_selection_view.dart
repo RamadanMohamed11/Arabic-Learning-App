@@ -48,6 +48,7 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
 
   @override
   void dispose() {
+    AppTtsService.instance.stop();
     _controller.dispose();
     super.dispose();
   }
@@ -99,7 +100,10 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
                             Color(0xFFA78BFA),
                           ],
                           onTap: () {
-                            context.push(AppRouter.kArabicStartRoute);
+                            AppTtsService.instance.stop();
+                            context
+                                .push(AppRouter.kArabicStartRoute)
+                                .then((_) => _initTts());
                           },
                         ),
                         const SizedBox(height: 32),
@@ -112,7 +116,10 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
                             Color(0xFF3182CE),
                           ],
                           onTap: () {
-                            context.push(AppRouter.kMathView);
+                            AppTtsService.instance.stop();
+                            context
+                                .push(AppRouter.kMathView)
+                                .then((_) => _initTts());
                           },
                         ),
                       ],

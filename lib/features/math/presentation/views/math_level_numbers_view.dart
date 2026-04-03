@@ -1,3 +1,4 @@
+import 'package:arabic_learning_app/core/utils/arabic_numbers_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
@@ -6,6 +7,8 @@ import 'package:arabic_learning_app/features/math/data/models/math_level_model.d
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'svg_number_tracing_view.dart';
 import 'math_level1_quiz_view.dart';
+import 'listen_and_write_view.dart';
+import 'number_ordering_view.dart';
 
 class MathLevelNumbersView extends StatefulWidget {
   final MathLevelModel level;
@@ -18,7 +21,6 @@ class MathLevelNumbersView extends StatefulWidget {
 
 class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
   MathProgressService? _progressService;
-  bool _ttsInitialized = false;
 
   @override
   void initState() {
@@ -28,10 +30,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
 
   Future<void> _loadProgress() async {
     _progressService = await MathProgressService.getInstance();
-    if (!_ttsInitialized) {
-      _ttsInitialized = true;
-      _initTts();
-    }
+    _initTts();
     setState(() {});
   }
 
@@ -46,6 +45,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
 
   @override
   void dispose() {
+    AppTtsService.instance.stop();
     super.dispose();
   }
 
@@ -96,48 +96,172 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                 Builder(
                   builder: (context) {
                     int completedCount = widget.level.numbers
-                        .where((n) =>
-                            _progressService?.isNumberCompleted(
-                                widget.level.level, n.number) ==
-                            true)
+                        .where(
+                          (n) =>
+                              _progressService?.isNumberCompleted(
+                                widget.level.level,
+                                n.number,
+                              ) ==
+                              true,
+                        )
                         .length;
-                    
-                    final isUnlocked = completedCount == widget.level.numbers.length;
+
+                    final allTracingDone =
+                        completedCount == widget.level.numbers.length;
+
+                    final quizDone = _progressService!.isLevelActivityCompleted(
+                      1,
+                      'quiz',
+                    );
+                    final listenWriteDone = _progressService!
+                        .isLevelActivityCompleted(1, 'listen_write');
+                    final orderingDone = _progressService!
+                        .isLevelActivityCompleted(1, 'number_ordering');
+
+                    final allActivitiesDone =
+                        allTracingDone &&
+                        quizDone &&
+                        listenWriteDone &&
+                        orderingDone;
+
+                    // Auto-unlock Level 2 when everything on Level 1 is done
+                    if (allActivitiesDone) {
+                      _progressService!.unlockLevel2();
+                    }
 
                     return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isUnlocked ? colors[0] : Colors.grey.shade400,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 32),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        onPressed: isUnlocked
-                            ? () {
-                                Navigator.push(
-                                  context,
-                                  AnimatedRoute.fadeScale(
-                                    const MathLevel1QuizView(),
-                                  ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: [
+                          // Activity 1: Quiz — اختر الصورة الصحيحة
+                          _buildActivityButton(
+                            title: 'النشاط ١: اختر الصورة الصحيحة',
+                            icon: Icons.image_search,
+                            colors: [AppColors.level1[0], AppColors.level1[1]],
+                            isUnlocked: allTracingDone,
+                            isCompleted: quizDone,
+                            onTap: () async {
+                              AppTtsService.instance.stop();
+                              final result = await Navigator.push(
+                                context,
+                                AnimatedRoute.fadeScale(
+                                  const MathLevel1QuizView(),
+                                ),
+                              );
+                              if (result == true) {
+                                await _progressService!.completeLevelActivity(
+                                  1,
+                                  'quiz',
                                 );
                               }
-                            : null, // Disabled when locked
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(isUnlocked ? Icons.quiz : Icons.lock),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'اختبار المستوى الأول',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
+                              _loadProgress();
+                            },
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Activity 2: Listen & Write
+                          _buildActivityButton(
+                            title: 'النشاط ٢: اسمع واكتب',
+                            icon: Icons.hearing,
+                            colors: [
+                              Colors.orange.shade500,
+                              Colors.deepOrange.shade500,
+                            ],
+                            isUnlocked: allTracingDone,
+                            isCompleted: listenWriteDone,
+                            onTap: () async {
+                              AppTtsService.instance.stop();
+                              final result = await Navigator.push(
+                                context,
+                                AnimatedRoute.fadeScale(
+                                  const ListenAndWriteView(),
+                                ),
+                              );
+                              if (result == true) {
+                                await _progressService!.completeLevelActivity(
+                                  1,
+                                  'listen_write',
+                                );
+                              }
+                              _loadProgress();
+                            },
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Activity 3: Number Ordering
+                          _buildActivityButton(
+                            title: 'النشاط ٣: ترتيب الأرقام',
+                            icon: Icons.sort,
+                            colors: [
+                              Colors.teal.shade500,
+                              Colors.green.shade600,
+                            ],
+                            isUnlocked: allTracingDone,
+                            isCompleted: orderingDone,
+                            onTap: () async {
+                              AppTtsService.instance.stop();
+                              final result = await Navigator.push(
+                                context,
+                                AnimatedRoute.fadeScale(
+                                  const NumberOrderingView(),
+                                ),
+                              );
+                              if (result == true) {
+                                await _progressService!.completeLevelActivity(
+                                  1,
+                                  'number_ordering',
+                                );
+                              }
+                              _loadProgress();
+                            },
+                          ),
+
+                          // Level 2 unlock banner
+                          if (allActivitiesDone) ...[
+                            const SizedBox(height: 16),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.amber.shade400,
+                                    Colors.orange.shade500,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.amber.withOpacity(0.4),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.lock_open,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'تم فتح المستوى الثاني! 🎉',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
-                        ),
+
+                          const SizedBox(height: 16),
+                        ],
                       ),
                     );
                   },
@@ -227,7 +351,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                       ),
                     ),
                     Text(
-                      '$completedCount / $total أرقام',
+                      '${completedCount.toArabicDigits()} / ${total.toArabicDigits()} أرقام',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -274,6 +398,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
               );
               while (currentIdx >= 0 &&
                   currentIdx < widget.level.numbers.length) {
+                AppTtsService.instance.stop();
                 final result = await Navigator.push(
                   context,
                   AnimatedRoute.slideRight(
@@ -283,6 +408,10 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                     ),
                   ),
                 );
+
+                // Update background UI with latest progress before pushing next or exiting
+                await _loadProgress();
+
                 if (result == 'next' &&
                     currentIdx + 1 < widget.level.numbers.length) {
                   currentIdx++;
@@ -290,7 +419,6 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                   break;
                 }
               }
-              _loadProgress();
             }
           : null,
       child: Stack(
@@ -303,8 +431,8 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                 end: Alignment.bottomRight,
                 colors: isUnlocked
                     ? (isCompleted
-                        ? [Colors.green.shade400, Colors.green.shade600]
-                        : colors)
+                          ? [Colors.green.shade400, Colors.green.shade600]
+                          : colors)
                     : [Colors.grey.shade300, Colors.grey.shade400],
               ),
               borderRadius: BorderRadius.circular(16),
@@ -363,6 +491,84 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActivityButton({
+    required String title,
+    required IconData icon,
+    required List<Color> colors,
+    required bool isUnlocked,
+    required bool isCompleted,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: isUnlocked && !isCompleted
+          ? onTap
+          : isCompleted
+          ? onTap
+          : null,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isUnlocked
+                ? (isCompleted
+                      ? [Colors.green.shade400, Colors.green.shade600]
+                      : colors)
+                : [Colors.grey.shade300, Colors.grey.shade400],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: (isUnlocked ? colors[0] : Colors.grey).withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(
+              isCompleted
+                  ? Icons.check_circle
+                  : isUnlocked
+                  ? icon
+                  : Icons.lock,
+              color: Colors.white,
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            if (isCompleted)
+              const Text(
+                'مكتمل ✓',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            else if (isUnlocked)
+              const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 20)
+            else
+              const Text(
+                'أكمل التتبع أولاً',
+                style: TextStyle(fontSize: 12, color: Colors.white70),
+              ),
+          ],
+        ),
       ),
     );
   }

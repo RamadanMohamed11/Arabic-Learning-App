@@ -11,7 +11,9 @@ class MathLevel1QuizView extends StatefulWidget {
 
 class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
   int currentQuestionIndex = 0;
-  
+  String? _selectedChoice;
+  bool? _isCorrectSelection;
+
   final List<Map<String, dynamic>> questions = [
     {
       'image': 'assets/svg/numbers/level1_Activity/Activity1/1.jpeg',
@@ -49,16 +51,37 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
     await AppTtsService.instance.speak("اختار الرقم الصحيح");
   }
 
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
+  }
+
   void _answerQuestion(String choice) async {
+    if (_selectedChoice != null) return; // Prevent clicking while animating
+
     final correct = questions[currentQuestionIndex]['answer'];
     final ttsAnswer = questions[currentQuestionIndex]['tts_answer'];
-    
-    if (choice == correct) {
+
+    final isCorrect = (choice == correct);
+
+    setState(() {
+      _selectedChoice = choice;
+      _isCorrectSelection = isCorrect;
+    });
+
+    if (isCorrect) {
       await AppTtsService.instance.speak("أحسنت! الإجابة صحيحة، $ttsAnswer");
+      await Future.delayed(const Duration(seconds: 1));
+
       if (currentQuestionIndex < questions.length - 1) {
-        setState(() {
-          currentQuestionIndex++;
-        });
+        if (mounted) {
+          setState(() {
+            currentQuestionIndex++;
+            _selectedChoice = null;
+            _isCorrectSelection = null;
+          });
+        }
       } else {
         await AppTtsService.instance.speak("رائع! لقد أكملت الاختبار بنجاح");
         if (mounted) {
@@ -67,6 +90,13 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
       }
     } else {
       await AppTtsService.instance.speak("حاول مرة أخرى");
+      await Future.delayed(const Duration(milliseconds: 800));
+      if (mounted) {
+        setState(() {
+          _selectedChoice = null;
+          _isCorrectSelection = null;
+        });
+      }
     }
   }
 
@@ -74,9 +104,11 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (ctx) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -88,7 +120,7 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'لقد أنهيت المستوى الأول بنجاح!',
+                'أكملت النشاط الأول بنجاح!',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18),
               ),
@@ -96,16 +128,22 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.level1[0],
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pop(context); // close dialog
-                  Navigator.pop(context); // close quiz view
+                  Navigator.pop(ctx); // close dialog
+                  Navigator.pop(context, true); // return true → activity done
                 },
-                child: const Text('المتابعة', style: TextStyle(fontSize: 20, color: Colors.white)),
+                child: const Text(
+                  'المتابعة',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -125,7 +163,10 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('اختبار المستوى الأول', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'اختبار المستوى الأول',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: AppColors.level1[0],
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -136,7 +177,11 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
               padding: EdgeInsets.all(20.0),
               child: Text(
                 "اختار الرقم الصحيح",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.indigo),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.indigo,
+                ),
               ),
             ),
             Expanded(
@@ -170,31 +215,46 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: (question['choices'] as List<String>).map((choice) {
+                  final isSelected = _selectedChoice == choice;
+                  List<Color> buttonColors = AppColors.level1;
+
+                  if (isSelected && _isCorrectSelection != null) {
+                    if (_isCorrectSelection!) {
+                      buttonColors = [
+                        Colors.green.shade400,
+                        Colors.green.shade600,
+                      ];
+                    } else {
+                      buttonColors = [Colors.red.shade400, Colors.red.shade600];
+                    }
+                  }
+
                   return GestureDetector(
                     onTap: () => _answerQuestion(choice),
-                    child: Container(
-                      width: 80,
-                      height: 80,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: isSelected ? 90 : 80,
+                      height: isSelected ? 90 : 80,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: AppColors.level1,
+                          colors: buttonColors,
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.level1[0].withOpacity(0.4),
-                            blurRadius: 10,
+                            color: buttonColors[0].withValues(alpha: 0.4),
+                            blurRadius: isSelected ? 15 : 10,
                             offset: const Offset(0, 5),
-                          )
+                          ),
                         ],
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         choice,
-                        style: const TextStyle(
-                          fontSize: 36,
+                        style: TextStyle(
+                          fontSize: isSelected ? 40 : 36,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),

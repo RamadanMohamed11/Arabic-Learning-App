@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/features/Alphabet/data/models/arabic_letter_model.dart';
@@ -37,12 +38,22 @@ class _LevelOneViewState extends State<LevelOneView> {
     // This ensures letters only stay unlocked if all 3 revision tests are completed
     await _progressService!.validateAndCorrectUnlocks();
 
+    _initTts();
     setState(() {
       _unlockedLetters = _progressService!.getUnlockedLetters();
       _unlockedLessons = _progressService!.getLevel1UnlockedLessons();
       _completedRevisions = _progressService!.getCompletedRevisions();
       _progress = _progressService!.getLevel1Progress();
     });
+  }
+
+  Future<void> _initTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'المستوى الأول: تعلم الحروف العربية! اختر الحرف الذي تريد تعلمه',
+      );
+    }
   }
 
   String _getProgressEmoji() {
@@ -57,6 +68,12 @@ class _LevelOneViewState extends State<LevelOneView> {
     if (_progress < 50) return AppColors.warning;
     if (_progress < 75) return AppColors.secondary;
     return AppColors.success;
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
   }
 
   @override
@@ -276,6 +293,7 @@ class _LevelOneViewState extends State<LevelOneView> {
     return GestureDetector(
       onTap: isUnlocked
           ? () async {
+              AppTtsService.instance.stop();
               // Navigate to letter shapes view
               await Navigator.push(
                 context,
@@ -307,33 +325,39 @@ class _LevelOneViewState extends State<LevelOneView> {
             ),
           ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isUnlocked) ...[
-              Text(letter.emoji, style: const TextStyle(fontSize: 32)),
-              const SizedBox(height: 8),
-              Text(
-                letter.letter,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ] else ...[
-              const Icon(Icons.lock, size: 40, color: Colors.white70),
-              const SizedBox(height: 8),
-              Text(
-                letter.letter,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.5),
-                ),
-              ),
-            ],
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isUnlocked) ...[
+                  Text(letter.emoji, style: const TextStyle(fontSize: 32)),
+                  const SizedBox(height: 8),
+                  Text(
+                    letter.letter,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ] else ...[
+                  const Icon(Icons.lock, size: 36, color: Colors.white70),
+                  const SizedBox(height: 8),
+                  Text(
+                    letter.letter,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -369,6 +393,7 @@ class _LevelOneViewState extends State<LevelOneView> {
     return GestureDetector(
       onTap: isUnlocked
           ? () async {
+              AppTtsService.instance.stop();
               await Navigator.push(
                 context,
                 AnimatedRoute.elegantZoom(
@@ -399,28 +424,34 @@ class _LevelOneViewState extends State<LevelOneView> {
             ),
           ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              isUnlocked ? Icons.quiz : Icons.lock,
-              size: 32,
-              color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  isUnlocked ? Icons.quiz : Icons.lock,
+                  size: 30,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'مراجعة',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  '${reviewIndex * 4 + 1}-${(reviewIndex + 1) * 4}',
+                  style: const TextStyle(fontSize: 12, color: Colors.white70),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            const Text(
-              'مراجعة',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            Text(
-              '${reviewIndex * 4 + 1}-${(reviewIndex + 1) * 4}',
-              style: const TextStyle(fontSize: 12, color: Colors.white70),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -555,6 +586,7 @@ class _LevelOneViewState extends State<LevelOneView> {
     return GestureDetector(
       onTap: allRevisionsCompleted
           ? () async {
+              AppTtsService.instance.stop();
               await Navigator.push(
                 context,
                 AnimatedRoute.elegantZoom(const FinalLevelOneTestView()),
@@ -586,28 +618,34 @@ class _LevelOneViewState extends State<LevelOneView> {
             ),
           ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              allRevisionsCompleted ? Icons.emoji_events : Icons.lock,
-              size: 32,
-              color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  allRevisionsCompleted ? Icons.emoji_events : Icons.lock,
+                  size: 30,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'الاختبار',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const Text(
+                  'النهائي',
+                  style: TextStyle(fontSize: 12, color: Colors.white70),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            const Text(
-              'الاختبار',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const Text(
-              'النهائي',
-              style: TextStyle(fontSize: 12, color: Colors.white70),
-            ),
-          ],
+          ),
         ),
       ),
     );

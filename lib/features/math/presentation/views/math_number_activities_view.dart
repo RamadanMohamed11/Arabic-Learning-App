@@ -67,9 +67,7 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
 
   Future<void> _loadProgress() async {
     _progressService = await MathProgressService.getInstance();
-    if (_isLoading) {
-      _initTts();
-    }
+    _initTts();
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -88,6 +86,7 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
 
   @override
   void dispose() {
+    AppTtsService.instance.stop();
     super.dispose();
   }
 
@@ -96,8 +95,9 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
     final activityId = activity['id'] as int;
 
     if (activityId == 1) {
-      // التتبع — SVG Number Tracing (only for numbers 1-10)
-      if (widget.numberModel.number >= 1 && widget.numberModel.number <= 10) {
+      // التتبع — SVG Number Tracing (for Level 1 and Level 2)
+      if (widget.levelModel.level == 1 || widget.levelModel.level == 2) {
+        AppTtsService.instance.stop();
         await Navigator.push(
           context,
           AnimatedRoute.fadeScale(
@@ -108,8 +108,7 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
           ),
         );
         // Refresh progress after returning
-        _progressService = await MathProgressService.getInstance();
-        if (mounted) setState(() {});
+        await _loadProgress();
       }
     }
     // Other activities not yet implemented
@@ -121,8 +120,8 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
 
     final activityId = activity['id'] as int;
     if (activityId == 1) {
-      // Tracing only available for numbers 1-10 (SVGs exist only for these)
-      return widget.numberModel.number >= 1 && widget.numberModel.number <= 10;
+      // Tracing available for Level 1 and Level 2
+      return widget.levelModel.level == 1 || widget.levelModel.level == 2;
     }
     return true;
   }

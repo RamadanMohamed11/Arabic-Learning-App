@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
@@ -35,6 +36,22 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
     super.initState();
     _prepareQuestions();
     _loadProgressService();
+    _initInstructionTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'اختبار نهاية المستوى الأول. اختر الإجابة الصحيحة لكل سؤال',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
   }
 
   void _prepareQuestions() {

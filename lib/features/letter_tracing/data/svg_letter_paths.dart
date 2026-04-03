@@ -8,10 +8,7 @@ class SvgLetterPath {
   final String letter;
   final List<Path> paths; // المسارات من SVG
 
-  const SvgLetterPath({
-    required this.letter,
-    required this.paths,
-  });
+  const SvgLetterPath({required this.letter, required this.paths});
 }
 
 /// محول SVG إلى Flutter Paths
@@ -29,19 +26,19 @@ class SvgPathConverter {
     try {
       // قراءة ملف SVG
       final svgString = await rootBundle.loadString('assets/svg/$letter.svg');
-      
+
       // ignore: avoid_print
       print('Loaded SVG for letter $letter, length: ${svgString.length}');
-      
+
       // تحليل XML
       final document = XmlDocument.parse(svgString);
-      
+
       // استخراج جميع عناصر path
       final pathElements = document.findAllElements('path');
-      
+
       // ignore: avoid_print
       print('Found ${pathElements.length} paths in SVG');
-      
+
       // تحويل كل path إلى Flutter Path
       final paths = <Path>[];
       for (final pathElement in pathElements) {
@@ -58,14 +55,11 @@ class SvgPathConverter {
           }
         }
       }
-      
+
       // ignore: avoid_print
       print('Total paths created: ${paths.length}');
-      
-      return SvgLetterPath(
-        letter: letter,
-        paths: paths,
-      );
+
+      return SvgLetterPath(letter: letter, paths: paths);
     } catch (e, stackTrace) {
       // ignore: avoid_print
       print('Error loading SVG for letter $letter: $e');
@@ -89,7 +83,13 @@ class _PathProxy implements PathProxy {
 
   @override
   void cubicTo(
-      double x1, double y1, double x2, double y2, double x3, double y3) {
+    double x1,
+    double y1,
+    double x2,
+    double y2,
+    double x3,
+    double y3,
+  ) {
     path.cubicTo(x1, y1, x2, y2, x3, y3);
   }
 
@@ -130,10 +130,34 @@ class SvgLetterPathManager {
   /// تحميل جميع الحروف مسبقاً
   static Future<void> preloadAllLetters() async {
     final letters = [
-      'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ',
-      'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص',
-      'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق',
-      'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي',
+      'ا',
+      'ب',
+      'ت',
+      'ث',
+      'ج',
+      'ح',
+      'خ',
+      'د',
+      'ذ',
+      'ر',
+      'ز',
+      'س',
+      'ش',
+      'ص',
+      'ض',
+      'ط',
+      'ظ',
+      'ع',
+      'غ',
+      'ف',
+      'ق',
+      'ك',
+      'ل',
+      'م',
+      'ن',
+      'ه',
+      'و',
+      'ي',
     ];
 
     for (final letter in letters) {

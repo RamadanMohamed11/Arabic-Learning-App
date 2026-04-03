@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/sentence_order_model.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/widgets/sentence_order_widget.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 
 class SentenceOrderView extends StatefulWidget {
   const SentenceOrderView({super.key});
@@ -16,26 +15,18 @@ class _SentenceOrderViewState extends State<SentenceOrderView> {
   int _current = 0;
   int _score = 0;
   bool _complete = false;
-  late final FlutterTts _instructionTts;
-  bool _instructionPlayed = false;
 
   @override
   void initState() {
     super.initState();
-    _instructionTts = FlutterTts();
-    _initInstruction();
+    _initInstructionTts();
   }
 
-  Future<void> _initInstruction() async {
-    await TtsConfig.configure(_instructionTts, speechRate: 0.45);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
-  }
-
-  Future<void> _playInstruction() async {
-    if (_instructionPlayed) return;
-    _instructionPlayed = true;
-    await _instructionTts.stop();
-    await _instructionTts.speak('رتب الكلمات لتكوين جملة صحيحة.');
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak('رتب الكلمات لتكوين جملة صحيحة.');
+    }
   }
 
   void _onCorrect() {
@@ -60,7 +51,7 @@ class _SentenceOrderViewState extends State<SentenceOrderView> {
 
   @override
   void dispose() {
-    _instructionTts.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 

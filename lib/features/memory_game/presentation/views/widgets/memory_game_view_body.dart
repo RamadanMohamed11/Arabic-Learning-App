@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/constants.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'dart:math';
 
 class MemoryCard {
@@ -39,6 +40,22 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
   void initState() {
     super.initState();
     _initializeGame();
+    _initInstructionTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        "لُعْبَةُ الذَّاكِرَةِ، اُنْقُرْ عَلَى الْبِطَاقَاتِ لِتُطَابِقَ كُلَّ حَرْفٍ مَعَ الصُّورَةِ الْمُنَاسِبَةِ لَهُ.",
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
   }
 
   void _initializeGame() {

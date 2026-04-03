@@ -168,13 +168,8 @@ class ImageToCharacterQuestion extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 48,
-          vertical: 16,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 5,
       ),
       child: Row(
@@ -182,10 +177,7 @@ class ImageToCharacterQuestion extends StatelessWidget {
         children: const [
           Text(
             'السؤال التالي',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(width: 8),
           Icon(Icons.arrow_forward),

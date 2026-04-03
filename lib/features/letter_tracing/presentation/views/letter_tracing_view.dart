@@ -3,6 +3,7 @@ import 'package:arabic_learning_app/features/letter_tracing/data/letter_paths.da
 import 'package:arabic_learning_app/features/letter_tracing/presentation/widgets/letter_trace_painter.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 
 class LetterTracingView extends StatefulWidget {
   final String letter;
@@ -36,6 +37,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
   void initState() {
     super.initState();
     letterPath = ArabicLetterPaths.getPath(widget.letter);
+    _playIntro();
 
     // تهيئة animation
     _celebrationController = AnimationController(
@@ -48,8 +50,13 @@ class _LetterTracingViewState extends State<LetterTracingView>
     );
   }
 
+  Future<void> _playIntro() async {
+    await AppTtsService.instance.speak("قُمْ بِتَتَبُّعِ الحَرْف");
+  }
+
   @override
   void dispose() {
+    AppTtsService.instance.stop();
     _celebrationController.dispose();
     super.dispose();
   }

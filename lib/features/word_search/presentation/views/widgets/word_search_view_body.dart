@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/constants.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'dart:math';
 
 // Function to remove tashkeel (diacritics) from Arabic text
@@ -58,6 +59,22 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
   void initState() {
     super.initState();
     _initializeGame();
+    _initInstructionTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        "اَلْبَحْثُ عَنِ الْكَلِمَاتِ، اِبْحَثْ عَنِ الْكَلِمَاتِ الْمَخْفِيَّةِ فِي الْجَدْوَلِ وَاسْحَبْ إِصْبَعَكَ عَلَيْهَا.",
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
   }
 
   void _initializeGame() {
@@ -162,7 +179,8 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
       } else {
         // Diagonal down-left
         final row = random.nextInt(gridSize - wordChars.length + 1);
-        final col = wordChars.length + random.nextInt(gridSize - wordChars.length);
+        final col =
+            wordChars.length + random.nextInt(gridSize - wordChars.length);
 
         if (_canPlaceDiagonalDownLeft(row, col, wordChars)) {
           final cells = <GridCell>[];
@@ -262,7 +280,7 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
   bool _isAdjacent(GridCell cell1, GridCell cell2) {
     final rowDiff = (cell1.row - cell2.row).abs();
     final colDiff = (cell1.col - cell2.col).abs();
-    
+
     // Check if cells are adjacent (horizontal, vertical, or diagonal)
     return rowDiff <= 1 && colDiff <= 1 && (rowDiff + colDiff) > 0;
   }
@@ -273,7 +291,7 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
     setState(() {
       isDragging = false;
       _checkSelection();
-      
+
       // Clear selection
       for (final cell in currentSelection) {
         cell.isSelected = false;
@@ -494,19 +512,22 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
                     color: word.isFound ? Colors.green.shade100 : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: word.isFound ? Colors.green : Colors.orange.shade200,
+                      color: word.isFound
+                          ? Colors.green
+                          : Colors.orange.shade200,
                       width: 2,
                     ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        word.emoji,
-                        style: const TextStyle(fontSize: 28),
-                      ),
+                      Text(word.emoji, style: const TextStyle(fontSize: 28)),
                       if (word.isFound)
-                        const Icon(Icons.check_circle, color: Colors.green, size: 14),
+                        const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 14,
+                        ),
                     ],
                   ),
                 );
@@ -526,13 +547,19 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
                       final cellSize = constraints.maxWidth / gridSize;
                       return GestureDetector(
                         onPanStart: (details) {
-                          final cell = _getCellFromPosition(details.localPosition, cellSize);
+                          final cell = _getCellFromPosition(
+                            details.localPosition,
+                            cellSize,
+                          );
                           if (cell != null) {
                             _onCellDragStart(cell);
                           }
                         },
                         onPanUpdate: (details) {
-                          final cell = _getCellFromPosition(details.localPosition, cellSize);
+                          final cell = _getCellFromPosition(
+                            details.localPosition,
+                            cellSize,
+                          );
                           if (cell != null) {
                             _onCellDragUpdate(cell);
                           }
@@ -549,7 +576,8 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
                                 (row) => Row(
                                   children: List.generate(
                                     gridSize,
-                                    (col) => _buildCell(grid[row][col], cellSize),
+                                    (col) =>
+                                        _buildCell(grid[row][col], cellSize),
                                   ),
                                 ),
                               ),
@@ -627,8 +655,8 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
           color: cell.isFound
               ? Colors.green
               : cell.isSelected
-                  ? Colors.orange
-                  : Colors.grey.shade300,
+              ? Colors.orange
+              : Colors.grey.shade300,
           width: cell.isFound || cell.isSelected ? 2 : 1,
         ),
       ),
@@ -641,8 +669,8 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
             color: cell.isFound
                 ? Colors.green.shade900
                 : cell.isSelected
-                    ? Colors.orange.shade900
-                    : Colors.black87,
+                ? Colors.orange.shade900
+                : Colors.black87,
           ),
         ),
       ),

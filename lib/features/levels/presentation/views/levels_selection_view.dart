@@ -25,7 +25,6 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
   double _level2Progress = 0.0;
   bool _level1FinalTestCompleted = false;
   bool _level2FinalTestCompleted = false;
-  bool _ttsInitialized = false;
 
   @override
   void initState() {
@@ -35,10 +34,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
 
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
-    if (!_ttsInitialized) {
-      _ttsInitialized = true;
-      _initTts();
-    }
+    _initTts();
     setState(() {
       _level2Unlocked = _progressService!.isLevel2Unlocked();
       _level1Progress = _progressService!.getLevel1Progress();
@@ -62,6 +58,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
 
   @override
   void dispose() {
+    AppTtsService.instance.stop();
     super.dispose();
   }
 
@@ -143,12 +140,16 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                                 isLocked: false,
                                 colors: AppColors.level1,
                                 onTap: () {
+                                  AppTtsService.instance.stop();
                                   Navigator.push(
                                     context,
                                     AnimatedRoute.slideScale(
                                       const LevelOneView(),
                                     ),
-                                  ).then((_) => _loadProgress());
+                                  ).then((_) {
+                                    _loadProgress();
+                                    _initTts();
+                                  });
                                 },
                               ),
 
@@ -166,12 +167,16 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                                 colors: AppColors.level2,
                                 onTap: _level2Unlocked
                                     ? () {
+                                        AppTtsService.instance.stop();
                                         Navigator.push(
                                           context,
                                           AnimatedRoute.slideScale(
                                             const LevelTwoView(),
                                           ),
-                                        ).then((_) => _loadProgress());
+                                        ).then((_) {
+                                          _loadProgress();
+                                          _initTts();
+                                        });
                                       }
                                     : null,
                               ),

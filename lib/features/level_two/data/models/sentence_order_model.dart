@@ -2,10 +2,7 @@ class SentenceOrderQuestion {
   final List<String> words; // shuffled to present
   final String sentence; // correct sentence
 
-  const SentenceOrderQuestion({
-    required this.words,
-    required this.sentence,
-  });
+  const SentenceOrderQuestion({required this.words, required this.sentence});
 }
 
 // Activity 5: رتّب الكلمات لتكوين جملة صحيحة

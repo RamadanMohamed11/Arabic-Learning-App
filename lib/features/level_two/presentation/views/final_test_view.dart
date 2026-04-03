@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -74,6 +75,7 @@ class _FinalTestViewState extends State<FinalTestView> {
   @override
   void dispose() {
     _tts.stop();
+    AppTtsService.instance.stop();
     if (_isListening) {
       _stt.stop();
     }
@@ -133,8 +135,7 @@ class _FinalTestViewState extends State<FinalTestView> {
   Future<void> _playInstruction() async {
     if (_instructionPlayed) return;
     _instructionPlayed = true;
-    await _tts.stop();
-    await _tts.speak(
+    await AppTtsService.instance.speak(
       'هذا اختبار نهاية المستوى الثاني، استمع للتعليمات في كل قسم وأجب بعناية.',
     );
   }

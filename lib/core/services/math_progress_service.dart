@@ -10,7 +10,8 @@ class MathProgressService {
   static const String _keyMathLevel3Completed = 'math_level3_completed';
 
   static const String _keyMathUnlockedNumbers = 'math_unlocked_numbers_v2';
-  static const String _keyMathCompletedActivities = 'math_completed_activities_v2';
+  static const String _keyMathCompletedActivities =
+      'math_completed_activities_v2';
 
   // Singleton pattern
   static MathProgressService? _instance;
@@ -41,7 +42,8 @@ class MathProgressService {
 
   // --- Levels Unlocked ---
   bool isLevel1Unlocked() {
-    return prefs.getBool(_keyMathLevel1Unlocked) ?? true; // Level 1 is always unlocked
+    return prefs.getBool(_keyMathLevel1Unlocked) ??
+        true; // Level 1 is always unlocked
   }
 
   bool isLevel2Unlocked() {
@@ -105,18 +107,18 @@ class MathProgressService {
     final key = '${level}_$number';
     if (!unlockedNumbers.contains(key)) {
       unlockedNumbers.add(key);
-      await prefs.setStringList(
-        _keyMathUnlockedNumbers,
-        unlockedNumbers,
-      );
+      await prefs.setStringList(_keyMathUnlockedNumbers, unlockedNumbers);
     }
   }
 
   bool isNumberUnlocked(int level, int number) {
-    if (level == 1 && number == 1) return true; // Level 1 starts with 1 unlocked
-    if (level == 2 && number == 10 && isLevel2Unlocked()) return true; // Level 2 starts with 10 unlocked
-    if (level == 3 && number == 21 && isLevel3Unlocked()) return true; // Level 3 starts with 21 unlocked
-    
+    if (level == 1 && number == 1)
+      return true; // Level 1 starts with 1 unlocked
+    if (level == 2 && number == 10 && isLevel2Unlocked())
+      return true; // Level 2 starts with 10 unlocked
+    if (level == 3 && number == 21 && isLevel3Unlocked())
+      return true; // Level 3 starts with 21 unlocked
+
     final key = '${level}_$number';
     return getUnlockedNumbers().contains(key);
   }
@@ -129,7 +131,11 @@ class MathProgressService {
     return activities?.toSet() ?? {};
   }
 
-  Future<void> completeActivity(int level, int number, int activityIndex) async {
+  Future<void> completeActivity(
+    int level,
+    int number,
+    int activityIndex,
+  ) async {
     final completedActivities = getCompletedActivities();
     completedActivities.add('${level}_${number}_$activityIndex');
     await prefs.setStringList(
@@ -143,14 +149,38 @@ class MathProgressService {
     return completedActivities.contains('${level}_${number}_$activityIndex');
   }
 
-  // Activity progression: Once all 4 activities are done for a number, it is completed.
-  bool isNumberCompleted(int level, int number, {int totalActivities = 4}) {
+  // Activity progression: number is completed after tracing (activity 0).
+  // Level-wide activities (listen-write, ordering) are tracked separately.
+  bool isNumberCompleted(int level, int number, {int totalActivities = 1}) {
     for (int i = 0; i < totalActivities; i++) {
       if (!isActivityCompleted(level, number, i)) {
         return false;
       }
     }
     return true;
+  }
+
+  // --- Level-wide Activities (e.g., listen-write, number-ordering) ---
+  static const String _keyMathLevelActivities = 'math_level_activities_v1';
+
+  Set<String> _getLevelActivities() {
+    final List<String>? activities = prefs.getStringList(
+      _keyMathLevelActivities,
+    );
+    return activities?.toSet() ?? {};
+  }
+
+  Future<void> completeLevelActivity(int level, String activityName) async {
+    final activities = _getLevelActivities();
+    activities.add('${level}_$activityName');
+    await prefs.setStringList(
+      _keyMathLevelActivities,
+      activities.toList(),
+    );
+  }
+
+  bool isLevelActivityCompleted(int level, String activityName) {
+    return _getLevelActivities().contains('${level}_$activityName');
   }
 
   // --- Reset ---
@@ -163,5 +193,6 @@ class MathProgressService {
     await prefs.remove(_keyMathLevel3Completed);
     await prefs.remove(_keyMathUnlockedNumbers);
     await prefs.remove(_keyMathCompletedActivities);
+    await prefs.remove(_keyMathLevelActivities);
   }
 }

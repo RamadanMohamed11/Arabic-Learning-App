@@ -6,11 +6,7 @@ class LetterPath {
   final List<List<Offset>> strokes; // كل حرف قد يحتوي على أكثر من stroke
   final List<Offset>? dots; // النقاط (للحروف مثل ب، ت، ث)
 
-  const LetterPath({
-    required this.letter,
-    required this.strokes,
-    this.dots,
-  });
+  const LetterPath({required this.letter, required this.strokes, this.dots});
 }
 
 /// مسارات جميع الحروف العربية
@@ -20,10 +16,7 @@ class ArabicLetterPaths {
     'ا': LetterPath(
       letter: 'ا',
       strokes: [
-        [
-          const Offset(160, 80),
-          const Offset(160, 250),
-        ],
+        [const Offset(160, 80), const Offset(160, 250)],
       ],
     ),
 
@@ -44,9 +37,7 @@ class ArabicLetterPaths {
           const Offset(70, 100),
         ],
         // النقطة (كـ stroke منفصل)
-        [
-          const Offset(160, 230),
-        ],
+        [const Offset(160, 230)],
       ],
     ),
 
@@ -67,13 +58,9 @@ class ArabicLetterPaths {
           const Offset(70, 100),
         ],
         // النقطة الأولى
-        [
-          const Offset(140, 70),
-        ],
+        [const Offset(140, 70)],
         // النقطة الثانية
-        [
-          const Offset(180, 70),
-        ],
+        [const Offset(180, 70)],
       ],
     ),
 
@@ -94,17 +81,11 @@ class ArabicLetterPaths {
           const Offset(70, 100),
         ],
         // النقطة الأولى
-        [
-          const Offset(120, 70),
-        ],
+        [const Offset(120, 70)],
         // النقطة الثانية
-        [
-          const Offset(160, 70),
-        ],
+        [const Offset(160, 70)],
         // النقطة الثالثة
-        [
-          const Offset(200, 70),
-        ],
+        [const Offset(200, 70)],
       ],
     ),
 
@@ -126,9 +107,7 @@ class ArabicLetterPaths {
           const Offset(100, 200),
         ],
         // النقطة
-        [
-          const Offset(160, 230),
-        ],
+        [const Offset(160, 230)],
       ],
     ),
 
@@ -169,9 +148,7 @@ class ArabicLetterPaths {
           const Offset(100, 200),
         ],
         // النقطة
-        [
-          const Offset(160, 70),
-        ],
+        [const Offset(160, 70)],
       ],
     ),
 
@@ -212,9 +189,7 @@ class ArabicLetterPaths {
           const Offset(90, 210),
         ],
         // النقطة
-        [
-          const Offset(180, 110),
-        ],
+        [const Offset(180, 110)],
       ],
     ),
 
@@ -247,9 +222,7 @@ class ArabicLetterPaths {
           const Offset(210, 250),
         ],
         // النقطة
-        [
-          const Offset(160, 100),
-        ],
+        [const Offset(160, 100)],
       ],
     ),
 
@@ -294,17 +267,11 @@ class ArabicLetterPaths {
           const Offset(250, 200),
         ],
         // النقطة الأولى
-        [
-          const Offset(120, 110),
-        ],
+        [const Offset(120, 110)],
         // النقطة الثانية
-        [
-          const Offset(160, 110),
-        ],
+        [const Offset(160, 110)],
         // النقطة الثالثة
-        [
-          const Offset(200, 110),
-        ],
+        [const Offset(200, 110)],
       ],
     ),
 
@@ -347,9 +314,7 @@ class ArabicLetterPaths {
           const Offset(110, 250),
         ],
         // النقطة
-        [
-          const Offset(180, 90),
-        ],
+        [const Offset(180, 90)],
       ],
     ),
 
@@ -392,9 +357,7 @@ class ArabicLetterPaths {
           const Offset(80, 200),
         ],
         // النقطة
-        [
-          const Offset(180, 110),
-        ],
+        [const Offset(180, 110)],
       ],
     ),
 
@@ -435,9 +398,7 @@ class ArabicLetterPaths {
           const Offset(120, 140),
         ],
         // النقطة
-        [
-          const Offset(160, 100),
-        ],
+        [const Offset(160, 100)],
       ],
     ),
 
@@ -459,9 +420,7 @@ class ArabicLetterPaths {
           const Offset(110, 180),
         ],
         // النقطة
-        [
-          const Offset(160, 60),
-        ],
+        [const Offset(160, 60)],
       ],
     ),
 
@@ -483,13 +442,9 @@ class ArabicLetterPaths {
           const Offset(110, 180),
         ],
         // النقطة الأولى
-        [
-          const Offset(140, 60),
-        ],
+        [const Offset(140, 60)],
         // النقطة الثانية
-        [
-          const Offset(180, 60),
-        ],
+        [const Offset(180, 60)],
       ],
     ),
 
@@ -497,10 +452,7 @@ class ArabicLetterPaths {
     'ك': LetterPath(
       letter: 'ك',
       strokes: [
-        [
-          const Offset(100, 100),
-          const Offset(100, 200),
-        ],
+        [const Offset(100, 100), const Offset(100, 200)],
         [
           const Offset(100, 150),
           const Offset(140, 120),
@@ -570,9 +522,7 @@ class ArabicLetterPaths {
           const Offset(110, 260),
         ],
         // النقطة
-        [
-          const Offset(160, 130),
-        ],
+        [const Offset(160, 130)],
       ],
     ),
 
@@ -637,13 +587,9 @@ class ArabicLetterPaths {
           const Offset(200, 280),
         ],
         // النقطة الأولى
-        [
-          const Offset(210, 300),
-        ],
+        [const Offset(210, 300)],
         // النقطة الثانية
-        [
-          const Offset(240, 300),
-        ],
+        [const Offset(240, 300)],
       ],
     ),
   };

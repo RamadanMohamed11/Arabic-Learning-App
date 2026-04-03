@@ -112,14 +112,14 @@ class LetterTracePainter extends CustomPainter {
       if (stroke.length == 1) {
         paint.style = PaintingStyle.fill;
         canvas.drawCircle(stroke.first, 12, paint);
-        
+
         // إضافة ظل للنقطة
         final shadowPaint = Paint()
           ..color = Colors.black.withOpacity(0.3)
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
         canvas.drawCircle(stroke.first, 12, shadowPaint);
         canvas.drawCircle(stroke.first, 12, paint);
-        
+
         paint.style = PaintingStyle.stroke;
         pointIndex++;
       } else {
@@ -139,7 +139,7 @@ class LetterTracePainter extends CustomPainter {
     // رسم الـ stroke الحالي (قيد التقدم)
     if (currentStrokeIndex < guideStrokes.length) {
       final currentStroke = guideStrokes[currentStrokeIndex];
-      
+
       if (currentStroke.length == 1) {
         // نقطة - انتظر حتى يلمس المستخدم
         // سيتم رسمها عند الإكمال
@@ -223,11 +223,25 @@ class LetterTracePainter extends CustomPainter {
     final path = Path();
 
     for (int i = 0; i < 5; i++) {
-      final double x = center.dx + size * (i % 2 == 0 ? 1 : 0.5) * 
-          (i == 0 ? 0 : (i == 1 ? 0.951 : (i == 2 ? 0.588 : (i == 3 ? -0.588 : -0.951))));
-      final double y = center.dy + size * (i % 2 == 0 ? 1 : 0.5) * 
-          (i == 0 ? -1 : (i == 1 ? -0.309 : (i == 2 ? 0.809 : (i == 3 ? 0.809 : -0.309))));
-      
+      final double x =
+          center.dx +
+          size *
+              (i % 2 == 0 ? 1 : 0.5) *
+              (i == 0
+                  ? 0
+                  : (i == 1
+                        ? 0.951
+                        : (i == 2 ? 0.588 : (i == 3 ? -0.588 : -0.951))));
+      final double y =
+          center.dy +
+          size *
+              (i % 2 == 0 ? 1 : 0.5) *
+              (i == 0
+                  ? -1
+                  : (i == 1
+                        ? -0.309
+                        : (i == 2 ? 0.809 : (i == 3 ? 0.809 : -0.309))));
+
       if (i == 0) {
         path.moveTo(x, y);
       } else {

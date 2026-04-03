@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 
 // كلمات التدريب على النطق
 class PracticeWord {
@@ -71,6 +72,16 @@ class _PronunciationPracticeViewBodyState
   void initState() {
     super.initState();
     _initSpeech();
+    _initInstructionTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        "تَمْرِينُ النُّطْقِ، اِضْغَطْ عَلَى الْمِيكْرُوفُونِ، وَٱنْطِقِ الْكَلِمَةَ الَّتِي تَظْهَرُ أَمَامَكَ.",
+      );
+    }
   }
 
   // تهيئة خدمة التعرف على الكلام
@@ -167,7 +178,8 @@ class _PronunciationPracticeViewBodyState
     if (cleanTarget == cleanRecognized) return true;
 
     // مقارنة إذا كانت إحداهما تحتوي على الأخرى
-    if (cleanRecognized.contains(cleanTarget) || cleanTarget.contains(cleanRecognized)) {
+    if (cleanRecognized.contains(cleanTarget) ||
+        cleanTarget.contains(cleanRecognized)) {
       return true;
     }
 
@@ -177,16 +189,16 @@ class _PronunciationPracticeViewBodyState
   // تطبيع الكلمة: إزالة التشكيل وتوحيد الحروف المتشابهة
   String _normalizeWord(String text) {
     String normalized = text.toLowerCase().trim();
-    
+
     // إزالة التشكيل
     normalized = normalized.replaceAll(RegExp(r'[\u064b-\u065f]'), '');
-    
+
     // توحيد ه و ة
     normalized = normalized.replaceAll('ة', 'ه');
-    
+
     // توحيد أ و إ و آ مع ا
     normalized = normalized.replaceAll(RegExp(r'[أإآ]'), 'ا');
-    
+
     return normalized;
   }
 
@@ -212,6 +224,7 @@ class _PronunciationPracticeViewBodyState
   @override
   void dispose() {
     _speechToText.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 
@@ -310,10 +323,7 @@ class _PronunciationPracticeViewBodyState
                     children: [
                       const Text(
                         'انطق الكلمة التالية:',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 20, color: Colors.grey),
                       ),
                       const SizedBox(height: 20),
 
@@ -487,10 +497,12 @@ class _PronunciationPracticeViewBodyState
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: FloatingActionButton.extended(
-                onPressed:
-                    _speechToText.isListening ? _stopListening : _startListening,
-                backgroundColor:
-                    _speechToText.isListening ? Colors.red : const Color(0xFF00796B),
+                onPressed: _speechToText.isListening
+                    ? _stopListening
+                    : _startListening,
+                backgroundColor: _speechToText.isListening
+                    ? Colors.red
+                    : const Color(0xFF00796B),
                 icon: Icon(
                   _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
                   color: Colors.white,

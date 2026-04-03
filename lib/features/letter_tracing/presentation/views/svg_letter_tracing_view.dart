@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/features/letter_tracing/data/svg_letter_paths.dart';
 import 'package:arabic_learning_app/features/letter_tracing/presentation/widgets/svg_letter_trace_painter.dart';
 import 'package:arabic_learning_app/constants.dart';
@@ -42,6 +43,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
     super.initState();
     _loadLetterPath();
     _initTts();
+    _initInstructionTts();
 
     // تهيئة animation
     _celebrationController = AnimationController(
@@ -70,10 +72,20 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
     await _flutterTts.speak(text);
   }
 
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'تدريب كتابة حرف ${widget.letter}. اتبع الخط المنقط بإصبعك لكتابة الحرف',
+      );
+    }
+  }
+
   @override
   void dispose() {
     _celebrationController.dispose();
     _flutterTts.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 

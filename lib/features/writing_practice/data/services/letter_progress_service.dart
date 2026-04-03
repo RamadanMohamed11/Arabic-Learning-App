@@ -8,7 +8,7 @@ class LetterProgressService {
   Future<void> markLetterCompleted(String letter) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('$_keyPrefix$letter', true);
-    
+
     // Update unlocked letters count
     final currentUnlocked = await getUnlockedLettersCount();
     final letterIndex = _getLetterIndex(letter);
@@ -26,7 +26,8 @@ class LetterProgressService {
   // Get the count of unlocked letters (letters that can be practiced)
   Future<int> getUnlockedLettersCount() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_keyUnlockedLetters) ?? 1; // At least the first letter is unlocked
+    return prefs.getInt(_keyUnlockedLetters) ??
+        1; // At least the first letter is unlocked
   }
 
   // Check if a letter is unlocked (can be practiced)
@@ -39,9 +40,34 @@ class LetterProgressService {
   // Get letter index from the Arabic alphabet
   int _getLetterIndex(String letter) {
     const arabicLetters = [
-      'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر',
-      'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف',
-      'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'
+      'ا',
+      'ب',
+      'ت',
+      'ث',
+      'ج',
+      'ح',
+      'خ',
+      'د',
+      'ذ',
+      'ر',
+      'ز',
+      'س',
+      'ش',
+      'ص',
+      'ض',
+      'ط',
+      'ظ',
+      'ع',
+      'غ',
+      'ف',
+      'ق',
+      'ك',
+      'ل',
+      'م',
+      'ن',
+      'ه',
+      'و',
+      'ي',
     ];
     return arabicLetters.indexOf(letter);
   }
@@ -61,19 +87,44 @@ class LetterProgressService {
   Future<double> getCompletionPercentage() async {
     const totalLetters = 28;
     int completedCount = 0;
-    
+
     const arabicLetters = [
-      'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر',
-      'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف',
-      'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'
+      'ا',
+      'ب',
+      'ت',
+      'ث',
+      'ج',
+      'ح',
+      'خ',
+      'د',
+      'ذ',
+      'ر',
+      'ز',
+      'س',
+      'ش',
+      'ص',
+      'ض',
+      'ط',
+      'ظ',
+      'ع',
+      'غ',
+      'ف',
+      'ق',
+      'ك',
+      'ل',
+      'م',
+      'ن',
+      'ه',
+      'و',
+      'ي',
     ];
-    
+
     for (final letter in arabicLetters) {
       if (await isLetterCompleted(letter)) {
         completedCount++;
       }
     }
-    
+
     return (completedCount / totalLetters) * 100;
   }
 }

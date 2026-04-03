@@ -57,7 +57,10 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
 
   String _normalize(String s) {
     final withoutDiacritics = s.replaceAll(RegExp(_arabicDiacritics), '');
-    return withoutDiacritics.replaceAll('\u200f', '').replaceAll('\u200e', '').trim();
+    return withoutDiacritics
+        .replaceAll('\u200f', '')
+        .replaceAll('\u200e', '')
+        .trim();
   }
 
   void _check() {
@@ -152,7 +155,10 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -166,7 +172,10 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
             alignment: WrapAlignment.center,
             children: widget.item.keywords.map((k) {
               return Chip(
-                label: Text(k, style: const TextStyle(fontWeight: FontWeight.w600)),
+                label: Text(
+                  k,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 backgroundColor: Colors.blue.shade50,
                 side: BorderSide(color: Colors.blue.shade200, width: 1.5),
               );
@@ -184,8 +193,13 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 icon: const Icon(Icons.refresh),
                 label: const Text('إعادة'),
@@ -196,8 +210,13 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 icon: const Icon(Icons.check),
                 label: const Text('تحقق'),
@@ -208,8 +227,13 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.success,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 icon: const Icon(Icons.arrow_forward),
                 label: const Text('التالي'),
@@ -249,7 +273,9 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: _isCorrect ? AppColors.success : AppColors.error,
+                          color: _isCorrect
+                              ? AppColors.success
+                              : AppColors.error,
                         ),
                       ),
                     ],
@@ -259,22 +285,31 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.amber.shade100,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text('$_matched / ${widget.item.keywords.length} كلمات مفتاحية',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            )),
+                        child: Text(
+                          '$_matched / ${widget.item.keywords.length} كلمات مفتاحية',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       TextButton.icon(
-                        onPressed: () => setState(() => _showSample = !_showSample),
-                        icon: const Icon(Icons.lightbulb, color: AppColors.primary),
+                        onPressed: () =>
+                            setState(() => _showSample = !_showSample),
+                        icon: const Icon(
+                          Icons.lightbulb,
+                          color: AppColors.primary,
+                        ),
                         label: Text(
                           _showSample ? 'إخفاء المثال' : 'عرض مثال',
                           style: const TextStyle(
@@ -293,12 +328,18 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade300, width: 1.5),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1.5,
+                        ),
                       ),
                       child: Text(
                         widget.item.sample,
                         textAlign: TextAlign.right,
-                        style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
                   ],

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/word_spelling_model.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/widgets/word_spelling_widget.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 
 /// Main view for word spelling activity
 class WordSpellingView extends StatefulWidget {
@@ -17,28 +16,20 @@ class _WordSpellingViewState extends State<WordSpellingView> {
   int _currentQuestionIndex = 0;
   int _score = 0;
   bool _isTestComplete = false;
-  late final FlutterTts _instructionTts;
-  bool _instructionPlayed = false;
 
   @override
   void initState() {
     super.initState();
-    _instructionTts = FlutterTts();
-    _initInstruction();
+    _initInstructionTts();
   }
 
-  Future<void> _initInstruction() async {
-    await TtsConfig.configure(_instructionTts, speechRate: 0.45);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
-  }
-
-  Future<void> _playInstruction() async {
-    if (_instructionPlayed) return;
-    _instructionPlayed = true;
-    await _instructionTts.stop();
-    await _instructionTts.speak(
-      'استمع للحروف ثم اسحبها بالترتيب الصحيح لتكوين الكلمة.',
-    );
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'استمع للحروف ثم اسحبها بالترتيب الصحيح لتكوين الكلمة.',
+      );
+    }
   }
 
   void _onCorrect() {
@@ -63,7 +54,7 @@ class _WordSpellingViewState extends State<WordSpellingView> {
 
   @override
   void dispose() {
-    _instructionTts.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 

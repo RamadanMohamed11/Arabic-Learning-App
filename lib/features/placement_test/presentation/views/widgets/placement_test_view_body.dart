@@ -6,6 +6,7 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:arabic_learning_app/core/utils/app_router.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 
 class PlacementTestQuestion {
   final String type; // 'writing', 'pronunciation', 'listening'
@@ -127,6 +128,16 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   void initState() {
     super.initState();
     _initServices();
+    _playWelcomeInstruction();
+  }
+
+  Future<void> _playWelcomeInstruction() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted && !_testStarted) {
+      await AppTtsService.instance.speak(
+        'أهلاً بك في اختبار تحديد المستوى! سنُقَيِّمُ مستواك في اللغة العربية. اضغط على ابدأ الاختبار للبدء',
+      );
+    }
   }
 
   Future<void> _initServices() async {
@@ -209,9 +220,26 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   }
 
   void _startTest() {
+    AppTtsService.instance.stop(); // Stop welcome instruction
     setState(() {
       _testStarted = true;
     });
+    _playQuestionInstruction();
+  }
+
+  Future<void> _playQuestionInstruction() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      final question = _questions[_currentQuestionIndex];
+      String instruction = question.question;
+      
+      // If it's a listening question that includes the word, we don't want to spell the answer
+      if (instruction.startsWith('اختر الصوت الصحيح للكلمة')) {
+        instruction = 'اختر الصوت الصحيح للكلمة';
+      }
+      
+      await AppTtsService.instance.speak(instruction);
+    }
   }
 
   Future<void> _playAudio(String text) async {
@@ -386,6 +414,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   void _nextQuestion() {
     // إيقاف أي صوت قيد التشغيل
     _flutterTts.stop();
+    AppTtsService.instance.stop();
 
     if (_currentQuestionIndex < _questions.length - 1) {
       setState(() {
@@ -396,6 +425,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
         _isPlayingAudio = false;
         _audioAttempts = 0; // إعادة تعيين عداد المحاولات
       });
+      _playQuestionInstruction();
     } else {
       _showResults();
     }
@@ -447,6 +477,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
     _answerController.dispose();
     _flutterTts.stop();
     _speechToText.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 

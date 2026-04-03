@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
@@ -40,6 +41,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
 
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
+    _initTts();
     setState(() {
       _tracingCompleted = _progressService!.isActivityCompleted(
         widget.letterIndex,
@@ -47,6 +49,21 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
       );
       _isLoading = false;
     });
+  }
+
+  Future<void> _initTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'تمارين حرف ${widget.letter}. اختر التمرين الذي تريد التدرب عليه',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
   }
 
   Future<void> _startTracingExercise() async {
@@ -370,9 +387,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.warmGradient,
-        ),
+        gradient: const LinearGradient(colors: AppColors.warmGradient),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

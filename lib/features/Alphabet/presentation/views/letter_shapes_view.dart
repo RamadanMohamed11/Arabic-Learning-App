@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
@@ -40,6 +41,17 @@ class _LetterShapesViewState extends State<LetterShapesView> {
 
     // الحصول على رقم الحرف
     _letterIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
+
+    _initInstructionTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'هذا حرف ${widget.letter}. يمكنك الضغط على الحرف لسماع نطقه. اضغط على التمارين لبدء التعلم',
+      );
+    }
   }
 
   Future<void> _initTts() async {
@@ -65,6 +77,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
   @override
   void dispose() {
     _flutterTts.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 

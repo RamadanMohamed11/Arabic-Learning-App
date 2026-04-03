@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -48,6 +49,16 @@ class _CharacterPronunciationPracticeViewState
     _letterName = getLetterName(widget.letter);
     _initSpeech();
     _initTts();
+    _initInstructionTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'تدريب نطق حرف ${widget.letter}. اضغط على زر الميكروفون وانطق اسم الحرف',
+      );
+    }
   }
 
   /// Initialize speech recognition
@@ -473,6 +484,7 @@ class _CharacterPronunciationPracticeViewState
   void dispose() {
     _speechToText.stop();
     _flutterTts.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 

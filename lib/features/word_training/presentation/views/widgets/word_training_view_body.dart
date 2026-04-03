@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/features/word_training/models/word_model.dart';
 import 'package:arabic_learning_app/constants.dart';
 
@@ -26,7 +27,17 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
   @override
   void initState() {
     super.initState();
+    _initInstructionTts();
     _initializeTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        "تَدْرِيبُ الْكَلِمَاتِ، اِضْغَطْ اِسْتَمِعْ وَاكْتُبِ الْكَلِمَةَ التَّي تَسْمَعُهَا.",
+      );
+    }
   }
 
   Future<void> _initializeTts() async {
@@ -47,6 +58,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
   @override
   void dispose() {
     _flutterTts.stop();
+    AppTtsService.instance.stop();
     _pageController.dispose();
     super.dispose();
   }
@@ -58,6 +70,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
 
     try {
       // Stop any ongoing speech
+      await AppTtsService.instance.stop();
       await _flutterTts.stop();
       // Re-initialize to ensure it works
       await _initializeTts();

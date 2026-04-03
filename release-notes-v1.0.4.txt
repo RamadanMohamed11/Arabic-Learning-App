@@ -1,0 +1,15 @@
+**Version 1.0.4 - Release Notes**
+
+**English:**
+- **Full Arabic Numeral Support**: All numbers in the Math section are now properly localized and displayed in Arabic numerals (١، ٢، ٣...).
+- **Level 2 Tracing Added**: Added tracing support for the level 2 numbers (multiples of 10: ١٠، ٢٠، ٣٠).
+- **Quiz Feedback Enhancements**: Added an enhanced visual feedback system for correct and incorrect answers in the level 1 quiz with animations and colors (Green for correct, Red for incorrect).
+- **Easier Tracing Completion**: We've listened to feedback! Reduced the tracing path coverage threshold so that young children can complete tracing the numbers more easily without extreme precision.
+- **Improved Math Progression**: Fixed an issue where completing numbers rapidly wouldn't immediately show the next numbers as unlocked visually.
+
+**عربي:**
+- **دعم الأرقام العربية بالكامل**: جميع الأرقام في أقسام الرياضيات تظهر الآن بالتنسيق العربي بشكل كامل (١، ٢، ٣...).
+- **تتبع أرقام المستوى الثاني**: إضافة ميزة التتبع بالأصابع لمضاعفات الرقم ١٠ في المستوى الثاني.
+- **تحسينات اختبار المستوى الأول**: إضافة تأثيرات بصرية مفيدة (ألوان متحركة - أخضر للإجابة الصحيحة وأحمر للخاطئة) لتوضيح وتأكيد إجابة الطفل.
+- **تتبع أسهل للأطفال**: قمنا بتقليل درجة الدقة المطلوبة بقليل عند تتبع الأرقام، مما يسهل على الأطفال إتمام كتابة الرقم بنجاح دون إحباط.
+- **تحديث أسرع لواجهة التقدم**: إصلاح مشكلة عدم ظهور الأرقام الجديدة مفتوحة فور الانتهاء من عدد آخر عند التنقل السريع بين الأرقام.

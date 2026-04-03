@@ -10,13 +10,11 @@ import 'package:arabic_learning_app/features/exercises/presentation/views/widget
 class RevisionTestSelectionView extends StatefulWidget {
   final int groupNumber; // رقم المجموعة (0-6)
 
-  const RevisionTestSelectionView({
-    super.key,
-    required this.groupNumber,
-  });
+  const RevisionTestSelectionView({super.key, required this.groupNumber});
 
   @override
-  State<RevisionTestSelectionView> createState() => _RevisionTestSelectionViewState();
+  State<RevisionTestSelectionView> createState() =>
+      _RevisionTestSelectionViewState();
 }
 
 class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
@@ -35,18 +33,48 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
     setState(() {
-      _listeningCompleted = _progressService!.isRevisionListeningCompleted(widget.groupNumber);
-      _writingCompleted = _progressService!.isRevisionWritingCompleted(widget.groupNumber);
-      _pronunciationCompleted = _progressService!.isRevisionPronunciationCompleted(widget.groupNumber);
+      _listeningCompleted = _progressService!.isRevisionListeningCompleted(
+        widget.groupNumber,
+      );
+      _writingCompleted = _progressService!.isRevisionWritingCompleted(
+        widget.groupNumber,
+      );
+      _pronunciationCompleted = _progressService!
+          .isRevisionPronunciationCompleted(widget.groupNumber);
       _isLoading = false;
     });
   }
 
   int _getLetterIndex(String letter) {
     const arabicLetters = [
-      'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر',
-      'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف',
-      'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'
+      'ا',
+      'ب',
+      'ت',
+      'ث',
+      'ج',
+      'ح',
+      'خ',
+      'د',
+      'ذ',
+      'ر',
+      'ز',
+      'س',
+      'ش',
+      'ص',
+      'ض',
+      'ط',
+      'ظ',
+      'ع',
+      'غ',
+      'ف',
+      'ق',
+      'ك',
+      'ل',
+      'م',
+      'ن',
+      'ه',
+      'و',
+      'ي',
     ];
     return arabicLetters.indexOf(letter);
   }
@@ -55,9 +83,14 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
   Future<void> _checkAndUnlockNextLetter() async {
     if (_progressService == null) return;
 
-    final listeningDone = _progressService!.isRevisionListeningCompleted(widget.groupNumber);
-    final writingDone = _progressService!.isRevisionWritingCompleted(widget.groupNumber);
-    final pronunciationDone = _progressService!.isRevisionPronunciationCompleted(widget.groupNumber);
+    final listeningDone = _progressService!.isRevisionListeningCompleted(
+      widget.groupNumber,
+    );
+    final writingDone = _progressService!.isRevisionWritingCompleted(
+      widget.groupNumber,
+    );
+    final pronunciationDone = _progressService!
+        .isRevisionPronunciationCompleted(widget.groupNumber);
 
     // Only unlock if ALL THREE tests are completed
     if (listeningDone && writingDone && pronunciationDone) {
@@ -115,9 +148,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: AppColors.exercise2,
-                  ),
+                  gradient: const LinearGradient(colors: AppColors.exercise2),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.exercise2[0].withOpacity(0.3),
@@ -132,7 +163,10 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                       children: [
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
                         ),
                         Expanded(
                           child: Column(
@@ -213,7 +247,8 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                         _buildTestOption(
                           context,
                           title: 'اختبار الكتابة',
-                          description: 'ارسم الحروف: ${testGroup.letters.join(' - ')}',
+                          description:
+                              'ارسم الحروف: ${testGroup.letters.join(' - ')}',
                           icon: Icons.edit,
                           color: AppColors.exercise1[0],
                           testType: 'writing',
@@ -225,7 +260,8 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                         _buildTestOption(
                           context,
                           title: 'اختبار النطق',
-                          description: 'انطق الحروف: ${testGroup.letters.join(' - ')}',
+                          description:
+                              'انطق الحروف: ${testGroup.letters.join(' - ')}',
                           icon: Icons.mic,
                           color: AppColors.exercise2[1],
                           testType: 'pronunciation',
@@ -273,8 +309,10 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                 await _loadProgress();
               } else if (testType == 'writing') {
                 final letters = revisionTestGroups[widget.groupNumber].letters;
-                final letterIndices = letters.map((letter) => _getLetterIndex(letter)).toList();
-                
+                final letterIndices = letters
+                    .map((letter) => _getLetterIndex(letter))
+                    .toList();
+
                 await Navigator.push(
                   context,
                   AnimatedRoute.slideScale(
@@ -283,7 +321,9 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                       letterIndices: letterIndices,
                       onComplete: () async {
                         // Mark writing test as completed
-                        await _progressService!.completeRevisionWriting(widget.groupNumber);
+                        await _progressService!.completeRevisionWriting(
+                          widget.groupNumber,
+                        );
                         // Check if all tests are completed to unlock next letter
                         await _checkAndUnlockNextLetter();
                         Navigator.pop(context);
@@ -295,7 +335,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                 await _loadProgress();
               } else if (testType == 'pronunciation') {
                 final letters = revisionTestGroups[widget.groupNumber].letters;
-                
+
                 await Navigator.push(
                   context,
                   AnimatedRoute.slideUp(
@@ -303,7 +343,9 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                       letters: letters,
                       onComplete: () async {
                         // Mark pronunciation test as completed
-                        await _progressService!.completeRevisionPronunciation(widget.groupNumber);
+                        await _progressService!.completeRevisionPronunciation(
+                          widget.groupNumber,
+                        );
                         // Check if all tests are completed to unlock next letter
                         await _checkAndUnlockNextLetter();
                         Navigator.pop(context);
@@ -343,11 +385,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                 color: Colors.white.withOpacity(0.3),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 40,
-                color: Colors.white,
-              ),
+              child: Icon(icon, size: 40, color: Colors.white),
             ),
             const SizedBox(width: 20),
             Expanded(

@@ -11,7 +11,8 @@ class AlphabetView extends StatefulWidget {
   State<AlphabetView> createState() => _AlphabetViewState();
 }
 
-class _AlphabetViewState extends State<AlphabetView> with SingleTickerProviderStateMixin {
+class _AlphabetViewState extends State<AlphabetView>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   late PageController _pageController;
 
@@ -47,11 +48,7 @@ class _AlphabetViewState extends State<AlphabetView> with SingleTickerProviderSt
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        children: const [
-          AlphabetViewBody(),
-          ExercisesView(),
-          AboutView(),
-        ],
+        children: const [AlphabetViewBody(), ExercisesView(), AboutView()],
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -80,10 +77,7 @@ class _AlphabetViewState extends State<AlphabetView> with SingleTickerProviderSt
           },
           destinations: [
             NavigationDestination(
-              icon: Icon(
-                Icons.abc,
-                color: Colors.white.withOpacity(0.7),
-              ),
+              icon: Icon(Icons.abc, color: Colors.white.withOpacity(0.7)),
               selectedIcon: const Icon(
                 Icons.abc,
                 color: Colors.white,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/features/letter_tracing/presentation/views/simple_svg_letter_view.dart';
 import 'package:arabic_learning_app/features/word_training/presentation/views/widgets/word_training_view_body.dart';
 import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/writing_practice_view_body.dart';
@@ -24,9 +25,14 @@ class ExerciseItem {
   });
 }
 
-class ExercisesViewBody extends StatelessWidget {
+class ExercisesViewBody extends StatefulWidget {
   const ExercisesViewBody({super.key});
 
+  @override
+  State<ExercisesViewBody> createState() => _ExercisesViewBodyState();
+}
+
+class _ExercisesViewBodyState extends State<ExercisesViewBody> {
   static final List<ExerciseItem> exercises = [
     ExerciseItem(
       title: 'تتبع الحروف',
@@ -71,6 +77,35 @@ class ExercisesViewBody extends StatelessWidget {
       page: PronunciationPracticeViewBody(),
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _initInstructionTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        "قِسْمُ التَمَارِينِ، اِخْتَرِ التَّمْرِينَ الَّذِي تُرِيد.",
+      );
+    }
+  }
+
+  void _rePlayInstruction() {
+    if (mounted) {
+      AppTtsService.instance.speak(
+        "قِسْمُ التَمَارِينِ، اِخْتَرِ التَّمْرِينَ الَّذِي تُرِيد.",
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +179,7 @@ class ExercisesViewBody extends StatelessWidget {
         Navigator.push(
           context,
           AnimatedRoute.rotationFade(Scaffold(body: exercise.page)),
-        );
+        ).then((_) => _rePlayInstruction());
       },
       child: Container(
         decoration: BoxDecoration(
@@ -170,7 +205,7 @@ class ExercisesViewBody extends StatelessWidget {
               Navigator.push(
                 context,
                 AnimatedRoute.rotationFade(Scaffold(body: exercise.page)),
-              );
+              ).then((_) => _rePlayInstruction());
             },
             child: Padding(
               padding: const EdgeInsets.all(20.0),

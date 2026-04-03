@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
@@ -18,7 +19,8 @@ class LetterTestSelectionView extends StatefulWidget {
   });
 
   @override
-  State<LetterTestSelectionView> createState() => _LetterTestSelectionViewState();
+  State<LetterTestSelectionView> createState() =>
+      _LetterTestSelectionViewState();
 }
 
 class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
@@ -41,6 +43,7 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
 
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
+    _initTts();
     setState(() {
       _tracingCompleted = _progressService!.isActivityCompleted(
         widget.letterIndex,
@@ -52,6 +55,21 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
       );
       _isLoading = false;
     });
+  }
+
+  Future<void> _initTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'اختبارات حرف ${widget.letter}. اختر الاختبار الذي تريد',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
   }
 
   Future<void> _startTracingExercise() async {
@@ -126,28 +144,39 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
     if (allCompleted) {
       // Complete the letter and unlock next one
       await _progressService!.completeLetter(widget.letterIndex);
-      
+
       // Check if we should unlock the next lesson (revision test)
       // Unlock lesson only when all 4 letters in current lesson are completed
       final currentLessonIndex = widget.letterIndex ~/ 4;
       final firstLetterInLesson = currentLessonIndex * 4;
       final lastLetterInLesson = firstLetterInLesson + 3;
-      
+
       // Check if all 4 letters in this lesson are completed
       bool allLettersInLessonCompleted = true;
-      for (int i = firstLetterInLesson; i <= lastLetterInLesson && i < 28; i++) {
-        final letterTracingDone = _progressService!.isActivityCompleted(i, tracingExerciseIndex);
-        final letterPronunciationDone = _progressService!.isActivityCompleted(i, pronunciationExerciseIndex);
+      for (
+        int i = firstLetterInLesson;
+        i <= lastLetterInLesson && i < 28;
+        i++
+      ) {
+        final letterTracingDone = _progressService!.isActivityCompleted(
+          i,
+          tracingExerciseIndex,
+        );
+        final letterPronunciationDone = _progressService!.isActivityCompleted(
+          i,
+          pronunciationExerciseIndex,
+        );
         if (!letterTracingDone || !letterPronunciationDone) {
           allLettersInLessonCompleted = false;
           break;
         }
       }
-      
+
       // If all 4 letters completed, unlock the next lesson (for revision test)
       if (allLettersInLessonCompleted) {
         final nextLessonIndex = currentLessonIndex + 1;
-        if (nextLessonIndex < 7) { // 28 letters / 4 = 7 lessons
+        if (nextLessonIndex < 7) {
+          // 28 letters / 4 = 7 lessons
           await _progressService!.unlockLevel1Lesson(nextLessonIndex);
         }
       }
@@ -361,7 +390,7 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
     required VoidCallback onTap,
   }) {
     final bool showCheck = isCompleted;
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -445,9 +474,7 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.warmGradient,
-        ),
+        gradient: const LinearGradient(colors: AppColors.warmGradient),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

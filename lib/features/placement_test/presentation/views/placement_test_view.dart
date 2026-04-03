@@ -6,8 +6,6 @@ class PlacementTestView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: PlacementTestViewBody(),
-    );
+    return const Scaffold(body: PlacementTestViewBody());
   }
 }

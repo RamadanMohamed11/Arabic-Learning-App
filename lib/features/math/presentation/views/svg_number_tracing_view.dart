@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/utils/arabic_numbers_extension.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/math_progress_service.dart';
@@ -6,7 +7,6 @@ import 'package:arabic_learning_app/features/math/data/svg_number_paths.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_number_model.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_level_model.dart';
 import 'package:arabic_learning_app/features/letter_tracing/presentation/widgets/svg_letter_trace_painter.dart';
-
 
 /// Arabic number names for TTS
 const Map<int, String> _arabicNumberNames = {
@@ -120,6 +120,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
 
   @override
   void dispose() {
+    AppTtsService.instance.stop();
     _celebrationController.dispose();
     super.dispose();
   }
@@ -209,7 +210,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
     }
 
     final coverageRatio = samplesCount > 0 ? totalCoverage / samplesCount : 0.0;
-    if (coverageRatio >= 0.9) {
+    if (coverageRatio >= 0.85) {
       _completeCurrentPath();
     }
   }
@@ -236,14 +237,12 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
     await AppTtsService.instance.speak('أحسنت! لقد أتقنت كتابة رقم $name');
 
     if (_progressService != null) {
-      // Mark all activities as completed for this number (tracing is the only one)
-      for (int i = 0; i < 4; i++) {
-        await _progressService!.completeActivity(
-          widget.levelModel.level,
-          widget.numberModel.number,
-          i,
-        );
-      }
+      // Mark tracing activity (id 0) as completed for this number
+      await _progressService!.completeActivity(
+        widget.levelModel.level,
+        widget.numberModel.number,
+        0, // activity 0 = tracing
+      );
 
       // Unlock the next number or mark level complete
       await _unlockNextNumber();
@@ -267,10 +266,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
     if (currentIdx + 1 < widget.levelModel.numbers.length) {
       // Unlock the next number
       final nextNumber = widget.levelModel.numbers[currentIdx + 1].number;
-      await _progressService!.unlockNumber(
-        widget.levelModel.level,
-        nextNumber,
-      );
+      await _progressService!.unlockNumber(widget.levelModel.level, nextNumber);
     } else {
       // All numbers completed — mark level done
       if (widget.levelModel.level == 1) {
@@ -343,8 +339,10 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
               child: Text(
                 'التالي: ${nextNumber.label}',
@@ -359,8 +357,10 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
               child: const Text(
                 'أحسنت! انتهيت من المستوى 🎉',
@@ -503,7 +503,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'التقدم: ${(progress * 100).toInt()}%',
+                'التقدم: ${(progress * 100).toInt().toArabicDigits()}%',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -511,7 +511,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
                 ),
               ),
               Text(
-                'المسار ${currentPathIndex + 1}/${numberPath!.paths.length}',
+                'المسار ${(currentPathIndex + 1).toArabicDigits()}/${numberPath!.paths.length.toArabicDigits()}',
                 style: TextStyle(color: _levelColors[1], fontSize: 16),
               ),
             ],

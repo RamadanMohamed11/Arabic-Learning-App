@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:arabic_learning_app/constants.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/automated_letter_trace_screen.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
@@ -26,11 +27,21 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
   void initState() {
     super.initState();
     _loadProgress();
+    _initInstructionTts();
+  }
+
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        "تَدْرِيبُ الْكِتَابَةِ، اُكْتُبِ الْحَرْفَ فِي الْمَكَانِ الْمُخَصَّص.",
+      );
+    }
   }
 
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
-    
+
     setState(() {
       _unlockedLetters = _progressService!.getUnlockedLetters();
     });
@@ -38,11 +49,10 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
 
   @override
   void dispose() {
+    AppTtsService.instance.stop();
     _pageController.dispose();
     super.dispose();
   }
-
-
 
   void _clearSignature() {
     _signaturePadKey.currentState?.clear();
@@ -85,9 +95,9 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
 
   void _startTracingPractice() async {
     if (_progressService == null) return;
-    
+
     final currentLetter = arabicLetters[_currentLetterIndex];
-    
+
     // Check if letter is unlocked
     final isUnlocked = _unlockedLetters.contains(_currentLetterIndex);
     if (!isUnlocked) {
@@ -101,9 +111,9 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
       }
       return;
     }
-    
+
     const int tracingActivityIndex = 0; // Activity 0 = Tracing Exercise
-    
+
     // Navigate to tracing screen
     if (mounted) {
       await Navigator.push(
@@ -118,19 +128,21 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                 _currentLetterIndex,
                 tracingActivityIndex,
               );
-              
+
               // Check if all activities for this letter are completed
               // For now, we only have 1 activity (tracing), so complete the letter
               await _progressService!.completeLetter(_currentLetterIndex);
-              
+
               // Reload progress
               await _loadProgress();
-              
+
               // Show success message
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('أحسنت! لقد أكملت حرف ${currentLetter.letter}'),
+                    content: Text(
+                      'أحسنت! لقد أكملت حرف ${currentLetter.letter}',
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -139,7 +151,7 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
           ),
         ),
       );
-      
+
       // Reload progress after returning from tracing screen
       await _loadProgress();
     }
@@ -170,9 +182,11 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                   itemBuilder: (context, index) {
                     final letter = arabicLetters[index];
                     // Check if tracing activity (activity 0) is completed for this letter
-                    final isCompleted = _progressService?.isActivityCompleted(index, 0) ?? false;
+                    final isCompleted =
+                        _progressService?.isActivityCompleted(index, 0) ??
+                        false;
                     final isLocked = !_unlockedLetters.contains(index);
-                    
+
                     return Card(
                       elevation: 8,
                       child: Container(
@@ -183,8 +197,8 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                             colors: isLocked
                                 ? [Colors.grey.shade400, Colors.grey.shade600]
                                 : isCompleted
-                                    ? [Colors.green.shade400, Colors.green.shade600]
-                                    : [Colors.teal.shade400, Colors.teal.shade600],
+                                ? [Colors.green.shade400, Colors.green.shade600]
+                                : [Colors.teal.shade400, Colors.teal.shade600],
                           ),
                         ),
                         child: Stack(
@@ -297,12 +311,16 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Builder(
                   builder: (context) {
-                    final isCompleted = _progressService?.isActivityCompleted(
+                    final isCompleted =
+                        _progressService?.isActivityCompleted(
+                          _currentLetterIndex,
+                          0, // Tracing activity
+                        ) ??
+                        false;
+                    final isLocked = !_unlockedLetters.contains(
                       _currentLetterIndex,
-                      0, // Tracing activity
-                    ) ?? false;
-                    final isLocked = !_unlockedLetters.contains(_currentLetterIndex);
-                    
+                    );
+
                     return ElevatedButton.icon(
                       onPressed: isLocked ? null : _startTracingPractice,
                       icon: Icon(
@@ -320,8 +338,8 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                         backgroundColor: isLocked
                             ? Colors.grey
                             : isCompleted
-                                ? Colors.green
-                                : Colors.deepPurple,
+                            ? Colors.green
+                            : Colors.deepPurple,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         minimumSize: const Size(double.infinity, 50),
@@ -352,47 +370,47 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                           // White background
                           Container(color: Colors.white),
 
-                            // Guidance frame
-                            Center(
-                              child: Container(
-                                width: 200,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.teal.withOpacity(0.3),
-                                    width: 2,
-                                    strokeAlign: BorderSide.strokeAlignInside,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
+                          // Guidance frame
+                          Center(
+                            child: Container(
+                              width: 200,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.teal.withOpacity(0.3),
+                                  width: 2,
+                                  strokeAlign: BorderSide.strokeAlignInside,
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    'اكتب هنا',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.teal.withOpacity(0.3),
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'اكتب هنا',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.teal.withOpacity(0.3),
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ),
+                          ),
 
-                            // Hint overlay
-                            if (_showHint)
-                              Center(
-                                child: Opacity(
-                                  opacity: 0.15,
-                                  child: Text(
-                                    arabicLetters[_currentLetterIndex].letter,
-                                    style: TextStyle(
-                                      fontSize: 180,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.teal.shade700,
-                                    ),
+                          // Hint overlay
+                          if (_showHint)
+                            Center(
+                              child: Opacity(
+                                opacity: 0.15,
+                                child: Text(
+                                  arabicLetters[_currentLetterIndex].letter,
+                                  style: TextStyle(
+                                    fontSize: 180,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.teal.shade700,
                                   ),
                                 ),
                               ),
+                            ),
 
                           // Signature pad
                           SfSignaturePad(
@@ -481,5 +499,4 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
       ),
     );
   }
-
 }

@@ -5,10 +5,7 @@ class SimpleSvgLetterPath {
   final String letter;
   final String svgContent; // محتوى SVG الخام
 
-  const SimpleSvgLetterPath({
-    required this.letter,
-    required this.svgContent,
-  });
+  const SimpleSvgLetterPath({required this.letter, required this.svgContent});
 }
 
 /// مدير مسارات الحروف من SVG (مبسط)
@@ -25,12 +22,12 @@ class SimpleSvgLetterPathManager {
     try {
       // قراءة ملف SVG
       final svgString = await rootBundle.loadString('assets/svg/$letter.svg');
-      
+
       final letterPath = SimpleSvgLetterPath(
         letter: letter,
         svgContent: svgString,
       );
-      
+
       _cache[letter] = letterPath;
       return letterPath;
     } catch (e) {
@@ -43,10 +40,34 @@ class SimpleSvgLetterPathManager {
   /// تحميل جميع الحروف مسبقاً
   static Future<void> preloadAllLetters() async {
     final letters = [
-      'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ',
-      'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص',
-      'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق',
-      'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي',
+      'ا',
+      'ب',
+      'ت',
+      'ث',
+      'ج',
+      'ح',
+      'خ',
+      'د',
+      'ذ',
+      'ر',
+      'ز',
+      'س',
+      'ش',
+      'ص',
+      'ض',
+      'ط',
+      'ظ',
+      'ع',
+      'غ',
+      'ف',
+      'ق',
+      'ك',
+      'ل',
+      'م',
+      'ن',
+      'ه',
+      'و',
+      'ي',
     ];
 
     for (final letter in letters) {

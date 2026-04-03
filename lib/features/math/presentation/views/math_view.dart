@@ -28,11 +28,10 @@ class _MathViewState extends State<MathView> {
   Future<void> _loadProgress() async {
     _progressService = await MathProgressService.getInstance();
     if (_isLoading) {
-      _initTts();
-    }
-    setState(() {
       _isLoading = false;
-    });
+    }
+    _initTts();
+    setState(() {});
   }
 
   Future<void> _initTts() async {
@@ -46,6 +45,7 @@ class _MathViewState extends State<MathView> {
 
   @override
   void dispose() {
+    AppTtsService.instance.stop();
     super.dispose();
   }
 
@@ -107,6 +107,7 @@ class _MathViewState extends State<MathView> {
                                           ? Icons.looks_two
                                           : Icons.looks_3,
                                       onTap: () async {
+                                        AppTtsService.instance.stop();
                                         await Navigator.push(
                                           context,
                                           AnimatedRoute.fadeScale(

@@ -1,4 +1,5 @@
 import 'package:arabic_learning_app/constants.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/widgets/letter_card.dart';
@@ -26,18 +27,36 @@ class _AlphabetViewBodyState extends State<AlphabetViewBody> {
   Future<void> _initTts() async {
     await TtsConfig.configure(flutterTts, language: 'ar-EG', speechRate: 0.5);
     flutterTts.setCompletionHandler(() {});
+
+    // Play screen instructions automatically
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'تعلم الحروف العربية، اضغط على بطاقة الحرف لتعلم أشكاله، أو اضغط على السماعة لسماع النطق.',
+      );
+    }
   }
 
   Future<void> _speak(String text) async {
     // Stop any ongoing speech
+    await AppTtsService.instance.stop();
     await flutterTts.stop();
     // Speak
     await flutterTts.speak(text);
   }
 
+  void _rePlayInstruction() {
+    if (mounted) {
+      AppTtsService.instance.speak(
+        'تعلم الحروف العربية، اضغط على بطاقة الحرف لتعلم أشكاله، أو اضغط على السماعة لسماع النطق.',
+      );
+    }
+  }
+
   @override
   void dispose() {
     flutterTts.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 
@@ -106,7 +125,7 @@ class _AlphabetViewBodyState extends State<AlphabetViewBody> {
                               letter: arabicLetters[index].letter,
                             ),
                           ),
-                        );
+                        ).then((_) => _rePlayInstruction());
                       },
                     );
                   },

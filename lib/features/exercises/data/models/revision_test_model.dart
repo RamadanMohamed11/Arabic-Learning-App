@@ -2,10 +2,7 @@ class RevisionQuestion {
   final String correctAnswer;
   final List<String> options;
 
-  RevisionQuestion({
-    required this.correctAnswer,
-    required this.options,
-  });
+  RevisionQuestion({required this.correctAnswer, required this.options});
 }
 
 class RevisionTestGroup {
@@ -33,22 +30,10 @@ final List<RevisionTestGroup> revisionTestGroups = [
     emoji: '🟩',
     letters: ['ا', 'ب', 'ت', 'ث'],
     questions: [
-      RevisionQuestion(
-        correctAnswer: 'ا',
-        options: ['ب', 'ث', 'ا', 'ت'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ب',
-        options: ['ت', 'ا', 'ب', 'ث'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ت',
-        options: ['ث', 'ب', 'ا', 'ت'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ث',
-        options: ['ت', 'ا', 'ث', 'ب'],
-      ),
+      RevisionQuestion(correctAnswer: 'ا', options: ['ب', 'ث', 'ا', 'ت']),
+      RevisionQuestion(correctAnswer: 'ب', options: ['ت', 'ا', 'ب', 'ث']),
+      RevisionQuestion(correctAnswer: 'ت', options: ['ث', 'ب', 'ا', 'ت']),
+      RevisionQuestion(correctAnswer: 'ث', options: ['ت', 'ا', 'ث', 'ب']),
     ],
   ),
 
@@ -59,22 +44,10 @@ final List<RevisionTestGroup> revisionTestGroups = [
     emoji: '🟦',
     letters: ['ج', 'ح', 'خ', 'د'],
     questions: [
-      RevisionQuestion(
-        correctAnswer: 'ج',
-        options: ['ج', 'ب', 'خ', 'ا'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ح',
-        options: ['ح', 'ت', 'د', 'ث'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'خ',
-        options: ['ب', 'خ', 'ج', 'ت'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'د',
-        options: ['د', 'ا', 'ب', 'ج'],
-      ),
+      RevisionQuestion(correctAnswer: 'ج', options: ['ج', 'ب', 'خ', 'ا']),
+      RevisionQuestion(correctAnswer: 'ح', options: ['ح', 'ت', 'د', 'ث']),
+      RevisionQuestion(correctAnswer: 'خ', options: ['ب', 'خ', 'ج', 'ت']),
+      RevisionQuestion(correctAnswer: 'د', options: ['د', 'ا', 'ب', 'ج']),
     ],
   ),
 
@@ -85,22 +58,10 @@ final List<RevisionTestGroup> revisionTestGroups = [
     emoji: '🟨',
     letters: ['ذ', 'ر', 'ز', 'س'],
     questions: [
-      RevisionQuestion(
-        correctAnswer: 'ذ',
-        options: ['ذ', 'د', 'ب', 'ت'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ر',
-        options: ['ر', 'ب', 'ا', 'ذ'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ز',
-        options: ['ث', 'ر', 'ز', 'ا'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'س',
-        options: ['س', 'خ', 'ر', 'ب'],
-      ),
+      RevisionQuestion(correctAnswer: 'ذ', options: ['ذ', 'د', 'ب', 'ت']),
+      RevisionQuestion(correctAnswer: 'ر', options: ['ر', 'ب', 'ا', 'ذ']),
+      RevisionQuestion(correctAnswer: 'ز', options: ['ث', 'ر', 'ز', 'ا']),
+      RevisionQuestion(correctAnswer: 'س', options: ['س', 'خ', 'ر', 'ب']),
     ],
   ),
 
@@ -111,22 +72,10 @@ final List<RevisionTestGroup> revisionTestGroups = [
     emoji: '🟧',
     letters: ['ش', 'ص', 'ض', 'ط'],
     questions: [
-      RevisionQuestion(
-        correctAnswer: 'ش',
-        options: ['ش', 'ص', 'ب', 'س'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ص',
-        options: ['ص', 'ط', 'ا', 'ذ'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ض',
-        options: ['ض', 'ر', 'ط', 'خ'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ط',
-        options: ['ط', 'ث', 'ض', 'ش'],
-      ),
+      RevisionQuestion(correctAnswer: 'ش', options: ['ش', 'ص', 'ب', 'س']),
+      RevisionQuestion(correctAnswer: 'ص', options: ['ص', 'ط', 'ا', 'ذ']),
+      RevisionQuestion(correctAnswer: 'ض', options: ['ض', 'ر', 'ط', 'خ']),
+      RevisionQuestion(correctAnswer: 'ط', options: ['ط', 'ث', 'ض', 'ش']),
     ],
   ),
 
@@ -137,22 +86,10 @@ final List<RevisionTestGroup> revisionTestGroups = [
     emoji: '🟪',
     letters: ['ظ', 'ع', 'غ', 'ف'],
     questions: [
-      RevisionQuestion(
-        correctAnswer: 'ظ',
-        options: ['ظ', 'ط', 'غ', 'ب'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ع',
-        options: ['ع', 'ص', 'غ', 'د'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'غ',
-        options: ['غ', 'ع', 'ت', 'ز'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ف',
-        options: ['ف', 'خ', 'ع', 'ش'],
-      ),
+      RevisionQuestion(correctAnswer: 'ظ', options: ['ظ', 'ط', 'غ', 'ب']),
+      RevisionQuestion(correctAnswer: 'ع', options: ['ع', 'ص', 'غ', 'د']),
+      RevisionQuestion(correctAnswer: 'غ', options: ['غ', 'ع', 'ت', 'ز']),
+      RevisionQuestion(correctAnswer: 'ف', options: ['ف', 'خ', 'ع', 'ش']),
     ],
   ),
 
@@ -163,22 +100,10 @@ final List<RevisionTestGroup> revisionTestGroups = [
     emoji: '🟥',
     letters: ['ق', 'ك', 'ل', 'م'],
     questions: [
-      RevisionQuestion(
-        correctAnswer: 'ق',
-        options: ['ق', 'ف', 'ك', 'ب'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ك',
-        options: ['ك', 'ل', 'ا', 'ط'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ل',
-        options: ['ل', 'ق', 'م', 'ص'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'م',
-        options: ['م', 'ك', 'ر', 'خ'],
-      ),
+      RevisionQuestion(correctAnswer: 'ق', options: ['ق', 'ف', 'ك', 'ب']),
+      RevisionQuestion(correctAnswer: 'ك', options: ['ك', 'ل', 'ا', 'ط']),
+      RevisionQuestion(correctAnswer: 'ل', options: ['ل', 'ق', 'م', 'ص']),
+      RevisionQuestion(correctAnswer: 'م', options: ['م', 'ك', 'ر', 'خ']),
     ],
   ),
 
@@ -189,22 +114,10 @@ final List<RevisionTestGroup> revisionTestGroups = [
     emoji: '🟫',
     letters: ['ن', 'ه', 'و', 'ي'],
     questions: [
-      RevisionQuestion(
-        correctAnswer: 'ن',
-        options: ['ن', 'م', 'ه', 'ب'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ه',
-        options: ['ه', 'ن', 'و', 'ك'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'و',
-        options: ['و', 'ي', 'ك', 'ف'],
-      ),
-      RevisionQuestion(
-        correctAnswer: 'ي',
-        options: ['ي', 'ه', 'م', 'ز'],
-      ),
+      RevisionQuestion(correctAnswer: 'ن', options: ['ن', 'م', 'ه', 'ب']),
+      RevisionQuestion(correctAnswer: 'ه', options: ['ه', 'ن', 'و', 'ك']),
+      RevisionQuestion(correctAnswer: 'و', options: ['و', 'ي', 'ك', 'ف']),
+      RevisionQuestion(correctAnswer: 'ي', options: ['ي', 'ه', 'م', 'ز']),
     ],
   ),
 ];

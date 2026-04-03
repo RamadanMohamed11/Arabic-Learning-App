@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/views/word_spelling_view.dart';
@@ -94,12 +95,28 @@ class _LevelTwoViewState extends State<LevelTwoView> {
     }
     unlocked.sort();
 
+    _initTts();
     setState(() {
       _progressService = service;
       _progress = progress;
       _unlockedLessons = unlocked;
       _completedActivities = service.getLevel2CompletedActivities().toSet();
     });
+  }
+
+  Future<void> _initTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'المستوى الثاني: تعلم الكلمات والجمل! اختر النشاط الذي تريد',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
   }
 
   Future<void> _openActivity(int index) async {
@@ -121,6 +138,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
       return;
     }
 
+    AppTtsService.instance.stop();
     final result = await Navigator.push(
       context,
       AnimatedRoute.slideRight(view),

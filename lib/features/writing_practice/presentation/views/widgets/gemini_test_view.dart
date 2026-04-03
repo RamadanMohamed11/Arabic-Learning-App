@@ -47,7 +47,7 @@
 //       print('DEBUG: Image size: ${imageBytes.length} bytes');
 
 //       // 2. السؤال
-//       final String prompt = 
+//       final String prompt =
 //           "هل الحرف في هذه الصورة هو الحرف العربي '${widget.targetLetter}'؟ أجب بكلمة 'نعم' أو 'لا' فقط بدون أي مقدمات أو شرح إضافي.";
 
 //       print('DEBUG: Prompt: $prompt');
@@ -63,7 +63,7 @@
 
 //       // 4. تحليل الإجابة
 //       final String? answer = response?.content?.parts?.last.text?.trim().toLowerCase();
-      
+
 //       print('DEBUG: Answer: $answer');
 
 //       if (answer != null && answer.contains('نعم')) {

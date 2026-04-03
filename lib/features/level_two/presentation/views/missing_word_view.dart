@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/missing_word_model.dart';
 import 'package:arabic_learning_app/features/level_two/presentation/widgets/missing_word_widget.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 
 class MissingWordView extends StatefulWidget {
   const MissingWordView({super.key});
@@ -16,28 +15,20 @@ class _MissingWordViewState extends State<MissingWordView> {
   int _current = 0;
   int _score = 0;
   bool _complete = false;
-  late final FlutterTts _instructionTts;
-  bool _instructionPlayed = false;
 
   @override
   void initState() {
     super.initState();
-    _instructionTts = FlutterTts();
-    _initInstruction();
+    _initInstructionTts();
   }
 
-  Future<void> _initInstruction() async {
-    await TtsConfig.configure(_instructionTts, speechRate: 0.45);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
-  }
-
-  Future<void> _playInstruction() async {
-    if (_instructionPlayed) return;
-    _instructionPlayed = true;
-    await _instructionTts.stop();
-    await _instructionTts.speak(
-      'اقرأ الكلمة وأكمل الحرف الناقص في المكان الفارغ.',
-    );
+  Future<void> _initInstructionTts() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await AppTtsService.instance.speak(
+        'اقرأ الكلمة وأكمل الحرف الناقص في المكان الفارغ.',
+      );
+    }
   }
 
   void _onCorrect() {
@@ -62,7 +53,7 @@ class _MissingWordViewState extends State<MissingWordView> {
 
   @override
   void dispose() {
-    _instructionTts.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 

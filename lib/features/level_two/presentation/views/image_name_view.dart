@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -36,6 +37,7 @@ class _ImageNameViewState extends State<ImageNameView> {
   @override
   void dispose() {
     _tts.stop();
+    AppTtsService.instance.stop();
     _ctrl.dispose();
     super.dispose();
   }
@@ -48,8 +50,7 @@ class _ImageNameViewState extends State<ImageNameView> {
   Future<void> _playInstruction() async {
     if (_instructionPlayed) return;
     _instructionPlayed = true;
-    await _tts.stop();
-    await _tts.speak('انظر إلى الصورة واكتب اسمها الصحيح.');
+    await AppTtsService.instance.speak('انظر إلى الصورة واكتب اسمها الصحيح.');
     // After instruction, speak the first image word
     await Future.delayed(const Duration(milliseconds: 1500));
     _speakCurrentImageWord();

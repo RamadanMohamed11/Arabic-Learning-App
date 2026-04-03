@@ -100,8 +100,13 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               icon: const Icon(Icons.refresh),
               label: const Text('إعادة'),
@@ -168,8 +173,8 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
                           color: matched
                               ? AppColors.success
                               : (selected
-                                  ? AppColors.primary
-                                  : Colors.grey.shade300),
+                                    ? AppColors.primary
+                                    : Colors.grey.shade300),
                           width: 2,
                         ),
                       ),
@@ -185,8 +190,8 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
                             color: matched
                                 ? AppColors.success
                                 : (selected
-                                    ? AppColors.primary
-                                    : AppColors.textPrimary),
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary),
                           ),
                         ),
                       ),
@@ -244,18 +249,19 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
                       color: matched
                           ? AppColors.success
                           : selected
-                              ? AppColors.primary
-                              : Colors.grey.shade300,
+                          ? AppColors.primary
+                          : Colors.grey.shade300,
                       width: 3,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: (matched
-                                ? AppColors.success
-                                : selected
+                        color:
+                            (matched
+                                    ? AppColors.success
+                                    : selected
                                     ? AppColors.primary
                                     : Colors.black)
-                            .withOpacity(0.08),
+                                .withOpacity(0.08),
                         blurRadius: 10,
                         offset: const Offset(0, 6),
                       ),
@@ -270,7 +276,11 @@ class _WordMatchWidgetState extends State<WordMatchWidget> {
                         Container(
                           color: Colors.black.withOpacity(0.25),
                           child: const Center(
-                            child: Icon(Icons.check_circle, color: Colors.white, size: 42),
+                            child: Icon(
+                              Icons.check_circle,
+                              color: Colors.white,
+                              size: 42,
+                            ),
                           ),
                         ),
                     ],

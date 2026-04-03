@@ -69,10 +69,7 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
 
   Future<void> _initTts() async {
     _flutterTts = FlutterTts();
-    await TtsConfig.configure(
-      _flutterTts,
-      speechRate: 0.5,
-    );
+    await TtsConfig.configure(_flutterTts, speechRate: 0.5);
     _flutterTts.setCompletionHandler(() {
       if (mounted) {
         setState(() => _isSpeaking = false);

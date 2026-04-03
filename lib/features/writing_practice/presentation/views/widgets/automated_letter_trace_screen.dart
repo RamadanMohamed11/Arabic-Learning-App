@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_drawing/path_drawing.dart';
 import 'dart:ui';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 
 class AutomatedLetterTraceScreen extends StatefulWidget {
   final String svgAssetPath;
@@ -49,6 +50,20 @@ class _AutomatedLetterTraceScreenState
   void initState() {
     super.initState();
     _loadAndParseSvg();
+    _playIntro();
+  }
+
+  Future<void> _playIntro() async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (mounted) {
+      await AppTtsService.instance.speak("قُم بتتبع الحرف");
+    }
+  }
+
+  @override
+  void dispose() {
+    AppTtsService.instance.stop();
+    super.dispose();
   }
 
   Future<void> _loadAndParseSvg() async {
