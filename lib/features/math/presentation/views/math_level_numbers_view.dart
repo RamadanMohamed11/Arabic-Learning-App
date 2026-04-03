@@ -101,43 +101,45 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                                 widget.level.level, n.number) ==
                             true)
                         .length;
-                    if (completedCount == widget.level.numbers.length) {
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colors[0],
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 16, horizontal: 32),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              AnimatedRoute.fadeScale(
-                                const MathLevel1QuizView(),
-                              ),
-                            );
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.quiz),
-                              SizedBox(width: 8),
-                              Text(
-                                'اختبار المستوى الأول',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ],
+                    
+                    final isUnlocked = completedCount == widget.level.numbers.length;
+
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isUnlocked ? colors[0] : Colors.grey.shade400,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 32),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                      );
-                    }
-                    return const SizedBox.shrink();
+                        onPressed: isUnlocked
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  AnimatedRoute.fadeScale(
+                                    const MathLevel1QuizView(),
+                                  ),
+                                );
+                              }
+                            : null, // Disabled when locked
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(isUnlocked ? Icons.quiz : Icons.lock),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'اختبار المستوى الأول',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   },
                 ),
             ],
