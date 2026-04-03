@@ -6,7 +6,7 @@ import 'package:arabic_learning_app/features/math/data/svg_number_paths.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_number_model.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_level_model.dart';
 import 'package:arabic_learning_app/features/letter_tracing/presentation/widgets/svg_letter_trace_painter.dart';
-import 'package:arabic_learning_app/core/utils/animated_route.dart';
+
 
 /// Arabic number names for TTS
 const Map<int, String> _arabicNumberNames = {
@@ -20,6 +20,15 @@ const Map<int, String> _arabicNumberNames = {
   8: 'ثمانية',
   9: 'تسعة',
   10: 'عشرة',
+  20: 'عشرون',
+  30: 'ثلاثون',
+  40: 'أربعون',
+  50: 'خمسون',
+  60: 'ستون',
+  70: 'سبعون',
+  80: 'ثمانون',
+  90: 'تسعون',
+  100: 'مائة',
 };
 
 class SvgNumberTracingView extends StatefulWidget {
@@ -330,15 +339,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(ctx); // close dialog
-                Navigator.pushReplacement(
-                  context,
-                  AnimatedRoute.slideRight(
-                    SvgNumberTracingView(
-                      numberModel: nextNumber,
-                      levelModel: widget.levelModel,
-                    ),
-                  ),
-                );
+                Navigator.pop(context, 'next'); // return to parent with 'next'
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
@@ -354,7 +355,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(ctx); // close dialog
-                Navigator.pop(context); // back to numbers
+                Navigator.pop(context, 'done'); // return to parent
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,

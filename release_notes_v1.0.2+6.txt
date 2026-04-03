@@ -1,0 +1,25 @@
+=== Release Notes v1.0.2+6 ===
+
+## 🇬🇧 English
+**New Features & Improvements:**
+- 🎨 **Enhanced Onboarding:** Streamlined the first-time experience. The app now asks for your name immediately upon launch to personalize your learning journey!
+- 🔢 **Interactive Math Tracing:** Replaced the "coming soon" placeholders in the Math module with a brand-new, interactive SVG number tracing activity (Numbers 1-10).
+- 🗣️ **Smart Audio Guidance:** Added intelligent TTS (Text-to-Speech) voice instructions when entering new screens to automatically guide learners through the Arabic and Math modules.
+- 🎯 **Tracing Accuracy:** Improved the tracing accuracy threshold and fixed graphics rendering, ensuring that the tracking guides correctly fill the screen.
+
+**Bug Fixes:**
+- 🐛 Fixed navigation problems and layout bugs in the Math Level activities. 
+- 🐛 Improved state management across all subject screens to prevent unmounted errors during progression.
+
+---
+
+## 🇸🇦 العربية
+**مميزات جديدة وتحسينات:**
+- 🎨 **تحسين شاشة الترحيب:** تم تبسيط تجربة الاستخدام لأول مرة. التطبيق الآن يطلب اسمك فور تشغيله لتخصيص رحلة التعلم الخاصة بك!
+- 🔢 **تتبع الأرقام التفاعلي:** تمت إضافة نشاط تفاعلي جديد بالكامل لتتبع الأرقام (من 1 إلى 10) في قسم الرياضيات.
+- 🗣️ **التوجيه الصوتي الذكي:** تمت إضافة تعليمات صوتية ذكية عند الدخول إلى شاشات جديدة لتوجيه المتعلمين تلقائيًا في أقسام اللغة العربية والرياضيات.
+- 🎯 **دقة التتبع:** تم رفع مستوى دقة استشعار التتبع وإصلاح العرض الرسومي للتأكد من ملاءمة أرقام التتبع لحجم الشاشة بشكل ممتاز.
+
+**إصلاحات أخطاء:**
+- 🐛 إصلاح مشاكل التنقل وأخطاء التصميم في أنشطة مستويات الرياضيات.
+- 🐛 تحسين إدارة الحالة (State Management) في جميع شاشات التطبيق لضمان انتقال سلس بين المستويات دون أخطاء.

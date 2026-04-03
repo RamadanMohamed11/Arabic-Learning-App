@@ -16,7 +16,7 @@ final List<MathLevelModel> mathLevels = [
     title: 'المستوى الثاني',
     description: 'مضاعفات الرقم 10',
     numbers: List.generate(
-      9,
+      10,
       (index) => MathNumberModel(
         number: (index + 1) * 10,
         label: '${(index + 1) * 10}',

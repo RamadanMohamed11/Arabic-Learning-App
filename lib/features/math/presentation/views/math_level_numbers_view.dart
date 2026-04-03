@@ -5,6 +5,7 @@ import 'package:arabic_learning_app/core/services/math_progress_service.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_level_model.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'svg_number_tracing_view.dart';
+import 'math_level1_quiz_view.dart';
 
 class MathLevelNumbersView extends StatefulWidget {
   final MathLevelModel level;
@@ -91,6 +92,54 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                   },
                 ),
               ),
+              if (widget.level.level == 1 && _progressService != null)
+                Builder(
+                  builder: (context) {
+                    int completedCount = widget.level.numbers
+                        .where((n) =>
+                            _progressService?.isNumberCompleted(
+                                widget.level.level, n.number) ==
+                            true)
+                        .length;
+                    if (completedCount == widget.level.numbers.length) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors[0],
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 32),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              AnimatedRoute.fadeScale(
+                                const MathLevel1QuizView(),
+                              ),
+                            );
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.quiz),
+                              SizedBox(width: 8),
+                              Text(
+                                'اختبار المستوى الأول',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
             ],
           ),
         ),
@@ -218,15 +267,27 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
     return GestureDetector(
       onTap: isUnlocked
           ? () async {
-              await Navigator.push(
-                context,
-                AnimatedRoute.slideRight(
-                  SvgNumberTracingView(
-                    numberModel: numberModel,
-                    levelModel: widget.level,
-                  ),
-                ),
+              var currentIdx = widget.level.numbers.indexWhere(
+                (n) => n.number == numberModel.number,
               );
+              while (currentIdx >= 0 &&
+                  currentIdx < widget.level.numbers.length) {
+                final result = await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(
+                    SvgNumberTracingView(
+                      numberModel: widget.level.numbers[currentIdx],
+                      levelModel: widget.level,
+                    ),
+                  ),
+                );
+                if (result == 'next' &&
+                    currentIdx + 1 < widget.level.numbers.length) {
+                  currentIdx++;
+                } else {
+                  break;
+                }
+              }
               _loadProgress();
             }
           : null,

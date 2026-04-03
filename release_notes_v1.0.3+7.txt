@@ -1,0 +1,13 @@
+Release Notes v1.0.3+7
+
+English:
+- Added interactive tracing activities for Level 2 (Multiples of 10, up to 100).
+- Included text-to-speech pronunciation for all multiples of 10 (20, 30... 100).
+- Improved the tracing accuracy requirement for better learning outcomes.
+- General bug fixes and stability improvements in the Math Module.
+
+عربي:
+- إضافة أنشطة التتبع التفاعلية للمستوى الثاني (مضاعفات الرقم 10 حتى 100).
+- تضمين النطق الصوتي الصحيح لجميع مضاعفات الرقم 10 (عشرون، ثلاثون... مائة).
+- تحسين دقة التتبع لضمان نتائج تعليمية أفضل.
+- إصلاحات عامة وزيادة استقرار قسم الرياضيات.
