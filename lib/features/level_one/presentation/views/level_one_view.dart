@@ -24,11 +24,13 @@ class _LevelOneViewState extends State<LevelOneView> {
   List<int> _unlockedLessons = [];
   List<int> _completedRevisions = [];
   double _progress = 0.0;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
     _loadProgress();
+    _playIntroOnce();
   }
 
   Future<void> _loadProgress() async {
@@ -38,7 +40,7 @@ class _LevelOneViewState extends State<LevelOneView> {
     // This ensures letters only stay unlocked if all 3 revision tests are completed
     await _progressService!.validateAndCorrectUnlocks();
 
-    _initTts();
+    if (!mounted) return;
     setState(() {
       _unlockedLetters = _progressService!.getUnlockedLetters();
       _unlockedLessons = _progressService!.getLevel1UnlockedLessons();
@@ -47,13 +49,13 @@ class _LevelOneViewState extends State<LevelOneView> {
     });
   }
 
-  Future<void> _initTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'المستوى الأول: تعلم الحروف العربية! اختر الحرف الذي تريد تعلمه',
-      );
-    }
+  Future<void> _playIntroOnce() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'المستوى الأول: تعلم الحروف العربية! اختر الحرف الذي تريد تعلمه',
+      isMounted: () => mounted,
+    );
   }
 
   String _getProgressEmoji() {
@@ -90,8 +92,8 @@ class _LevelOneViewState extends State<LevelOneView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.level1[0].withOpacity(0.3),
-              AppColors.level1[1].withOpacity(0.3),
+              AppColors.level1[0].withValues(alpha: 0.3),
+              AppColors.level1[1].withValues(alpha: 0.3),
             ],
           ),
         ),
@@ -105,7 +107,7 @@ class _LevelOneViewState extends State<LevelOneView> {
                   gradient: const LinearGradient(colors: AppColors.level1),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.level1[0].withOpacity(0.3),
+                      color: AppColors.level1[0].withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 5),
                     ),
@@ -143,7 +145,7 @@ class _LevelOneViewState extends State<LevelOneView> {
                                 'الحروف الأبجدية',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                 ),
                               ),
                             ],
@@ -167,7 +169,7 @@ class _LevelOneViewState extends State<LevelOneView> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
@@ -196,7 +198,7 @@ class _LevelOneViewState extends State<LevelOneView> {
                           const SizedBox(height: 8),
                           LinearProgressIndicator(
                             value: _progress / 100,
-                            backgroundColor: Colors.white.withOpacity(0.3),
+                            backgroundColor: Colors.white.withValues(alpha: 0.3),
                             valueColor: AlwaysStoppedAnimation<Color>(
                               _getProgressColor(),
                             ),
@@ -319,7 +321,7 @@ class _LevelOneViewState extends State<LevelOneView> {
             BoxShadow(
               color: isUnlocked
                   ? AppColors.shadowMedium
-                  : Colors.grey.withOpacity(0.2),
+                  : Colors.grey.withValues(alpha: 0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -351,7 +353,7 @@ class _LevelOneViewState extends State<LevelOneView> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -417,8 +419,8 @@ class _LevelOneViewState extends State<LevelOneView> {
           boxShadow: [
             BoxShadow(
               color: isUnlocked
-                  ? AppColors.exercise2[0].withOpacity(0.3)
-                  : Colors.grey.withOpacity(0.2),
+                  ? AppColors.exercise2[0].withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -476,14 +478,14 @@ class _LevelOneViewState extends State<LevelOneView> {
                   vertical: 32,
                   horizontal: 16,
                 ),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.1)),
+                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const Text('📚', style: TextStyle(fontSize: 40)),
@@ -611,8 +613,8 @@ class _LevelOneViewState extends State<LevelOneView> {
           boxShadow: [
             BoxShadow(
               color: allRevisionsCompleted
-                  ? const Color(0xFFFFD700).withOpacity(0.3)
-                  : Colors.grey.withOpacity(0.2),
+                  ? const Color(0xFFFFD700).withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

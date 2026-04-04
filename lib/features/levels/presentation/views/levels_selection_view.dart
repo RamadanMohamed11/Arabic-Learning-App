@@ -25,16 +25,18 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
   double _level2Progress = 0.0;
   bool _level1FinalTestCompleted = false;
   bool _level2FinalTestCompleted = false;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
     _loadProgress();
+    _playIntroOnce();
   }
 
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
-    _initTts();
+    if (!mounted) return;
     setState(() {
       _level2Unlocked = _progressService!.isLevel2Unlocked();
       _level1Progress = _progressService!.getLevel1Progress();
@@ -47,13 +49,13 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
     });
   }
 
-  Future<void> _initTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'اختر المستوى الذي تريد تعلمه في اللغة العربية',
-      );
-    }
+  Future<void> _playIntroOnce() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'اختر المستوى الذي تريد تعلمه في اللغة العربية',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -148,7 +150,6 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                                     ),
                                   ).then((_) {
                                     _loadProgress();
-                                    _initTts();
                                   });
                                 },
                               ),
@@ -175,7 +176,6 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                                           ),
                                         ).then((_) {
                                           _loadProgress();
-                                          _initTts();
                                         });
                                       }
                                     : null,
@@ -229,7 +229,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                           horizontal: 16,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: Colors.white24, width: 1.5),
                         ),
@@ -270,14 +270,14 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                   vertical: 32,
                   horizontal: 16,
                 ),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.1)),
+                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const Text('📚', style: TextStyle(fontSize: 40)),
@@ -399,8 +399,8 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
           boxShadow: [
             BoxShadow(
               color: isLocked
-                  ? Colors.grey.withOpacity(0.3)
-                  : colors[0].withOpacity(0.5),
+                  ? Colors.grey.withValues(alpha: 0.3)
+                  : colors[0].withValues(alpha: 0.5),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -414,7 +414,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
                   child: Text(
@@ -441,7 +441,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                         isLocked ? 'أكمل المستوى السابق' : subtitle,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
@@ -481,7 +481,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: progress / 100,
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
                     valueColor: const AlwaysStoppedAnimation<Color>(
                       Colors.white,
                     ),

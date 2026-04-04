@@ -104,13 +104,15 @@ class _LevelTwoViewState extends State<LevelTwoView> {
     });
   }
 
+  bool _hasPlayedIntro = false;
+
   Future<void> _initTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'المستوى الثاني: تعلم الكلمات والجمل! اختر النشاط الذي تريد',
-      );
-    }
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'المستوى الثاني: تعلم الكلمات والجمل! اختر النشاط الذي تريد',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -198,8 +200,8 @@ class _LevelTwoViewState extends State<LevelTwoView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.level2[0].withOpacity(0.3),
-              AppColors.level2[1].withOpacity(0.3),
+              AppColors.level2[0].withValues(alpha: 0.3),
+              AppColors.level2[1].withValues(alpha: 0.3),
             ],
           ),
         ),
@@ -213,7 +215,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                   gradient: const LinearGradient(colors: AppColors.level2),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.level2[0].withOpacity(0.3),
+                      color: AppColors.level2[0].withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 5),
                     ),
@@ -246,7 +248,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                                 'الكلمات والجمل',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                 ),
                               ),
                             ],
@@ -263,7 +265,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
@@ -292,7 +294,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                           const SizedBox(height: 8),
                           LinearProgressIndicator(
                             value: _progress / 100,
-                            backgroundColor: Colors.white.withOpacity(0.3),
+                            backgroundColor: Colors.white.withValues(alpha: 0.3),
                             valueColor: AlwaysStoppedAnimation<Color>(
                               _getProgressColor(),
                             ),
@@ -377,8 +379,8 @@ class _LevelTwoViewState extends State<LevelTwoView> {
           boxShadow: [
             BoxShadow(
               color: isUnlocked
-                  ? activity.colors[0].withOpacity(0.4)
-                  : Colors.grey.withOpacity(0.2),
+                  ? activity.colors[0].withValues(alpha: 0.4)
+                  : Colors.grey.withValues(alpha: 0.2),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -391,7 +393,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -425,7 +427,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
                     style: TextStyle(
                       fontSize: 14,
                       color: isUnlocked
-                          ? Colors.white.withOpacity(0.9)
+                          ? Colors.white.withValues(alpha: 0.9)
                           : Colors.white60,
                     ),
                   ),
@@ -436,7 +438,7 @@ class _LevelTwoViewState extends State<LevelTwoView> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 shape: BoxShape.circle,
               ),
               child: Icon(

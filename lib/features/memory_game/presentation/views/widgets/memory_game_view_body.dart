@@ -35,6 +35,7 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
   int moves = 0;
   int matches = 0;
   int totalPairs = 6; // عدد الأزواج في اللعبة
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -44,12 +45,12 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
   }
 
   Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        "لُعْبَةُ الذَّاكِرَةِ، اُنْقُرْ عَلَى الْبِطَاقَاتِ لِتُطَابِقَ كُلَّ حَرْفٍ مَعَ الصُّورَةِ الْمُنَاسِبَةِ لَهُ.",
-      );
-    }
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      "لُعْبَةُ الذَّاكِرَةِ، اُنْقُرْ عَلَى الْبِطَاقَاتِ لِتُطَابِقَ كُلَّ حَرْفٍ مَعَ الصُّورَةِ الْمُنَاسِبَةِ لَهُ.",
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -365,7 +366,7 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -407,7 +408,7 @@ class _MemoryGameViewBodyState extends State<MemoryGameViewBody> {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

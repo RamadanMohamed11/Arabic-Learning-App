@@ -108,7 +108,7 @@ class ImageToCharacterQuestion extends StatelessWidget {
         return isCorrect ? AppColors.success : AppColors.error;
       }
       if (isCorrect) {
-        return AppColors.success.withOpacity(0.5);
+        return AppColors.success.withValues(alpha: 0.5);
       }
       return Colors.grey.shade200;
     }
@@ -122,7 +122,7 @@ class ImageToCharacterQuestion extends StatelessWidget {
           border: Border.all(
             color: isAnswered && isSelected
                 ? Colors.transparent
-                : AppColors.primary.withOpacity(0.3),
+                : AppColors.primary.withValues(alpha: 0.3),
             width: 2,
           ),
           boxShadow: [

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/data/letter_names.dart';
 
@@ -30,7 +28,6 @@ class CharacterPronunciationPracticeView extends StatefulWidget {
 class _CharacterPronunciationPracticeViewState
     extends State<CharacterPronunciationPracticeView> {
   final SpeechToText _speechToText = SpeechToText();
-  final FlutterTts _flutterTts = FlutterTts();
 
   bool _speechEnabled = false;
   String _recognizedWords = '';
@@ -38,27 +35,24 @@ class _CharacterPronunciationPracticeViewState
   Color _feedbackColor = Colors.grey;
   int _correctCount = 0;
   int _totalAttempts = 0;
-  bool _isSpeaking = false;
   LetterName? _letterName;
   bool _isCorrect = true; // Track if last attempt was correct
   bool _hasSpokenCorrection = false; // Track if correction TTS has been spoken
+  bool _isSpeaking = false;
 
   @override
   void initState() {
     super.initState();
     _letterName = getLetterName(widget.letter);
     _initSpeech();
-    _initTts();
     _initInstructionTts();
   }
 
   Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'تدريب نطق حرف ${widget.letter}. اضغط على زر الميكروفون وانطق اسم الحرف',
-      );
-    }
+    await AppTtsService.instance.speakScreenIntro(
+      'تدريب نطق حرف ${widget.letter}. اضغط على زر الميكروفون وانطق اسم الحرف',
+      isMounted: () => mounted,
+    );
   }
 
   /// Initialize speech recognition
@@ -76,9 +70,7 @@ class _CharacterPronunciationPracticeViewState
             // Speak the correct letter name (only once)
             if (_letterName != null && !_hasSpokenCorrection) {
               _hasSpokenCorrection = true;
-              Future.delayed(const Duration(milliseconds: 500), () {
-                _speak(_letterName!.nameWithDiacritics);
-              });
+              _speak(_letterName!.nameWithDiacritics);
             }
           }
         },
@@ -96,9 +88,7 @@ class _CharacterPronunciationPracticeViewState
                 _letterName != null &&
                 !_hasSpokenCorrection) {
               _hasSpokenCorrection = true;
-              Future.delayed(const Duration(milliseconds: 500), () {
-                _speak(_letterName!.nameWithDiacritics);
-              });
+              _speak(_letterName!.nameWithDiacritics);
             }
           }
         },
@@ -114,23 +104,10 @@ class _CharacterPronunciationPracticeViewState
         });
         // Speak the correct letter name
         if (_letterName != null) {
-          Future.delayed(const Duration(milliseconds: 500), () {
-            _speak(_letterName!.nameWithDiacritics);
-          });
+          _speak(_letterName!.nameWithDiacritics);
         }
       }
     }
-  }
-
-  /// Initialize text-to-speech
-  Future<void> _initTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
-
-    _flutterTts.setCompletionHandler(() {
-      setState(() {
-        _isSpeaking = false;
-      });
-    });
   }
 
   /// Start listening to user's speech
@@ -154,7 +131,7 @@ class _CharacterPronunciationPracticeViewState
       await _speechToText.listen(
         onResult: _onSpeechResult,
         localeId: "ar-SA",
-        listenMode: ListenMode.confirmation,
+        listenOptions: SpeechListenOptions(listenMode: ListenMode.confirmation),
         pauseFor: const Duration(seconds: 3),
         listenFor: const Duration(seconds: 10),
       );
@@ -276,8 +253,8 @@ class _CharacterPronunciationPracticeViewState
     final recognizedWord = _recognizedWords.trim();
 
     // Debug logging
-    print('🎯 Target: "$targetName" | Recognized: "$recognizedWord"');
-    print(
+    debugPrint('🎯 Target: "$targetName" | Recognized: "$recognizedWord"');
+    debugPrint(
       '🔧 Normalized Target: "${_normalizeWord(targetName)}" | Normalized Recognized: "${_normalizeWord(recognizedWord)}"',
     );
 
@@ -308,9 +285,7 @@ class _CharacterPronunciationPracticeViewState
       // Speak the correct letter name with diacritics when wrong (only once)
       if (!_hasSpokenCorrection) {
         _hasSpokenCorrection = true;
-        Future.delayed(const Duration(milliseconds: 500), () {
-          _speak(_letterName!.nameWithDiacritics);
-        });
+        _speak(_letterName!.nameWithDiacritics);
       }
     }
   }
@@ -320,20 +295,20 @@ class _CharacterPronunciationPracticeViewState
     String cleanTarget = _normalizeWord(target);
     String cleanRecognized = _normalizeWord(recognized);
 
-    print(
+    debugPrint(
       '   🔍 Clean Target: "$cleanTarget" | Clean Recognized: "$cleanRecognized"',
     );
 
     // Direct match
     if (cleanTarget == cleanRecognized) {
-      print('   ✅ Direct match!');
+      debugPrint('   ✅ Direct match!');
       return true;
     }
 
     // Contains match
     if (cleanRecognized.contains(cleanTarget) ||
         cleanTarget.contains(cleanRecognized)) {
-      print('   ✅ Contains match!');
+      debugPrint('   ✅ Contains match!');
       return true;
     }
 
@@ -359,65 +334,65 @@ class _CharacterPronunciationPracticeViewState
 
     if (thSeGroup.contains(cleanTarget) &&
         thSeGroup.contains(cleanRecognized)) {
-      print('   ✅ Th/Se group match!');
+      debugPrint('   ✅ Th/Se group match!');
       return true;
     }
     if (zDhGroup.contains(cleanTarget) && zDhGroup.contains(cleanRecognized)) {
-      print('   ✅ Z/Dh group match!');
+      debugPrint('   ✅ Z/Dh group match!');
       return true;
     }
 
     if (taGroup.contains(cleanTarget) && taGroup.contains(cleanRecognized)) {
-      print('   ✅ Ta group match (تاء/تائن/etc)!');
+      debugPrint('   ✅ Ta group match (تاء/تائن/etc)!');
       return true;
     }
     if (baGroup.contains(cleanTarget) && baGroup.contains(cleanRecognized)) {
-      print('   ✅ Ba group match (باء/بائن/etc)!');
+      debugPrint('   ✅ Ba group match (باء/بائن/etc)!');
       return true;
     }
     if (thaGroup.contains(cleanTarget) && thaGroup.contains(cleanRecognized)) {
-      print('   ✅ Tha group match (ثاء/ثائن/etc)!');
+      debugPrint('   ✅ Tha group match (ثاء/ثائن/etc)!');
       return true;
     }
     if (haGroup.contains(cleanTarget) && haGroup.contains(cleanRecognized)) {
-      print('   ✅ Ha group match (هاء/هائن/etc)!');
+      debugPrint('   ✅ Ha group match (هاء/هائن/etc)!');
       return true;
     }
     if (yaGroup.contains(cleanTarget) && yaGroup.contains(cleanRecognized)) {
-      print('   ✅ Ya group match (ياء/يائن/etc)!');
+      debugPrint('   ✅ Ya group match (ياء/يائن/etc)!');
       return true;
     }
     if (raGroup.contains(cleanTarget) && raGroup.contains(cleanRecognized)) {
-      print('   ✅ Ra group match (راء/رائن/etc)!');
+      debugPrint('   ✅ Ra group match (راء/رائن/etc)!');
       return true;
     }
     if (zaGroup.contains(cleanTarget) && zaGroup.contains(cleanRecognized)) {
-      print('   ✅ Za group match!');
+      debugPrint('   ✅ Za group match!');
       return true;
     }
     if (daGroup.contains(cleanTarget) && daGroup.contains(cleanRecognized)) {
-      print('   ✅ Da group match!');
+      debugPrint('   ✅ Da group match!');
       return true;
     }
     if (faGroup.contains(cleanTarget) && faGroup.contains(cleanRecognized)) {
-      print('   ✅ Fa group match!');
+      debugPrint('   ✅ Fa group match!');
       return true;
     }
     if (waGroup.contains(cleanTarget) && waGroup.contains(cleanRecognized)) {
-      print('   ✅ Wa group match!');
+      debugPrint('   ✅ Wa group match!');
       return true;
     }
     if (jimGroup.contains(cleanTarget) && jimGroup.contains(cleanRecognized)) {
-      print('   ✅ Jim group match!');
+      debugPrint('   ✅ Jim group match!');
       return true;
     }
     if (haSmallGroup.contains(cleanTarget) &&
         haSmallGroup.contains(cleanRecognized)) {
-      print('   ✅ Ha (small) group match!');
+      debugPrint('   ✅ Ha (small) group match!');
       return true;
     }
     if (khaGroup.contains(cleanTarget) && khaGroup.contains(cleanRecognized)) {
-      print('   ✅ Kha group match!');
+      debugPrint('   ✅ Kha group match!');
       return true;
     }
 
@@ -431,13 +406,13 @@ class _CharacterPronunciationPracticeViewState
         if (cleanRecognized.endsWith('ائن') ||
             cleanRecognized.endsWith('اءن') ||
             cleanRecognized.endsWith('اين')) {
-          print('   ✅ First char match with common suffix pattern!');
+          debugPrint('   ✅ First char match with common suffix pattern!');
           return true;
         }
       }
     }
 
-    print('   ❌ No match found');
+    debugPrint('   ❌ No match found');
     return false;
   }
 
@@ -471,19 +446,20 @@ class _CharacterPronunciationPracticeViewState
 
   /// Speak text using TTS
   Future<void> _speak(String text) async {
-    if (_isSpeaking) {
-      await _flutterTts.stop();
-    }
     setState(() {
       _isSpeaking = true;
     });
-    await _flutterTts.speak(text);
+    await AppTtsService.instance.speak(text);
+    if (mounted) {
+      setState(() {
+        _isSpeaking = false;
+      });
+    }
   }
 
   @override
   void dispose() {
     _speechToText.stop();
-    _flutterTts.stop();
     AppTtsService.instance.stop();
     super.dispose();
   }
@@ -526,8 +502,8 @@ class _CharacterPronunciationPracticeViewState
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.level1[0].withOpacity(0.2),
-              AppColors.level1[1].withOpacity(0.2),
+              AppColors.level1[0].withValues(alpha: 0.2),
+              AppColors.level1[1].withValues(alpha: 0.2),
             ],
           ),
         ),
@@ -654,7 +630,7 @@ class _CharacterPronunciationPracticeViewState
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -761,9 +737,12 @@ class _CharacterPronunciationPracticeViewState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _feedbackColor.withOpacity(0.1),
+        color: _feedbackColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _feedbackColor.withOpacity(0.3), width: 2),
+        border: Border.all(
+          color: _feedbackColor.withValues(alpha: 0.3),
+          width: 2,
+        ),
       ),
       child: Text(
         _feedbackMessage,

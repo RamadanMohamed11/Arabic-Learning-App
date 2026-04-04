@@ -118,7 +118,7 @@
 //                   borderRadius: BorderRadius.circular(12),
 //                   boxShadow: [
 //                     BoxShadow(
-//                       color: Colors.grey.withOpacity(0.5),
+//                       color: Colors.grey.withValues(alpha: 0.5),
 //                       spreadRadius: 2,
 //                       blurRadius: 5,
 //                       offset: const Offset(0, 3),
@@ -170,7 +170,7 @@
 //                   width: double.infinity,
 //                   padding: const EdgeInsets.all(16),
 //                   decoration: BoxDecoration(
-//                     color: _resultColor.withOpacity(0.1),
+//                     color: _resultColor.withValues(alpha: 0.1),
 //                     borderRadius: BorderRadius.circular(8),
 //                     border: Border.all(color: _resultColor, width: 2)
 //                   ),

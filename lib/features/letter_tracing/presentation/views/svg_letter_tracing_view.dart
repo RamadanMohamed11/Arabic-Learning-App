@@ -37,6 +37,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
 
   // إعدادات الحساسية
   final double touchTolerance = 40.0; // المسافة المسموحة للخطأ
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -73,12 +74,12 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
   }
 
   Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'تدريب كتابة حرف ${widget.letter}. اتبع الخط المنقط بإصبعك لكتابة الحرف',
-      );
-    }
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'تدريب كتابة حرف ${widget.letter}. اتبع الخط المنقط بإصبعك لكتابة الحرف',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -383,7 +384,7 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -484,8 +485,8 @@ class _SvgLetterTracingViewState extends State<SvgLetterTracingView>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isCompleted
-            ? Colors.green.withOpacity(0.2)
-            : Colors.blue.withOpacity(0.2),
+            ? Colors.green.withValues(alpha: 0.2)
+            : Colors.blue.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: isCompleted ? Colors.green : Colors.blue,

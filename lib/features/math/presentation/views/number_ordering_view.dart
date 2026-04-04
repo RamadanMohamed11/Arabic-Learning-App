@@ -33,9 +33,9 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
   late List<int> _currentOrder;
   late List<int> _answerSlots;
   late Set<int> _usedIndices;
-
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -52,12 +52,12 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
   }
 
   Future<void> _playIntro() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'رتب الأرقام من الأصغر إلى الأكبر. اضغط على الأرقام بالترتيب الصحيح!',
-      );
-    }
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'رتب الأرقام من الأصغر إلى الأكبر. اضغط على الأرقام بالترتيب الصحيح!',
+      isMounted: () => mounted,
+    );
   }
 
   void _initRound() {
@@ -110,8 +110,6 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
     });
 
     await AppTtsService.instance.speak('أحسنت! ترتيب صحيح');
-    await Future.delayed(const Duration(seconds: 2));
-
     if (!mounted) return;
 
     if (_currentRound < _rounds.length - 1) {
@@ -121,7 +119,6 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
       });
 
       // Play next round instruction
-      await Future.delayed(const Duration(milliseconds: 300));
       if (mounted) {
         await AppTtsService.instance.speak('رتب الأرقام التالية');
       }
@@ -167,7 +164,7 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.level1[0].withOpacity(0.1), Colors.white],
+            colors: [AppColors.level1[0].withValues(alpha: 0.1), Colors.white],
           ),
         ),
         child: SafeArea(
@@ -180,7 +177,7 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.level1[0].withOpacity(0.15),
+                  color: AppColors.level1[0].withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.level1[0], width: 2),
                 ),
@@ -221,13 +218,13 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
               Icon(
                 Icons.arrow_upward,
                 size: 36,
-                color: AppColors.level1[0].withOpacity(0.5),
+                color: AppColors.level1[0].withValues(alpha: 0.5),
               ),
               Text(
                 'اختر بالترتيب',
                 style: TextStyle(
                   fontSize: 16,
-                  color: AppColors.level1[0].withOpacity(0.7),
+                  color: AppColors.level1[0].withValues(alpha: 0.7),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -296,13 +293,13 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
                   border: Border.all(
                     color: hasValue
                         ? Colors.green.shade600
-                        : AppColors.level1[0].withOpacity(0.4),
+                        : AppColors.level1[0].withValues(alpha: 0.4),
                     width: 2.5,
                   ),
                   boxShadow: [
                     if (hasValue)
                       BoxShadow(
-                        color: Colors.green.withOpacity(0.3),
+                        color: Colors.green.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -322,7 +319,7 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
                           (index + 1).toArabicDigits(),
                           style: TextStyle(
                             fontSize: fontSize * 0.65,
-                            color: AppColors.level1[0].withOpacity(0.3),
+                            color: AppColors.level1[0].withValues(alpha: 0.3),
                           ),
                         ),
                 ),
@@ -366,7 +363,7 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
                       ? []
                       : [
                           BoxShadow(
-                            color: AppColors.level1[0].withOpacity(0.3),
+                            color: AppColors.level1[0].withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -452,7 +449,7 @@ class _NumberOrderingViewState extends State<NumberOrderingView>
                   'لقد أكملت نشاط ترتيب الأرقام',
                   style: TextStyle(
                     fontSize: 20,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 const SizedBox(height: 12),

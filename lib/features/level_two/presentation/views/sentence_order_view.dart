@@ -16,17 +16,21 @@ class _SentenceOrderViewState extends State<SentenceOrderView> {
   int _score = 0;
   bool _complete = false;
 
+  bool _hasPlayedIntro = false;
+
   @override
   void initState() {
     super.initState();
-    _initInstructionTts();
+    _playIntro();
   }
 
-  Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak('رتب الكلمات لتكوين جملة صحيحة.');
-    }
+  Future<void> _playIntro() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'رتب الكلمات لتكوين جملة صحيحة.',
+      isMounted: () => mounted,
+    );
   }
 
   void _onCorrect() {
@@ -159,10 +163,10 @@ class _SentenceOrderViewState extends State<SentenceOrderView> {
     final percentage = (_score / total * 100).round();
     final isPassed = percentage >= 70;
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, true);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) Navigator.pop(context, true);
       },
       child: Scaffold(
         body: Container(
@@ -171,8 +175,8 @@ class _SentenceOrderViewState extends State<SentenceOrderView> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: isPassed
-                  ? [AppColors.success, AppColors.success.withOpacity(0.7)]
-                  : [AppColors.warning, AppColors.warning.withOpacity(0.7)],
+                  ? [AppColors.success, AppColors.success.withValues(alpha: 0.7)]
+                  : [AppColors.warning, AppColors.warning.withValues(alpha: 0.7)],
             ),
           ),
           child: SafeArea(
@@ -210,7 +214,7 @@ class _SentenceOrderViewState extends State<SentenceOrderView> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -248,7 +252,7 @@ class _SentenceOrderViewState extends State<SentenceOrderView> {
                                 (isPassed
                                         ? AppColors.success
                                         : AppColors.warning)
-                                    .withOpacity(0.1),
+                                    .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isPassed

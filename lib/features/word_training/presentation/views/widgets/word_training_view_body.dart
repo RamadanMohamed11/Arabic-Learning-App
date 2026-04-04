@@ -23,6 +23,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
   int _correctCount = 0;
   int _attemptCount = 0;
   bool _isPlaying = false;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -32,12 +33,12 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
   }
 
   Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+      await AppTtsService.instance.speakScreenIntro(
         "تَدْرِيبُ الْكَلِمَاتِ، اِضْغَطْ اِسْتَمِعْ وَاكْتُبِ الْكَلِمَةَ التَّي تَسْمَعُهَا.",
+      isMounted: () => mounted,
       );
-    }
   }
 
   Future<void> _initializeTts() async {
@@ -78,7 +79,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
       final currentWord = trainingWords[_currentWordIndex];
       await _flutterTts.speak(currentWord.audioText);
     } catch (e) {
-      print('Error playing word: $e');
+      debugPrint('Error playing word: $e');
       setState(() {
         _isPlaying = false;
       });
@@ -134,7 +135,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
         await _initializeTts();
         await _flutterTts.speak('ممتاز');
       } catch (e) {
-        print('Error playing success sound: $e');
+        debugPrint('Error playing success sound: $e');
       }
     }
   }
@@ -392,7 +393,7 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: _feedbackColor.withOpacity(0.1),
+                    color: _feedbackColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: _feedbackColor, width: 2),
                   ),
@@ -557,3 +558,4 @@ class _WordTrainingViewBodyState extends State<WordTrainingViewBody> {
     );
   }
 }
+

@@ -287,8 +287,8 @@ class _RevisionTestViewState extends State<RevisionTestView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.exercise2[0].withOpacity(0.2),
-              AppColors.exercise2[1].withOpacity(0.2),
+              AppColors.exercise2[0].withValues(alpha: 0.2),
+              AppColors.exercise2[1].withValues(alpha: 0.2),
             ],
           ),
         ),
@@ -302,7 +302,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                   gradient: const LinearGradient(colors: AppColors.exercise2),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.exercise2[0].withOpacity(0.3),
+                      color: AppColors.exercise2[0].withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 5),
                     ),
@@ -335,7 +335,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                                 'السؤال ${_currentQuestionIndex + 1} من ${_testGroup.questions.length}',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                 ),
                               ),
                             ],
@@ -347,7 +347,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
@@ -374,7 +374,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                     const SizedBox(height: 12),
                     LinearProgressIndicator(
                       value: progress,
-                      backgroundColor: Colors.white.withOpacity(0.3),
+                      backgroundColor: Colors.white.withValues(alpha: 0.3),
                       valueColor: const AlwaysStoppedAnimation<Color>(
                         Colors.white,
                       ),
@@ -407,7 +407,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withOpacity(0.4),
+                                color: AppColors.primary.withValues(alpha: 0.4),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -474,7 +474,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                                   : AppColors.error;
                             }
                             if (isCorrect) {
-                              return AppColors.success.withOpacity(0.5);
+                              return AppColors.success.withValues(alpha: 0.5);
                             }
                             return Colors.grey.shade200;
                           }
@@ -488,7 +488,7 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                                 border: Border.all(
                                   color: _isAnswered && isSelected
                                       ? Colors.transparent
-                                      : AppColors.primary.withOpacity(0.3),
+                                      : AppColors.primary.withValues(alpha: 0.3),
                                   width: 2,
                                 ),
                                 boxShadow: [
@@ -593,12 +593,12 @@ class _RevisionTestViewState extends State<RevisionTestView> {
             end: Alignment.bottomCenter,
             colors: isPassed
                 ? [
-                    AppColors.success.withOpacity(0.3),
-                    AppColors.success.withOpacity(0.1),
+                    AppColors.success.withValues(alpha: 0.3),
+                    AppColors.success.withValues(alpha: 0.1),
                   ]
                 : [
-                    AppColors.warning.withOpacity(0.3),
-                    AppColors.warning.withOpacity(0.1),
+                    AppColors.warning.withValues(alpha: 0.3),
+                    AppColors.warning.withValues(alpha: 0.1),
                   ],
           ),
         ),
@@ -719,10 +719,10 @@ class _RevisionTestViewState extends State<RevisionTestView> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.1),
+                      color: AppColors.success.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: AppColors.success.withOpacity(0.3),
+                        color: AppColors.success.withValues(alpha: 0.3),
                         width: 2,
                       ),
                     ),

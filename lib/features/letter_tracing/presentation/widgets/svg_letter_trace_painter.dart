@@ -54,7 +54,7 @@ class SvgLetterTracePainter extends CustomPainter {
 
   /// رسم المسارات الإرشادية الرمادية
   void _drawGuidePaths(Canvas canvas, Paint paint) {
-    paint.color = Colors.grey.withOpacity(0.3);
+    paint.color = Colors.grey.withValues(alpha: 0.3);
     paint.strokeWidth = 25.0;
 
     for (final path in guidePaths) {
@@ -76,12 +76,12 @@ class SvgLetterTracePainter extends CustomPainter {
     // دائرة خارجية خضراء متحركة
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 3.0;
-    paint.color = Colors.green.withOpacity(0.6);
+    paint.color = Colors.green.withValues(alpha: 0.6);
     canvas.drawCircle(startPoint, 25, paint);
 
     // دائرة داخلية خضراء
     paint.style = PaintingStyle.fill;
-    paint.color = Colors.green.withOpacity(0.8);
+    paint.color = Colors.green.withValues(alpha: 0.8);
     canvas.drawCircle(startPoint, 15, paint);
 
     paint.style = PaintingStyle.stroke;
@@ -96,7 +96,7 @@ class SvgLetterTracePainter extends CustomPainter {
       final path = guidePaths[i];
 
       // إضافة ظل
-      canvas.drawShadow(path, Colors.black.withOpacity(0.3), 4.0, false);
+      canvas.drawShadow(path, Colors.black.withValues(alpha: 0.3), 4.0, false);
       canvas.drawPath(path, paint);
     }
   }
@@ -115,14 +115,14 @@ class SvgLetterTracePainter extends CustomPainter {
     }
 
     // إضافة ظل للمسار
-    canvas.drawShadow(path, Colors.black.withOpacity(0.3), 4.0, false);
+    canvas.drawShadow(path, Colors.black.withValues(alpha: 0.3), 4.0, false);
     canvas.drawPath(path, paint);
   }
 
   /// رسم مؤشر الإصبع الحالي
   void _drawFingerIndicator(Canvas canvas, Paint paint) {
     paint.style = PaintingStyle.fill;
-    paint.color = Colors.blue.withOpacity(0.3);
+    paint.color = Colors.blue.withValues(alpha: 0.3);
     canvas.drawCircle(currentFingerPosition!, 20, paint);
 
     paint.style = PaintingStyle.stroke;
@@ -138,7 +138,7 @@ class SvgLetterTracePainter extends CustomPainter {
 
     for (final path in guidePaths) {
       // إضافة ظل
-      canvas.drawShadow(path, Colors.black.withOpacity(0.3), 6.0, false);
+      canvas.drawShadow(path, Colors.black.withValues(alpha: 0.3), 6.0, false);
       canvas.drawPath(path, paint);
     }
 

@@ -143,7 +143,7 @@ class _RevisionPronunciationPracticeState
       await _speechToText.listen(
         onResult: _onSpeechResult,
         localeId: "ar-SA",
-        listenMode: ListenMode.confirmation,
+        listenOptions: SpeechListenOptions(listenMode: ListenMode.confirmation),
         pauseFor: const Duration(seconds: 3),
         listenFor: const Duration(seconds: 10),
       );
@@ -458,8 +458,8 @@ class _RevisionPronunciationPracticeState
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.exercise2[0].withOpacity(0.2),
-              AppColors.exercise2[1].withOpacity(0.2),
+              AppColors.exercise2[0].withValues(alpha: 0.2),
+              AppColors.exercise2[1].withValues(alpha: 0.2),
             ],
           ),
         ),
@@ -470,7 +470,7 @@ class _RevisionPronunciationPracticeState
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.exercise2[0].withOpacity(0.1),
+                  color: AppColors.exercise2[0].withValues(alpha: 0.1),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -554,7 +554,7 @@ class _RevisionPronunciationPracticeState
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.exercise2[0].withOpacity(0.3),
+                                color: AppColors.exercise2[0].withValues(alpha: 0.3),
                                 blurRadius: 15,
                                 offset: const Offset(0, 5),
                               ),
@@ -623,7 +623,7 @@ class _RevisionPronunciationPracticeState
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: _feedbackColor.withOpacity(0.1),
+                            color: _feedbackColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: _feedbackColor, width: 2),
                           ),
@@ -633,7 +633,7 @@ class _RevisionPronunciationPracticeState
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: _feedbackColor.withOpacity(0.9),
+                              color: _feedbackColor.withValues(alpha: 0.9),
                             ),
                           ),
                         ),
@@ -663,7 +663,7 @@ class _RevisionPronunciationPracticeState
                                       (_speechToText.isListening
                                               ? Colors.red
                                               : AppColors.exercise2[0])
-                                          .withOpacity(0.4),
+                                          .withValues(alpha: 0.4),
                                   blurRadius: 20,
                                   spreadRadius: 5,
                                 ),
@@ -738,7 +738,7 @@ class _RevisionPronunciationPracticeState
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, -3),
                     ),

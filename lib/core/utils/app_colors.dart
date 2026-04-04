@@ -59,7 +59,7 @@ class AppColors {
   static const Color error = Color(0xFFE89BA3);
 
   // Shadow colors with opacity
-  static Color shadowLight = slateBlue.withOpacity(0.1);
-  static Color shadowMedium = slateBlue.withOpacity(0.2);
-  static Color shadowDark = slateBlue.withOpacity(0.3);
+  static Color shadowLight = slateBlue.withValues(alpha: 0.1);
+  static Color shadowMedium = slateBlue.withValues(alpha: 0.2);
+  static Color shadowDark = slateBlue.withValues(alpha: 0.3);
 }

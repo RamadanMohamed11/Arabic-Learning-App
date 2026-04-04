@@ -1,0 +1,24 @@
+﻿
+warning - lib\features\level_two\presenta
+tion\views\final_test_view.dart:358:11 - 
+The value of the local variable 
+'isCorrect' isn't used. Try removing the 
+variable or using it. - 
+unused_local_variable
+warning - lib\features\level_two\presenta
+tion\views\final_test_view.dart:485:11 - 
+The value of the local variable 'ok' 
+isn't used. Try removing the variable or 
+using it. - unused_local_variable
+warning - lib\features\level_two\presenta
+tion\views\final_test_view.dart:596:11 - 
+The value of the local variable 'ok' 
+isn't used. Try removing the variable or 
+using it. - unused_local_variable
+warning - lib\features\level_two\presenta
+tion\views\image_name_view.dart:66:16 - 
+The declaration '_speak' isn't 
+referenced. Try removing the declaration 
+of '_speak'. - unused_element
+
+

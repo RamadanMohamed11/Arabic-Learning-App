@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/writing_practice/presentation/views/widgets/automated_letter_trace_screen.dart';
 
@@ -20,38 +19,40 @@ class ListenAndWriteQuestion extends StatefulWidget {
 }
 
 class _ListenAndWriteQuestionState extends State<ListenAndWriteQuestion> {
-  late FlutterTts _flutterTts;
   bool _isPlaying = false;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
-    _flutterTts = FlutterTts();
-    _configureTts();
-    Future.delayed(const Duration(milliseconds: 400), () {
-      if (mounted) _speakLetter();
+    _setupTtsHandlers();
+    _playIntro();
+  }
+
+  void _setupTtsHandlers() {
+    final rawTts = AppTtsService.instance.rawTts;
+    rawTts.setStartHandler(() {
+      if (mounted) setState(() => _isPlaying = true);
+    });
+    rawTts.setCompletionHandler(() {
+      if (mounted) setState(() => _isPlaying = false);
+    });
+    rawTts.setErrorHandler((message) {
+      if (mounted) setState(() => _isPlaying = false);
     });
   }
 
-  Future<void> _configureTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
-
-    _flutterTts.setStartHandler(() {
-      if (mounted) setState(() => _isPlaying = true);
-    });
-
-    _flutterTts.setCompletionHandler(() {
-      if (mounted) setState(() => _isPlaying = false);
-    });
-
-    _flutterTts.setErrorHandler((message) {
-      if (mounted) setState(() => _isPlaying = false);
-    });
+  Future<void> _playIntro() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      widget.letter,
+      isMounted: () => mounted,
+    );
   }
 
   Future<void> _speakLetter() async {
-    if (_isPlaying) await _flutterTts.stop();
-    await _flutterTts.speak(widget.letter);
+    await AppTtsService.instance.speak(widget.letter);
   }
 
   void _openTracingBoard() {
@@ -105,7 +106,6 @@ class _ListenAndWriteQuestionState extends State<ListenAndWriteQuestion> {
 
   @override
   void dispose() {
-    _flutterTts.stop();
     super.dispose();
   }
 

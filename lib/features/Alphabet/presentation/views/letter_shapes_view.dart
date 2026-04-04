@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/models/letter_shapes.dart';
 import 'package:arabic_learning_app/core/data/letter_names.dart';
@@ -19,17 +17,15 @@ class LetterShapesView extends StatefulWidget {
 }
 
 class _LetterShapesViewState extends State<LetterShapesView> {
-  final FlutterTts _flutterTts = FlutterTts();
   LetterShapes? letterShapes;
   LetterName? _letterName;
   String exampleWord = '';
-  bool _isSpeaking = false;
   int _letterIndex = 0;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
-    _initTts();
     letterShapes = ArabicLetterShapes.getShapes(widget.letter);
     _letterName = getLetterName(widget.letter);
     // Get the word with tashkeel from arabicLetters list
@@ -42,41 +38,24 @@ class _LetterShapesViewState extends State<LetterShapesView> {
     // الحصول على رقم الحرف
     _letterIndex = arabicLetters.indexWhere((l) => l.letter == widget.letter);
 
-    _initInstructionTts();
+    _playIntro();
   }
 
-  Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'هذا حرف ${widget.letter}. يمكنك الضغط على الحرف لسماع نطقه. اضغط على التمارين لبدء التعلم',
-      );
-    }
+  Future<void> _playIntro() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'هذا حرف ${widget.letter}. يمكنك الضغط على الحرف لسماع نطقه. اضغط على التمارين لبدء التعلم',
+      isMounted: () => mounted,
+    );
   }
 
-  Future<void> _initTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.4, pitch: 1.0);
-
-    _flutterTts.setCompletionHandler(() {
-      setState(() {
-        _isSpeaking = false;
-      });
-    });
-  }
-
-  Future<void> _speak(String text) async {
-    if (_isSpeaking) {
-      await _flutterTts.stop();
-    }
-    setState(() {
-      _isSpeaking = true;
-    });
-    await _flutterTts.speak(text);
+  void _speak(String text) {
+    AppTtsService.instance.speak(text);
   }
 
   @override
   void dispose() {
-    _flutterTts.stop();
     AppTtsService.instance.stop();
     super.dispose();
   }
@@ -174,7 +153,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
                   _letterName?.nameWithDiacritics ?? letterShapes!.name,
                 ),
                 icon: Icon(
-                  _isSpeaking ? Icons.volume_off : Icons.volume_up,
+                  Icons.volume_up,
                   color: Colors.white,
                   size: 40,
                 ),
@@ -269,7 +248,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -299,7 +278,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
               ),
             ),
             const SizedBox(height: 8),
-            Icon(Icons.volume_up, color: color.withOpacity(0.5), size: 20),
+            Icon(Icons.volume_up, color: color.withValues(alpha: 0.5), size: 20),
           ],
         ),
       ),

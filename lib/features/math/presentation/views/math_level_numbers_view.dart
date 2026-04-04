@@ -21,26 +21,28 @@ class MathLevelNumbersView extends StatefulWidget {
 
 class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
   MathProgressService? _progressService;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
     _loadProgress();
+    _playIntroOnce();
   }
 
   Future<void> _loadProgress() async {
     _progressService = await MathProgressService.getInstance();
-    _initTts();
+    if (!mounted) return;
     setState(() {});
   }
 
-  Future<void> _initTts() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        '${widget.level.title}. اختر الرقم الذي تريد تعلمه',
-      );
-    }
+  Future<void> _playIntroOnce() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      '${widget.level.title}. اختر الرقم الذي تريد تعلمه',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -63,7 +65,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [colors[0].withOpacity(0.3), colors[1].withOpacity(0.3)],
+            colors: [colors[0].withValues(alpha: 0.3), colors[1].withValues(alpha: 0.3)],
           ),
         ),
         child: SafeArea(
@@ -232,7 +234,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.amber.withOpacity(0.4),
+                                    color: Colors.amber.withValues(alpha: 0.4),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
@@ -291,7 +293,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
         gradient: LinearGradient(colors: colors),
         boxShadow: [
           BoxShadow(
-            color: colors[0].withOpacity(0.3),
+            color: colors[0].withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 5),
           ),
@@ -318,7 +320,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                       widget.level.description,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ],
@@ -334,7 +336,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -363,7 +365,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                 const SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: progressVal,
-                  backgroundColor: Colors.white.withOpacity(0.3),
+                  backgroundColor: Colors.white.withValues(alpha: 0.3),
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     Colors.greenAccent,
                   ),
@@ -399,6 +401,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
               while (currentIdx >= 0 &&
                   currentIdx < widget.level.numbers.length) {
                 AppTtsService.instance.stop();
+                if (!mounted) break;
                 final result = await Navigator.push(
                   context,
                   AnimatedRoute.slideRight(
@@ -439,8 +442,8 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
               boxShadow: [
                 BoxShadow(
                   color: isUnlocked
-                      ? colors[0].withOpacity(0.3)
-                      : Colors.grey.withOpacity(0.2),
+                      ? colors[0].withValues(alpha: 0.3)
+                      : Colors.grey.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -466,7 +469,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -523,7 +526,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: (isUnlocked ? colors[0] : Colors.grey).withOpacity(0.3),
+              color: (isUnlocked ? colors[0] : Colors.grey).withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

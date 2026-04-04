@@ -39,13 +39,15 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
     _initInstructionTts();
   }
 
+  bool _hasPlayedIntro = false;
+
   Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'اختبار نهاية المستوى الأول. اختر الإجابة الصحيحة لكل سؤال',
-      );
-    }
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'اختبار نهاية المستوى الأول. اختر الإجابة الصحيحة لكل سؤال',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -223,8 +225,8 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.level1[0].withOpacity(0.2),
-              AppColors.level1[1].withOpacity(0.2),
+              AppColors.level1[0].withValues(alpha: 0.2),
+              AppColors.level1[1].withValues(alpha: 0.2),
             ],
           ),
         ),
@@ -252,7 +254,7 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
         gradient: const LinearGradient(colors: AppColors.level1),
         boxShadow: [
           BoxShadow(
-            color: AppColors.level1[0].withOpacity(0.3),
+            color: AppColors.level1[0].withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 5),
           ),
@@ -283,7 +285,7 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
                       'السؤال ${_currentQuestionIndex + 1} من ${_questions.length}',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ],
@@ -295,7 +297,7 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -318,7 +320,7 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
           const SizedBox(height: 12),
           LinearProgressIndicator(
             value: progress,
-            backgroundColor: Colors.white.withOpacity(0.3),
+            backgroundColor: Colors.white.withValues(alpha: 0.3),
             valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
             minHeight: 8,
             borderRadius: BorderRadius.circular(4),
@@ -367,12 +369,12 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
             end: Alignment.bottomCenter,
             colors: isPassed
                 ? [
-                    AppColors.success.withOpacity(0.3),
-                    AppColors.success.withOpacity(0.1),
+                    AppColors.success.withValues(alpha: 0.3),
+                    AppColors.success.withValues(alpha: 0.1),
                   ]
                 : [
-                    AppColors.warning.withOpacity(0.3),
-                    AppColors.warning.withOpacity(0.1),
+                    AppColors.warning.withValues(alpha: 0.3),
+                    AppColors.warning.withValues(alpha: 0.1),
                   ],
           ),
         ),
@@ -481,7 +483,7 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
                         decoration: BoxDecoration(
                           color:
                               (isPassed ? AppColors.success : AppColors.warning)
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: isPassed
@@ -512,8 +514,8 @@ class _FinalLevelOneTestViewState extends State<FinalLevelOneTestView> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: isPassed
-                        ? AppColors.success.withOpacity(0.1)
-                        : AppColors.warning.withOpacity(0.1),
+                        ? AppColors.success.withValues(alpha: 0.1)
+                        : AppColors.warning.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isPassed ? AppColors.success : AppColors.warning,

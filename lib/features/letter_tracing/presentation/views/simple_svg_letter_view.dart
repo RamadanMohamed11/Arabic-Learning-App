@@ -172,7 +172,7 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.2),
+                color: Colors.blue.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.blue, width: 2),
               ),
@@ -206,7 +206,7 @@ class _SimpleSvgLetterViewState extends State<SimpleSvgLetterView> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),

@@ -46,7 +46,7 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.25),
+                color: AppColors.primary.withValues(alpha: 0.25),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -211,8 +211,8 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: _isCorrect
-                    ? AppColors.success.withOpacity(0.1)
-                    : AppColors.error.withOpacity(0.1),
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: _isCorrect ? AppColors.success : AppColors.error,
@@ -331,8 +331,8 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
               decoration: BoxDecoration(
                 color: isSelected
                     ? (isCorrect
-                          ? AppColors.success.withOpacity(0.15)
-                          : AppColors.error.withOpacity(0.15))
+                          ? AppColors.success.withValues(alpha: 0.15)
+                          : AppColors.error.withValues(alpha: 0.15))
                     : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
@@ -343,7 +343,7 @@ class _MissingWordWidgetState extends State<MissingWordWidget> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 6,
                     offset: const Offset(0, 4),
                   ),

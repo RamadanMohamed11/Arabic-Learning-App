@@ -73,9 +73,8 @@ class SvgNumberPathConverter {
         totalBounds.top * scale;
 
     // إنشاء مصفوفة التحويل
-    final matrix = Matrix4.identity()
-      ..translate(offsetX, offsetY)
-      ..scale(scale, scale);
+    final matrix = Matrix4.translationValues(offsetX, offsetY, 0.0)
+        * Matrix4.diagonal3Values(scale, scale, 1.0);
 
     // تحويل جميع المسارات
     final transformedPaths = <Path>[];

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/image_name_model.dart';
 
 class ImageNameView extends StatefulWidget {
@@ -19,54 +17,40 @@ class _ImageNameViewState extends State<ImageNameView> {
   final TextEditingController _ctrl = TextEditingController();
   bool _checked = false;
   bool _lastCorrect = false;
-  late final FlutterTts _tts;
-  bool _instructionPlayed = false;
-  static const Map<String, String> _ttsOverrides = {
-    'يرسم': 'يَرْسُم',
-    'يكتب': 'يَكْتُب',
-    'يقرأ': 'يَقْرَأ',
-  };
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
-    _tts = FlutterTts();
-    _initTts();
+    _playInstructionAndWord();
   }
 
   @override
   void dispose() {
-    _tts.stop();
     AppTtsService.instance.stop();
     _ctrl.dispose();
     super.dispose();
   }
 
-  Future<void> _initTts() async {
-    await TtsConfig.configure(_tts, speechRate: 0.45);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _playInstruction());
-  }
-
-  Future<void> _playInstruction() async {
-    if (_instructionPlayed) return;
-    _instructionPlayed = true;
-    await AppTtsService.instance.speak('انظر إلى الصورة واكتب اسمها الصحيح.');
-    // After instruction, speak the first image word
-    await Future.delayed(const Duration(milliseconds: 1500));
-    _speakCurrentImageWord();
+  Future<void> _playInstructionAndWord() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    
+    // We combine the intro instruction entirely
+    final item = imageNameItems[_current];
+    final textToSpeak = item.ttsText ?? item.answer;
+    
+    await AppTtsService.instance.speakScreenIntro(
+      'انظر إلى الصورة واكتب اسمها الصحيح. ثم استمع للكلمة التوضيحية: $textToSpeak',
+      isMounted: () => mounted,
+    );
   }
 
   Future<void> _speakCurrentImageWord() async {
+    if (!mounted) return;
     final item = imageNameItems[_current];
     final textToSpeak = item.ttsText ?? item.answer;
-    await _tts.stop();
-    await _tts.speak(textToSpeak);
-  }
-
-  Future<void> _speak(String text) async {
-    await _tts.stop();
-    final toSpeak = _ttsOverrides[text.trim()] ?? text;
-    await _tts.speak(toSpeak);
+    await AppTtsService.instance.speak(textToSpeak);
   }
 
   String _normalize(String s) {
@@ -114,10 +98,8 @@ class _ImageNameViewState extends State<ImageNameView> {
         _checked = false;
         _lastCorrect = false;
       });
-      // Speak the new image word after a brief delay
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _speakCurrentImageWord();
-      });
+      // Speak the new image word
+      _speakCurrentImageWord();
     } else {
       setState(() => _complete = true);
     }
@@ -238,7 +220,7 @@ class _ImageNameViewState extends State<ImageNameView> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -280,7 +262,7 @@ class _ImageNameViewState extends State<ImageNameView> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -383,10 +365,10 @@ class _ImageNameViewState extends State<ImageNameView> {
     final percentage = (_score / total * 100).round();
     final isPassed = percentage >= 70;
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, true);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) Navigator.pop(context, true);
       },
       child: Scaffold(
         body: Container(
@@ -395,8 +377,8 @@ class _ImageNameViewState extends State<ImageNameView> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: isPassed
-                  ? [AppColors.success, AppColors.success.withOpacity(0.7)]
-                  : [AppColors.warning, AppColors.warning.withOpacity(0.7)],
+                  ? [AppColors.success, AppColors.success.withValues(alpha: 0.7)]
+                  : [AppColors.warning, AppColors.warning.withValues(alpha: 0.7)],
             ),
           ),
           child: SafeArea(

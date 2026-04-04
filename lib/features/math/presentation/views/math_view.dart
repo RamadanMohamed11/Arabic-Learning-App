@@ -18,11 +18,13 @@ class MathView extends StatefulWidget {
 class _MathViewState extends State<MathView> {
   MathProgressService? _progressService;
   bool _isLoading = true;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
     _loadProgress();
+    _playIntroOnce();
   }
 
   Future<void> _loadProgress() async {
@@ -30,17 +32,17 @@ class _MathViewState extends State<MathView> {
     if (_isLoading) {
       _isLoading = false;
     }
-    _initTts();
+    if (!mounted) return;
     setState(() {});
   }
 
-  Future<void> _initTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'أهلاً بك في الرياضيات! اختر المستوى الذي تريد تعلمه',
-      );
-    }
+  Future<void> _playIntroOnce() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'أهلاً بك في الرياضيات! اختر المستوى الذي تريد تعلمه',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -145,7 +147,7 @@ class _MathViewState extends State<MathView> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -200,8 +202,8 @@ class _MathViewState extends State<MathView> {
           boxShadow: [
             BoxShadow(
               color: isUnlocked
-                  ? colors[0].withOpacity(0.4)
-                  : Colors.grey.withOpacity(0.3),
+                  ? colors[0].withValues(alpha: 0.4)
+                  : Colors.grey.withValues(alpha: 0.3),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -216,7 +218,7 @@ class _MathViewState extends State<MathView> {
               child: Icon(
                 icon,
                 size: 150,
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
               ),
             ),
             Padding(
@@ -226,7 +228,7 @@ class _MathViewState extends State<MathView> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(

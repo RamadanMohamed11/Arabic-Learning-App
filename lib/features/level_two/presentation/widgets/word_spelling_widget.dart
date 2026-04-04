@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_two/data/models/word_spelling_model.dart';
 
@@ -22,7 +21,6 @@ class WordSpellingWidget extends StatefulWidget {
 }
 
 class _WordSpellingWidgetState extends State<WordSpellingWidget> {
-  late FlutterTts _flutterTts;
   late List<String> _shuffledLetters;
   late List<String?> _arrangedLetters;
   bool _isCorrect = false;
@@ -32,18 +30,9 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
   @override
   void initState() {
     super.initState();
-    _flutterTts = FlutterTts();
-    _configureTts();
     _initializeLetters();
-    Future.delayed(const Duration(milliseconds: 1800), () {
+    Future.delayed(const Duration(milliseconds: 3000), () {
       if (mounted) _speakLetters();
-    });
-  }
-
-  Future<void> _configureTts() async {
-    await TtsConfig.configure(_flutterTts, speechRate: 0.5);
-    _flutterTts.setCompletionHandler(() {
-      if (mounted) setState(() => _isSpeaking = false);
     });
   }
 
@@ -53,16 +42,24 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
   }
 
   Future<void> _speakLetters() async {
-    setState(() => _isSpeaking = true);
+    if (_isSpeaking) return;
+    setState(() {
+      _isSpeaking = true;
+    });
     for (final letter in widget.question.letters) {
-      await _flutterTts.speak(letter);
+      if (!mounted) break;
+      await AppTtsService.instance.speak(letter, speechRate: 0.5);
       await Future.delayed(const Duration(milliseconds: 600));
     }
-    setState(() => _isSpeaking = false);
+    if (mounted) {
+      setState(() {
+        _isSpeaking = false;
+      });
+    }
   }
 
   Future<void> _speakWord() async {
-    await _flutterTts.speak(widget.question.word);
+    await AppTtsService.instance.speak(widget.question.word, speechRate: 0.5);
   }
 
   void _checkAnswer() {
@@ -95,7 +92,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
 
   @override
   void dispose() {
-    _flutterTts.stop();
+    AppTtsService.instance.stop();
     super.dispose();
   }
 
@@ -163,7 +160,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -357,7 +354,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
                     ? []
                     : [
                         BoxShadow(
-                          color: AppColors.success.withOpacity(0.3),
+                          color: AppColors.success.withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -435,7 +432,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: backgroundColor.withOpacity(0.4),
+              color: backgroundColor.withValues(alpha: 0.4),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

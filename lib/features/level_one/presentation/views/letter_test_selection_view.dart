@@ -38,12 +38,12 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
   @override
   void initState() {
     super.initState();
+    _initTts();
     _loadProgress();
   }
 
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
-    _initTts();
     setState(() {
       _tracingCompleted = _progressService!.isActivityCompleted(
         widget.letterIndex,
@@ -58,12 +58,10 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
   }
 
   Future<void> _initTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'اختبارات حرف ${widget.letter}. اختر الاختبار الذي تريد',
-      );
-    }
+    await AppTtsService.instance.speakScreenIntro(
+      'اختبارات حرف ${widget.letter}. اختر الاختبار الذي تريد',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -264,8 +262,8 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppColors.level1[0].withOpacity(0.2),
-                    AppColors.level1[1].withOpacity(0.2),
+                    AppColors.level1[0].withValues(alpha: 0.2),
+                    AppColors.level1[1].withValues(alpha: 0.2),
                   ],
                 ),
               ),
@@ -358,7 +356,7 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.lightSlateBlue.withOpacity(0.2),
+        color: AppColors.lightSlateBlue.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.secondary, width: 2),
       ),
@@ -400,7 +398,7 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -417,8 +415,8 @@ class _LetterTestSelectionViewState extends State<LetterTestSelectionView> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: showCheck
-                    ? AppColors.success.withOpacity(0.1)
-                    : color.withOpacity(0.1),
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(

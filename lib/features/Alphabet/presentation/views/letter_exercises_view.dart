@@ -39,9 +39,11 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
     _loadProgress();
   }
 
+  bool _hasPlayedIntro = false;
+
   Future<void> _loadProgress() async {
     _progressService = await UserProgressService.getInstance();
-    _initTts();
+    _playIntro();
     setState(() {
       _tracingCompleted = _progressService!.isActivityCompleted(
         widget.letterIndex,
@@ -51,13 +53,13 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
     });
   }
 
-  Future<void> _initTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'تمارين حرف ${widget.letter}. اختر التمرين الذي تريد التدرب عليه',
-      );
-    }
+  Future<void> _playIntro() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'تمارين حرف ${widget.letter}. اختر التمرين الذي تريد التدرب عليه',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -275,7 +277,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.lightSlateBlue.withOpacity(0.2),
+        color: AppColors.lightSlateBlue.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.secondary, width: 2),
       ),
@@ -315,7 +317,7 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -332,8 +334,8 @@ class _LetterExercisesViewState extends State<LetterExercisesView> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: isCompleted
-                    ? AppColors.success.withOpacity(0.1)
-                    : color.withOpacity(0.1),
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(

@@ -70,6 +70,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
 
   // إعدادات الحساسية
   final double touchTolerance = 40.0;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -91,13 +92,15 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
   }
 
   Future<void> _speakIntro() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      final name =
-          _arabicNumberNames[widget.numberModel.number] ??
-          widget.numberModel.label;
-      await AppTtsService.instance.speak('تتبع الرقم $name بإصبعك');
-    }
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    final name =
+        _arabicNumberNames[widget.numberModel.number] ??
+        widget.numberModel.label;
+    await AppTtsService.instance.speakScreenIntro(
+      'تتبع الرقم $name بإصبعك',
+      isMounted: () => mounted,
+    );
   }
 
   Future<void> _loadNumberPath() async {
@@ -424,7 +427,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [_levelColors[0].withOpacity(0.15), Colors.white],
+            colors: [_levelColors[0].withValues(alpha: 0.15), Colors.white],
           ),
         ),
         child: Column(
@@ -452,7 +455,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -522,7 +525,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 12,
-              backgroundColor: _levelColors[0].withOpacity(0.2),
+              backgroundColor: _levelColors[0].withValues(alpha: 0.2),
               valueColor: AlwaysStoppedAnimation<Color>(
                 isCompleted ? Colors.green : _levelColors[0],
               ),
@@ -554,8 +557,8 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isCompleted
-            ? Colors.green.withOpacity(0.2)
-            : _levelColors[0].withOpacity(0.2),
+            ? Colors.green.withValues(alpha: 0.2)
+            : _levelColors[0].withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: isCompleted ? Colors.green : _levelColors[0],

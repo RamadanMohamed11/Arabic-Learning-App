@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:go_router/go_router.dart';
@@ -34,7 +32,6 @@ class PlacementTestViewBody extends StatefulWidget {
 }
 
 class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
-  final FlutterTts _flutterTts = FlutterTts();
   final SpeechToText _speechToText = SpeechToText();
   final TextEditingController _answerController = TextEditingController();
   UserProgressService? _progressService;
@@ -46,9 +43,6 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   bool _testStarted = false;
   bool _showingResults = false;
   bool _isPlayingAudio = false;
-  bool _ttsInitialized = false;
-  int _audioAttempts = 0;
-  String _ttsLanguage = 'ar-SA';
 
   final List<PlacementTestQuestion> _questions = [
     // أسئلة الكتابة (3 أسئلة)
@@ -132,90 +126,21 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   }
 
   Future<void> _playWelcomeInstruction() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted && !_testStarted) {
-      await AppTtsService.instance.speak(
-        'أهلاً بك في اختبار تحديد المستوى! سنُقَيِّمُ مستواك في اللغة العربية. اضغط على ابدأ الاختبار للبدء',
-      );
-    }
+    if (_testStarted) return;
+    await AppTtsService.instance.speakScreenIntro(
+      'أهلاً بك في اختبار تحديد المستوى! سنُقَيِّمُ مستواك في اللغة العربية. اضغط على ابدأ الاختبار للبدء',
+      isMounted: () => mounted,
+    );
   }
 
   Future<void> _initServices() async {
     _progressService = await UserProgressService.getInstance();
-    await _initializeTTS();
 
     // تهيئة التعرف على الصوت
     try {
       await _speechToText.initialize();
     } catch (e) {
-      print('Error initializing Speech to Text: $e');
-    }
-  }
-
-  Future<void> _initializeTTS() async {
-    try {
-      // إعادة تعيين حالة TTS
-      await _flutterTts.stop();
-
-      // تجربة لغات مختلفة للعربية
-      List<String> arabicLanguages = ['ar-SA', 'ar', 'ar-EG', 'ar-AE'];
-      bool languageSet = false;
-      String selectedLanguage = _ttsLanguage;
-
-      for (String lang in arabicLanguages) {
-        try {
-          var result = await _flutterTts.setLanguage(lang);
-          if (result == 1) {
-            print('TTS language set successfully: $lang');
-            languageSet = true;
-            selectedLanguage = lang;
-            break;
-          }
-        } catch (e) {
-          print('Failed to set language $lang: $e');
-          continue;
-        }
-      }
-
-      if (!languageSet) {
-        print('Warning: Could not set Arabic language, using default');
-      }
-
-      await TtsConfig.configure(
-        _flutterTts,
-        language: selectedLanguage,
-        speechRate: 0.3,
-      );
-      _ttsLanguage = selectedLanguage;
-
-      // إعداد callbacks للـ TTS
-      _flutterTts.setCompletionHandler(() {
-        print('TTS completed successfully');
-        if (mounted) {
-          setState(() {
-            _isPlayingAudio = false;
-          });
-        }
-      });
-
-      _flutterTts.setErrorHandler((message) {
-        print('TTS error: $message');
-        if (mounted) {
-          setState(() {
-            _isPlayingAudio = false;
-          });
-        }
-      });
-
-      _flutterTts.setStartHandler(() {
-        print('TTS started');
-      });
-
-      _ttsInitialized = true;
-      print('TTS initialized successfully');
-    } catch (e) {
-      print('Error initializing TTS: $e');
-      _ttsInitialized = false;
+      debugPrint('Error initializing Speech to Text: $e');
     }
   }
 
@@ -228,115 +153,34 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   }
 
   Future<void> _playQuestionInstruction() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      final question = _questions[_currentQuestionIndex];
-      String instruction = question.question;
-      
-      // If it's a listening question that includes the word, we don't want to spell the answer
-      if (instruction.startsWith('اختر الصوت الصحيح للكلمة')) {
-        instruction = 'اختر الصوت الصحيح للكلمة';
-      }
-      
-      await AppTtsService.instance.speak(instruction);
+    final question = _questions[_currentQuestionIndex];
+    String instruction = question.question;
+    
+    // If it's a listening question that includes the word, we don't want to spell the answer
+    if (instruction.startsWith('اختر الصوت الصحيح للكلمة')) {
+      instruction = 'اختر الصوت الصحيح للكلمة';
     }
+    
+    await AppTtsService.instance.speakScreenIntro(
+      instruction,
+      isMounted: () => mounted,
+    );
   }
 
   Future<void> _playAudio(String text) async {
-    print('Attempting to play audio: "$text"');
-
-    // منع المحاولات المتعددة المتزامنة
-    if (_isPlayingAudio) {
-      print('Audio already playing, stopping previous');
-      await _flutterTts.stop();
-      await Future.delayed(const Duration(milliseconds: 200));
-    }
-
-    _audioAttempts++;
-    print('Audio attempt #$_audioAttempts');
-
+    if (_isPlayingAudio) return;
+    
     setState(() {
       _isPlayingAudio = true;
     });
 
     try {
-      // التحقق من تهيئة TTS
-      if (!_ttsInitialized) {
-        print('TTS not initialized, reinitializing...');
-        await _initializeTTS();
-        if (!_ttsInitialized) {
-          throw Exception('Failed to initialize TTS');
-        }
-      }
-
-      // إيقاف أي صوت قيد التشغيل والانتظار
-      await _flutterTts.stop();
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // التحقق من توفر اللغات
-      var languages = await _flutterTts.getLanguages;
-      print('Available languages: $languages');
-
-      // تشغيل الصوت مع إعادة المحاولة
-      int maxRetries = 3;
-      bool success = false;
-
-      for (int i = 0; i < maxRetries && !success; i++) {
-        try {
-          print('TTS speak attempt ${i + 1}/$maxRetries');
-
-          // تأكيد إعدادات TTS قبل كل محاولة
-          await TtsConfig.configure(
-            _flutterTts,
-            language: _ttsLanguage,
-            speechRate: 0.3,
-          );
-
-          final result = await _flutterTts.speak(text);
-          print('TTS speak result: $result');
-
-          if (result == 1) {
-            success = true;
-            print('Audio started successfully');
-
-            // انتظار لمدة قصيرة للتأكد من بدء التشغيل
-            await Future.delayed(const Duration(milliseconds: 100));
-          } else {
-            print('TTS speak failed with result: $result');
-            if (i < maxRetries - 1) {
-              await Future.delayed(const Duration(milliseconds: 500));
-              // إعادة تهيئة TTS في حالة الفشل
-              await _initializeTTS();
-            }
-          }
-        } catch (e) {
-          print('TTS speak attempt ${i + 1} failed: $e');
-          if (i < maxRetries - 1) {
-            await Future.delayed(const Duration(milliseconds: 500));
-            await _initializeTTS();
-          }
-        }
-      }
-
-      if (!success) {
-        throw Exception('Failed to play audio after $maxRetries attempts');
-      }
-    } catch (e) {
-      print('Critical error playing audio: $e');
+      await AppTtsService.instance.speak(text);
+    } finally {
       if (mounted) {
         setState(() {
           _isPlayingAudio = false;
         });
-      }
-
-      // إظهار رسالة خطأ للمستخدم
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('حدث خطأ في تشغيل الصوت. يرجى المحاولة مرة أخرى.'),
-            duration: Duration(seconds: 2),
-          ),
-        );
       }
     }
   }
@@ -413,7 +257,6 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
 
   void _nextQuestion() {
     // إيقاف أي صوت قيد التشغيل
-    _flutterTts.stop();
     AppTtsService.instance.stop();
 
     if (_currentQuestionIndex < _questions.length - 1) {
@@ -423,7 +266,6 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
         _selectedOption = '';
         _isListening = false;
         _isPlayingAudio = false;
-        _audioAttempts = 0; // إعادة تعيين عداد المحاولات
       });
       _playQuestionInstruction();
     } else {
@@ -452,30 +294,9 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
     context.go('/levels_selection');
   }
 
-  // Test function to verify TTS is working
-  Future<void> _testTTS() async {
-    print('Testing TTS functionality...');
-    try {
-      var engines = await _flutterTts.getEngines;
-      print('Available TTS engines: $engines');
-
-      var voices = await _flutterTts.getVoices;
-      print('Available voices: $voices');
-
-      var languages = await _flutterTts.getLanguages;
-      print('Available languages: $languages');
-
-      // Test with simple Arabic text
-      await _playAudio('مرحبا');
-    } catch (e) {
-      print('TTS test failed: $e');
-    }
-  }
-
   @override
   void dispose() {
     _answerController.dispose();
-    _flutterTts.stop();
     _speechToText.stop();
     AppTtsService.instance.stop();
     super.dispose();
@@ -484,7 +305,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   @override
   void deactivate() {
     // إيقاف الصوت عند مغادرة الصفحة
-    _flutterTts.stop();
+    AppTtsService.instance.stop();
     super.deactivate();
   }
 
@@ -544,7 +365,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Column(
@@ -583,17 +404,6 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextButton(
-                          onPressed: _testTTS,
-                          child: const Text(
-                            'اختبار الصوت',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
                         TextButton.icon(
                           onPressed: () {
                             context.push(AppRouter.kAboutView);
@@ -797,22 +607,6 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                 ),
               ),
             ),
-            if (_audioAttempts > 0 && !_isPlayingAudio) ...[
-              const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: () async {
-                  await _initializeTTS();
-                  _audioAttempts = 0;
-                  setState(() {});
-                },
-                icon: const Icon(Icons.refresh, size: 16),
-                label: const Text(
-                  'إعادة تهيئة الصوت',
-                  style: TextStyle(fontSize: 12),
-                ),
-                style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
-              ),
-            ],
           ],
         ),
         const SizedBox(height: 24),
@@ -847,7 +641,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -889,7 +683,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -947,7 +741,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.white.withOpacity(0.3)
+                              ? Colors.white.withValues(alpha: 0.3)
                               : Colors.grey.shade200,
                           shape: BoxShape.circle,
                         ),
@@ -1045,7 +839,7 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Column(

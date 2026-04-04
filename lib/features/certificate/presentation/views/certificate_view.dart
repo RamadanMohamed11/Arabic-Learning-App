@@ -316,7 +316,7 @@ class _FooterSection extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.35),
+            color: Colors.white.withValues(alpha: 0.35),
             borderRadius: BorderRadius.circular(32),
             boxShadow: const [
               BoxShadow(
@@ -390,12 +390,12 @@ class _CertificateBorderPainter extends CustomPainter {
     final innerRect = outerRect.deflate(12);
 
     final outerPaint = Paint()
-      ..color = const Color(0xFFB4DEBD).withOpacity(0.7)
+      ..color = const Color(0xFFB4DEBD).withValues(alpha: 0.7)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
 
     final innerPaint = Paint()
-      ..color = Colors.white.withOpacity(0.5)
+      ..color = Colors.white.withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
@@ -570,7 +570,7 @@ class _BlurredCircle extends StatelessWidget {
             color: color,
             shape: BoxShape.circle,
             gradient: RadialGradient(
-              colors: [color.withOpacity(0.6), color.withOpacity(0.2)],
+              colors: [color.withValues(alpha: 0.6), color.withValues(alpha: 0.2)],
             ),
           ),
         ),
@@ -601,10 +601,10 @@ class _GeometricPatternPainter extends CustomPainter {
     canvas.drawRect(Offset.zero & size, backgroundPaint);
 
     final circlePaint = Paint()
-      ..color = const Color(0xFF80A1BA).withOpacity(0.08)
+      ..color = const Color(0xFF80A1BA).withValues(alpha: 0.08)
       ..style = PaintingStyle.fill;
     final linePaint = Paint()
-      ..color = const Color(0xFF91C4C3).withOpacity(0.08)
+      ..color = const Color(0xFF91C4C3).withValues(alpha: 0.08)
       ..strokeWidth = 0.6;
 
     const spacing = 30.0;
@@ -690,7 +690,7 @@ class _Dot extends StatelessWidget {
         color: color,
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.5),
+            color: color.withValues(alpha: 0.5),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

@@ -22,6 +22,7 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
   int _currentLetterIndex = 0;
   bool _showHint = false;
   List<int> _unlockedLetters = [0];
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -31,12 +32,12 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
   }
 
   Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+      await AppTtsService.instance.speakScreenIntro(
         "تَدْرِيبُ الْكِتَابَةِ، اُكْتُبِ الْحَرْفَ فِي الْمَكَانِ الْمُخَصَّص.",
+      isMounted: () => mounted,
       );
-    }
   }
 
   Future<void> _loadProgress() async {
@@ -377,7 +378,7 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                               height: 200,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: Colors.teal.withOpacity(0.3),
+                                  color: Colors.teal.withValues(alpha: 0.3),
                                   width: 2,
                                   strokeAlign: BorderSide.strokeAlignInside,
                                 ),
@@ -388,7 +389,7 @@ class _WritingPracticeViewBodyState extends State<WritingPracticeViewBody> {
                                   'اكتب هنا',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.teal.withOpacity(0.3),
+                                    color: Colors.teal.withValues(alpha: 0.3),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

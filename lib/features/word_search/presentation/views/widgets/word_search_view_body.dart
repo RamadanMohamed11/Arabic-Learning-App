@@ -54,6 +54,7 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
   List<GridCell> currentSelection = [];
   int foundWords = 0;
   bool isDragging = false;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -63,12 +64,12 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
   }
 
   Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+      await AppTtsService.instance.speakScreenIntro(
         "اَلْبَحْثُ عَنِ الْكَلِمَاتِ، اِبْحَثْ عَنِ الْكَلِمَاتِ الْمَخْفِيَّةِ فِي الْجَدْوَلِ وَاسْحَبْ إِصْبَعَكَ عَلَيْهَا.",
+      isMounted: () => mounted,
       );
-    }
   }
 
   @override
@@ -466,7 +467,7 @@ class _WordSearchViewBodyState extends State<WordSearchViewBody> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.orange.withOpacity(0.2),
+                        color: Colors.orange.withValues(alpha: 0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),

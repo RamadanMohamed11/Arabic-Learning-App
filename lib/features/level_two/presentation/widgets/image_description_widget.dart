@@ -248,8 +248,8 @@ class _ImageDescriptionWidgetState extends State<ImageDescriptionWidget> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: _isCorrect
-                    ? AppColors.success.withOpacity(0.1)
-                    : AppColors.error.withOpacity(0.1),
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: _isCorrect ? AppColors.success : AppColors.error,

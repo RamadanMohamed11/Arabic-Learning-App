@@ -33,6 +33,8 @@ class ExercisesViewBody extends StatefulWidget {
 }
 
 class _ExercisesViewBodyState extends State<ExercisesViewBody> {
+  bool _hasPlayedIntro = false;
+
   static final List<ExerciseItem> exercises = [
     ExerciseItem(
       title: 'تتبع الحروف',
@@ -85,18 +87,18 @@ class _ExercisesViewBodyState extends State<ExercisesViewBody> {
   }
 
   Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        "قِسْمُ التَمَارِينِ، اِخْتَرِ التَّمْرِينَ الَّذِي تُرِيد.",
-      );
-    }
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      "قِسْمُ التَمَارِينِ، اِخْتَرِ التَّمْرِينَ الَّذِي تُرِيد.",
+      isMounted: () => mounted,
+    );
   }
 
   void _rePlayInstruction() {
     if (mounted) {
       AppTtsService.instance.speak(
-        "قِسْمُ التَمَارِينِ، اِخْتَرِ التَّمْرِينَ الَّذِي تُرِيد.",
+        "قِسْمُ التَمَارِينِ، اِخْتَرِ التَّمْرِينَ الَّذِي تُرِيد.",
       );
     }
   }
@@ -191,7 +193,7 @@ class _ExercisesViewBodyState extends State<ExercisesViewBody> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: exercise.gradientColors[0].withOpacity(0.4),
+              color: exercise.gradientColors[0].withValues(alpha: 0.4),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -216,7 +218,7 @@ class _ExercisesViewBodyState extends State<ExercisesViewBody> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(exercise.icon, size: 48, color: Colors.white),
@@ -238,7 +240,7 @@ class _ExercisesViewBodyState extends State<ExercisesViewBody> {
                     exercise.description,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 2,
@@ -248,7 +250,7 @@ class _ExercisesViewBodyState extends State<ExercisesViewBody> {
                   // Arrow Icon
                   Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     size: 20,
                   ),
                 ],

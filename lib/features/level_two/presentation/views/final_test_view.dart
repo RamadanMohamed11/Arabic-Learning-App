@@ -162,8 +162,12 @@ class _FinalTestViewState extends State<FinalTestView> {
     await _stt.listen(
       localeId: 'ar_SA',
       onResult: _onSpeechResult,
-      listenMode: stt.ListenMode.dictation,
-      partialResults: true,
+      listenOptions: stt.SpeechListenOptions(
+          listenMode: stt.ListenMode.dictation,
+          partialResults: true,
+          cancelOnError: true,
+          autoPunctuation: true,
+          enableHapticFeedback: true),
       listenFor: const Duration(minutes: 2),
       pauseFor: const Duration(seconds: 30),
     );
@@ -355,7 +359,7 @@ class _FinalTestViewState extends State<FinalTestView> {
     final q = finalAQuestions[_index];
     final isAnswered = _checked;
     final order = _aOptionOrder[_index];
-    final isCorrect =
+    final _ =
         isAnswered &&
         _selectedOption != null &&
         order[_selectedOption!] == q.correctIndex;
@@ -482,7 +486,7 @@ class _FinalTestViewState extends State<FinalTestView> {
   Widget _buildSectionB() {
     final q = finalBQuestions[_index];
     final isAnswered = _checked;
-    final ok = isAnswered && _speechMatches(_spoken, q.text);
+    final _ = isAnswered && _speechMatches(_spoken, q.text);
     return Column(
       children: [
         const SizedBox(height: 24),
@@ -493,7 +497,7 @@ class _FinalTestViewState extends State<FinalTestView> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -593,7 +597,7 @@ class _FinalTestViewState extends State<FinalTestView> {
   Widget _buildSectionC() {
     final q = finalCQuestions[_index];
     final isAnswered = _checked;
-    final ok =
+    final _ =
         isAnswered && _normalize(_dictationCtrl.text) == _normalize(q.text);
 
     return Column(
@@ -629,7 +633,7 @@ class _FinalTestViewState extends State<FinalTestView> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -720,10 +724,10 @@ class _FinalTestViewState extends State<FinalTestView> {
       _handleSuccessfulCompletion();
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, true);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) Navigator.pop(context, true);
       },
       child: Scaffold(
         body: Container(
@@ -732,8 +736,8 @@ class _FinalTestViewState extends State<FinalTestView> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: isPassed
-                  ? [AppColors.success, AppColors.success.withOpacity(0.7)]
-                  : [AppColors.warning, AppColors.warning.withOpacity(0.7)],
+                  ? [AppColors.success, AppColors.success.withValues(alpha: 0.7)]
+                  : [AppColors.warning, AppColors.warning.withValues(alpha: 0.7)],
             ),
           ),
           child: SafeArea(

@@ -112,12 +112,15 @@ class MathProgressService {
   }
 
   bool isNumberUnlocked(int level, int number) {
-    if (level == 1 && number == 1)
+    if (level == 1 && number == 1) {
       return true; // Level 1 starts with 1 unlocked
-    if (level == 2 && number == 10 && isLevel2Unlocked())
+    }
+    if (level == 2 && number == 10 && isLevel2Unlocked()) {
       return true; // Level 2 starts with 10 unlocked
-    if (level == 3 && number == 21 && isLevel3Unlocked())
+    }
+    if (level == 3 && number == 21 && isLevel3Unlocked()) {
       return true; // Level 3 starts with 21 unlocked
+    }
 
     final key = '${level}_$number';
     return getUnlockedNumbers().contains(key);

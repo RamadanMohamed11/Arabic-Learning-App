@@ -1,11 +1,9 @@
 import 'package:arabic_learning_app/constants.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
-import 'package:arabic_learning_app/core/audio/tts_config.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/widgets/letter_card.dart';
 import 'package:arabic_learning_app/features/Alphabet/presentation/views/letter_shapes_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 
 class AlphabetViewBody extends StatefulWidget {
@@ -16,46 +14,29 @@ class AlphabetViewBody extends StatefulWidget {
 }
 
 class _AlphabetViewBodyState extends State<AlphabetViewBody> {
-  final FlutterTts flutterTts = FlutterTts();
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
-    _initTts();
+    _playIntro();
   }
 
-  Future<void> _initTts() async {
-    await TtsConfig.configure(flutterTts, language: 'ar-EG', speechRate: 0.5);
-    flutterTts.setCompletionHandler(() {});
-
-    // Play screen instructions automatically
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'تعلم الحروف العربية، اضغط على بطاقة الحرف لتعلم أشكاله، أو اضغط على السماعة لسماع النطق.',
-      );
-    }
+  Future<void> _playIntro() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'تعلم الحروف العربية، اضغط على بطاقة الحرف لتعلم أشكاله، أو اضغط على السماعة لسماع النطق.',
+      isMounted: () => mounted,
+    );
   }
 
-  Future<void> _speak(String text) async {
-    // Stop any ongoing speech
-    await AppTtsService.instance.stop();
-    await flutterTts.stop();
-    // Speak
-    await flutterTts.speak(text);
-  }
-
-  void _rePlayInstruction() {
-    if (mounted) {
-      AppTtsService.instance.speak(
-        'تعلم الحروف العربية، اضغط على بطاقة الحرف لتعلم أشكاله، أو اضغط على السماعة لسماع النطق.',
-      );
-    }
+  void _speak(String text) {
+    AppTtsService.instance.speak(text);
   }
 
   @override
   void dispose() {
-    flutterTts.stop();
     AppTtsService.instance.stop();
     super.dispose();
   }
@@ -125,7 +106,7 @@ class _AlphabetViewBodyState extends State<AlphabetViewBody> {
                               letter: arabicLetters[index].letter,
                             ),
                           ),
-                        ).then((_) => _rePlayInstruction());
+                        );
                       },
                     );
                   },

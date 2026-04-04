@@ -17,19 +17,21 @@ class _WordSpellingViewState extends State<WordSpellingView> {
   int _score = 0;
   bool _isTestComplete = false;
 
+  bool _hasPlayedIntro = false;
+
   @override
   void initState() {
     super.initState();
-    _initInstructionTts();
+    _playIntro();
   }
 
-  Future<void> _initInstructionTts() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'استمع للحروف ثم اسحبها بالترتيب الصحيح لتكوين الكلمة.',
-      );
-    }
+  Future<void> _playIntro() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'استمع للحروف ثم اسحبها بالترتيب الصحيح لتكوين الكلمة.',
+      isMounted: () => mounted,
+    );
   }
 
   void _onCorrect() {
@@ -168,10 +170,10 @@ class _WordSpellingViewState extends State<WordSpellingView> {
     final percentage = (_score / wordSpellingQuestions.length * 100).round();
     final isPassed = percentage >= 70;
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, true);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) Navigator.pop(context, true);
       },
       child: Scaffold(
         body: Container(
@@ -180,8 +182,8 @@ class _WordSpellingViewState extends State<WordSpellingView> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: isPassed
-                  ? [AppColors.success, AppColors.success.withOpacity(0.7)]
-                  : [AppColors.warning, AppColors.warning.withOpacity(0.7)],
+                  ? [AppColors.success, AppColors.success.withValues(alpha: 0.7)]
+                  : [AppColors.warning, AppColors.warning.withValues(alpha: 0.7)],
             ),
           ),
           child: SafeArea(
@@ -219,7 +221,7 @@ class _WordSpellingViewState extends State<WordSpellingView> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -257,7 +259,7 @@ class _WordSpellingViewState extends State<WordSpellingView> {
                                 (isPassed
                                         ? AppColors.success
                                         : AppColors.warning)
-                                    .withOpacity(0.1),
+                                    .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isPassed

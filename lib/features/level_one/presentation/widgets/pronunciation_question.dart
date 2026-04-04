@@ -158,7 +158,12 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
           }
         },
         localeId: "ar-SA",
-        listenMode: ListenMode.confirmation,
+        listenOptions: SpeechListenOptions(
+            listenMode: ListenMode.confirmation,
+            cancelOnError: true,
+            partialResults: true,
+            autoPunctuation: true,
+            enableHapticFeedback: true),
         pauseFor: const Duration(seconds: 3),
         listenFor: const Duration(seconds: 10),
       );
@@ -431,7 +436,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: _feedbackColor.withOpacity(0.1),
+            color: _feedbackColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: _feedbackColor, width: 2),
           ),
@@ -443,7 +448,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
               fontWeight: FontWeight.bold,
               color: _feedbackColor == Colors.grey
                   ? _feedbackColor
-                  : _feedbackColor.withOpacity(0.9),
+                  : _feedbackColor.withValues(alpha: 0.9),
             ),
           ),
         ),
@@ -473,7 +478,7 @@ class _PronunciationQuestionState extends State<PronunciationQuestion> {
                       (_speechToText.isListening
                               ? Colors.red
                               : AppColors.primary)
-                          .withOpacity(0.4),
+                          .withValues(alpha: 0.4),
                   blurRadius: 20,
                   spreadRadius: 5,
                 ),

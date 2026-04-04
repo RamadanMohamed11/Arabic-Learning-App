@@ -113,14 +113,19 @@ class _ListenAndWriteViewState extends State<ListenAndWriteView>
       });
     }
 
-    // Play instruction
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Play instruction using cancellable intro
+    final instruction = _currentRound == 0
+        ? 'اسمع الرقم ثم اكتبه، ${round.arabicName}'
+        : round.arabicName;
+
+    await AppTtsService.instance.speakScreenIntro(
+      instruction,
+      isMounted: () => mounted,
+    );
     if (mounted) {
-      await AppTtsService.instance.speak('اسمع الرقم ثم اكتبه');
-      await Future.delayed(const Duration(milliseconds: 1200));
-      if (mounted) {
-        await _playNumberSound();
-      }
+      setState(() {
+        _hasListened = true;
+      });
     }
   }
 
@@ -287,7 +292,7 @@ class _ListenAndWriteViewState extends State<ListenAndWriteView>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.level1[0].withOpacity(0.15), Colors.white],
+            colors: [AppColors.level1[0].withValues(alpha: 0.15), Colors.white],
           ),
         ),
         child: _isLoadingPath
@@ -319,7 +324,7 @@ class _ListenAndWriteViewState extends State<ListenAndWriteView>
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               ),
@@ -382,7 +387,7 @@ class _ListenAndWriteViewState extends State<ListenAndWriteView>
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.orange.withOpacity(0.3),
+              color: Colors.orange.withValues(alpha: 0.3),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -430,8 +435,8 @@ class _ListenAndWriteViewState extends State<ListenAndWriteView>
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: _isTracingComplete
-            ? Colors.green.withOpacity(0.2)
-            : AppColors.level1[0].withOpacity(0.2),
+            ? Colors.green.withValues(alpha: 0.2)
+            : AppColors.level1[0].withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: _isTracingComplete ? Colors.green : AppColors.level1[0],
@@ -493,7 +498,7 @@ class _ListenAndWriteViewState extends State<ListenAndWriteView>
                   'لقد أكملت نشاط اسمع واكتب',
                   style: TextStyle(
                     fontSize: 20,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 const SizedBox(height: 12),

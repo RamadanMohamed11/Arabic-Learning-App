@@ -70,7 +70,7 @@ class _RevisionWritingPracticeState extends State<RevisionWritingPractice> {
             Container(
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
               decoration: BoxDecoration(
-                color: AppColors.exercise1[0].withOpacity(0.1),
+                color: AppColors.exercise1[0].withValues(alpha: 0.1),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -145,7 +145,7 @@ class _RevisionWritingPracticeState extends State<RevisionWritingPractice> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, -3),
                   ),

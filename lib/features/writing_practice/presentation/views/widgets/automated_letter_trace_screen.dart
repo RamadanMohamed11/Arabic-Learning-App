@@ -45,6 +45,7 @@ class _AutomatedLetterTraceScreenState
   int _missedPoints = 0;
   int _totalAttempts = 0;
   bool _isInteractingWithBoard = false;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -54,10 +55,12 @@ class _AutomatedLetterTraceScreenState
   }
 
   Future<void> _playIntro() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (mounted) {
-      await AppTtsService.instance.speak("قُم بتتبع الحرف");
-    }
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      "قُم بتتبع الحرف",
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -69,10 +72,10 @@ class _AutomatedLetterTraceScreenState
   Future<void> _loadAndParseSvg() async {
     try {
       final String svgString = await rootBundle.loadString(widget.svgAssetPath);
-      print('📄 SVG loaded, length: ${svgString.length}');
+      debugPrint('📄 SVG loaded, length: ${svgString.length}');
 
       if (svgString.isEmpty) {
-        print('❌ SVG is empty!');
+        debugPrint('❌ SVG is empty!');
         return;
       }
 
@@ -80,10 +83,10 @@ class _AutomatedLetterTraceScreenState
       final RegExp pathRegExp = RegExp(r'd="([^"]+)"');
       final Iterable<Match> matches = pathRegExp.allMatches(svgString);
 
-      print('🔍 Found ${matches.length} paths in SVG');
+      debugPrint('🔍 Found ${matches.length} paths in SVG');
 
       if (matches.isEmpty) {
-        print('❌ No paths found!');
+        debugPrint('❌ No paths found!');
         return;
       }
 
@@ -94,12 +97,12 @@ class _AutomatedLetterTraceScreenState
       for (final Match match in matches) {
         try {
           final String pathData = match.group(1)!;
-          print('📍 Path $pathIndex data length: ${pathData.length}');
+          debugPrint('📍 Path $pathIndex data length: ${pathData.length}');
 
           // Validate that path starts with M or m (moveTo command)
           final String trimmedPath = pathData.trim();
           if (!trimmedPath.startsWith('M') && !trimmedPath.startsWith('m')) {
-            print('⚠️ Path $pathIndex does not start with moveTo, skipping');
+            debugPrint('⚠️ Path $pathIndex does not start with moveTo, skipping');
             pathIndex++;
             continue;
           }
@@ -108,15 +111,15 @@ class _AutomatedLetterTraceScreenState
           parsedPaths.add(parsedPath);
           pathIndex++;
         } catch (e) {
-          print('❌ Error parsing path $pathIndex: $e');
+          debugPrint('❌ Error parsing path $pathIndex: $e');
           pathIndex++;
         }
       }
 
-      print('✅ Successfully parsed ${parsedPaths.length} paths');
+      debugPrint('✅ Successfully parsed ${parsedPaths.length} paths');
 
       if (parsedPaths.isEmpty) {
-        print('❌ No valid paths!');
+        debugPrint('❌ No valid paths!');
         return;
       }
 
@@ -126,13 +129,13 @@ class _AutomatedLetterTraceScreenState
         combinedPath.addPath(path, Offset.zero);
       }
       final Rect bounds = combinedPath.getBounds();
-      print(
+      debugPrint(
         '📏 Bounds: ${bounds.left}, ${bounds.top}, ${bounds.right}, ${bounds.bottom}',
       );
-      print('📐 Size: ${bounds.width} x ${bounds.height}');
+      debugPrint('📐 Size: ${bounds.width} x ${bounds.height}');
 
       if (bounds.width == 0 || bounds.height == 0) {
-        print('❌ Invalid bounds!');
+        debugPrint('❌ Invalid bounds!');
         return;
       }
 
@@ -142,7 +145,7 @@ class _AutomatedLetterTraceScreenState
       final double scaleY = targetSize / bounds.height;
       final double scale = scaleX < scaleY ? scaleX : scaleY;
 
-      print('🔢 Scale: $scale');
+      debugPrint('🔢 Scale: $scale');
 
       // Center the path in the 320x320 canvas
       final double scaledWidth = bounds.width * scale;
@@ -150,11 +153,10 @@ class _AutomatedLetterTraceScreenState
       final double offsetX = (320 - scaledWidth) / 2 - bounds.left * scale;
       final double offsetY = (320 - scaledHeight) / 2 - bounds.top * scale;
 
-      print('📍 Offset: $offsetX, $offsetY');
+      debugPrint('📍 Offset: $offsetX, $offsetY');
 
-      final Matrix4 matrix = Matrix4.identity()
-        ..translate(offsetX, offsetY)
-        ..scale(scale, scale);
+      final Matrix4 matrix = Matrix4.translationValues(offsetX, offsetY, 0.0)
+        * Matrix4.diagonal3Values(scale, scale, 1.0);
 
       // Transform and generate points for each path separately
       List<Path> transformedPaths = [];
@@ -168,7 +170,7 @@ class _AutomatedLetterTraceScreenState
         List<Offset> pathPoints = [];
         final PathMetrics pathMetrics = transformedPath.computeMetrics();
         for (final PathMetric pathMetric in pathMetrics) {
-          print('📏 Path $i metric length: ${pathMetric.length}');
+          debugPrint('📏 Path $i metric length: ${pathMetric.length}');
           for (
             double distance = 0;
             distance < pathMetric.length;
@@ -203,7 +205,7 @@ class _AutomatedLetterTraceScreenState
         }
 
         allPoints.add(pathPoints);
-        print('✅ Path $i: Generated ${pathPoints.length} points');
+        debugPrint('✅ Path $i: Generated ${pathPoints.length} points');
       }
 
       setState(() {
@@ -215,7 +217,7 @@ class _AutomatedLetterTraceScreenState
         _isLoading = false;
       });
     } catch (e) {
-      print('❌ Error loading SVG: $e');
+      debugPrint('❌ Error loading SVG: $e');
       setState(() {
         _isLoading = false;
       });
@@ -259,7 +261,7 @@ class _AutomatedLetterTraceScreenState
           allUserPaths[currentPathIndex] = List.from(
             userPath,
           ); // Save completed path
-          print('✅ Path $currentPathIndex completed!');
+          debugPrint('✅ Path $currentPathIndex completed!');
 
           // Move to next path
           currentPathIndex++;
@@ -273,7 +275,7 @@ class _AutomatedLetterTraceScreenState
             // Reset for next path
             userPath.clear();
             nextPointIndex = 0;
-            print('👉 Starting path $currentPathIndex');
+            debugPrint('👉 Starting path $currentPathIndex');
           }
         }
       });
@@ -385,7 +387,7 @@ class _AutomatedLetterTraceScreenState
         border: Border.all(color: Colors.teal.shade200, width: 3),
         boxShadow: [
           BoxShadow(
-            color: Colors.teal.withOpacity(0.2),
+            color: Colors.teal.withValues(alpha: 0.2),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -678,11 +680,11 @@ class AutomatedLetterPainter extends CustomPainter {
         canvas.drawPath(guidePaths[i], paint);
       } else if (i == currentPathIndex) {
         // Draw current path in gray
-        paint.color = Colors.grey.withOpacity(0.3);
+        paint.color = Colors.grey.withValues(alpha: 0.3);
         canvas.drawPath(guidePaths[i], paint);
       } else {
         // Draw future paths in darker gray
-        paint.color = Colors.grey.withOpacity(0.15);
+        paint.color = Colors.grey.withValues(alpha: 0.15);
         canvas.drawPath(guidePaths[i], paint);
       }
     }
@@ -747,7 +749,7 @@ class AutomatedLetterPainter extends CustomPainter {
 
         // Draw pulsing ring to indicate "continue from here"
         final ringPaint = Paint()
-          ..color = Colors.yellowAccent.withOpacity(0.3)
+          ..color = Colors.yellowAccent.withValues(alpha: 0.3)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3;
         canvas.drawCircle(currentPoints[nextPointIndex], 25, ringPaint);
@@ -764,7 +766,7 @@ class AutomatedLetterPainter extends CustomPainter {
 
       // Draw pulsing ring around start point
       final ringPaint = Paint()
-        ..color = Colors.greenAccent.withOpacity(0.3)
+        ..color = Colors.greenAccent.withValues(alpha: 0.3)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3;
       canvas.drawCircle(currentPoints[0], 25, ringPaint);
@@ -789,3 +791,4 @@ class AutomatedLetterPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
+

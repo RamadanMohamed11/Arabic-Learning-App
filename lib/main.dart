@@ -1,5 +1,6 @@
 import 'package:arabic_learning_app/core/utils/app_router.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
+import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,6 +17,9 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  // Pre-initialise the TTS engine so the first speak() call is fast.
+  await AppTtsService.instance.warmUp();
 
   runApp(const ArabicLearningApp());
 }
@@ -43,12 +47,11 @@ class ArabicLearningApp extends StatelessWidget {
           primary: AppColors.primary,
           secondary: AppColors.secondary,
           surface: AppColors.surface,
-          background: AppColors.background,
         ),
         scaffoldBackgroundColor: AppColors.background,
         navigationBarTheme: NavigationBarThemeData(
           backgroundColor: AppColors.primary,
-          indicatorColor: AppColors.secondary.withOpacity(0.3),
+          indicatorColor: AppColors.secondary.withValues(alpha: 0.3),
           labelTextStyle: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
               return const TextStyle(
@@ -58,7 +61,7 @@ class ArabicLearningApp extends StatelessWidget {
               );
             }
             return TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 12,
             );
           }),
@@ -66,7 +69,7 @@ class ArabicLearningApp extends StatelessWidget {
             if (states.contains(WidgetState.selected)) {
               return const IconThemeData(color: Colors.white);
             }
-            return IconThemeData(color: Colors.white.withOpacity(0.7));
+            return IconThemeData(color: Colors.white.withValues(alpha: 0.7));
           }),
         ),
         appBarTheme: AppBarTheme(

@@ -47,8 +47,15 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
     _playIntro();
   }
 
+  bool _hasPlayedIntro = false;
+
   Future<void> _playIntro() async {
-    await AppTtsService.instance.speak("اختار الرقم الصحيح");
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      "اختر الرقم الصحيح",
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -72,7 +79,6 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
 
     if (isCorrect) {
       await AppTtsService.instance.speak("أحسنت! الإجابة صحيحة، $ttsAnswer");
-      await Future.delayed(const Duration(seconds: 1));
 
       if (currentQuestionIndex < questions.length - 1) {
         if (mounted) {
@@ -90,7 +96,6 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
       }
     } else {
       await AppTtsService.instance.speak("حاول مرة أخرى");
-      await Future.delayed(const Duration(milliseconds: 800));
       if (mounted) {
         setState(() {
           _selectedChoice = null;
@@ -193,7 +198,7 @@ class _MathLevel1QuizViewState extends State<MathLevel1QuizView> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),

@@ -40,10 +40,11 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
   }
 
   Future<void> _greetUser() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      AppTtsService.instance.speak('مَا اسْمُكَ؟');
-    }
+    await AppTtsService.instance.speakScreenIntro(
+      'مَا اسْمُكَ؟',
+      isMounted: () => mounted,
+      delayMs: 0,
+    );
   }
 
   void _initAnimation() {
@@ -149,18 +150,12 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
       _isLoading = true;
     });
 
-    // انتظار قليل لإغلاق الكيبورد
-    await Future.delayed(const Duration(milliseconds: 300));
-
     // حفظ الاسم في التفضيلات
     final progressService = await UserProgressService.getInstance();
     await progressService.saveUserName(name);
 
     // تشغيل صوت ترحيب شخصي
     await AppTtsService.instance.speak('أَهْلاً $name، سَعِيدٌ بِلِقَائِكَ');
-
-    // انتظار كافي حتى ينتهي الصوت (حوالي 3-4 ثواني للجملة)
-    await Future.delayed(const Duration(milliseconds: 3500));
 
     if (mounted) {
       // الانتقال إلى الشاشة الرئيسية لاختيار المادة
@@ -241,13 +236,13 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            _softPrimary.withOpacity(0.3),
-            _softSecondary.withOpacity(0.3),
+            _softPrimary.withValues(alpha: 0.3),
+            _softSecondary.withValues(alpha: 0.3),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: _softPrimary.withOpacity(0.2),
+            color: _softPrimary.withValues(alpha: 0.2),
             blurRadius: 30,
             spreadRadius: 5,
           ),
@@ -296,7 +291,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 18,
-            color: _softText.withOpacity(0.7),
+            color: _softText.withValues(alpha: 0.7),
             height: 1.5,
           ),
         ),
@@ -311,11 +306,11 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: _softPrimary.withOpacity(0.1),
+                color: _softPrimary.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 5),
               ),
@@ -338,7 +333,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
                 'سَنُخَصِّصُ رِحْلَتَكَ التَّعْلِيمِيَّةَ بِاسْمِكَ',
                 style: TextStyle(
                   fontSize: 16,
-                  color: _softText.withOpacity(0.7),
+                  color: _softText.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -354,7 +349,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: _softPrimary.withOpacity(0.1),
+                color: _softPrimary.withValues(alpha: 0.1),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -372,7 +367,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
               hintText: 'أدخل اسمك أو استخدم الميكروفون',
               hintStyle: TextStyle(
                 fontSize: 20,
-                color: _softText.withOpacity(0.3),
+                color: _softText.withValues(alpha: 0.3),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -416,20 +411,20 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
                   boxShadow: [
                     // تأثير توهج قوي
                     BoxShadow(
-                      color: _softPrimary.withOpacity(0.6),
+                      color: _softPrimary.withValues(alpha: 0.6),
                       blurRadius: 30,
                       spreadRadius: 2,
                       offset: const Offset(0, 8),
                     ),
                     BoxShadow(
-                      color: _softSecondary.withOpacity(0.5),
+                      color: _softSecondary.withValues(alpha: 0.5),
                       blurRadius: 40,
                       spreadRadius: 0,
                       offset: const Offset(0, 12),
                     ),
                     // ظل للعمق
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -440,8 +435,8 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
                   child: InkWell(
                     onTap: _onContinue,
                     borderRadius: BorderRadius.circular(16),
-                    splashColor: Colors.white.withOpacity(0.3),
-                    highlightColor: Colors.white.withOpacity(0.1),
+                    splashColor: Colors.white.withValues(alpha: 0.3),
+                    highlightColor: Colors.white.withValues(alpha: 0.1),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 40,
@@ -458,7 +453,7 @@ class _WelcomeScreenViewState extends State<WelcomeScreenView>
                               color: Colors.white,
                               shadows: [
                                 Shadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha: 0.3),
                                   offset: const Offset(0, 2),
                                   blurRadius: 4,
                                 ),
@@ -533,7 +528,7 @@ class _SpeechMicButton extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
-            color: disabled ? Colors.redAccent : primary.withOpacity(0.8),
+            color: disabled ? Colors.redAccent : primary.withValues(alpha: 0.8),
           ),
         ),
       ],

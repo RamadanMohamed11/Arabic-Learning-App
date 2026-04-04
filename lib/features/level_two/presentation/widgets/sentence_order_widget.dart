@@ -321,8 +321,8 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: _isCorrect
-                  ? AppColors.success.withOpacity(0.1)
-                  : AppColors.error.withOpacity(0.1),
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : AppColors.error.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: _isCorrect ? AppColors.success : AppColors.error,
@@ -389,7 +389,7 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: dragging
-            ? AppColors.primary.withOpacity(0.9)
+            ? AppColors.primary.withValues(alpha: 0.9)
             : (enabled ? Colors.white : Colors.white),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
@@ -399,14 +399,14 @@ class _SentenceOrderWidgetState extends State<SentenceOrderWidget> {
         boxShadow: dragging
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
               ]
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 6,
                   offset: const Offset(0, 4),
                 ),

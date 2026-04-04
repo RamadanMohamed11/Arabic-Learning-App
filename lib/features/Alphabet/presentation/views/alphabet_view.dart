@@ -69,7 +69,7 @@ class _AlphabetViewState extends State<AlphabetView>
           elevation: 0,
           selectedIndex: _currentIndex,
           backgroundColor: Colors.transparent,
-          indicatorColor: Colors.white.withOpacity(0.3),
+          indicatorColor: Colors.white.withValues(alpha: 0.3),
           height: 70,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           onDestinationSelected: (value) {
@@ -77,7 +77,7 @@ class _AlphabetViewState extends State<AlphabetView>
           },
           destinations: [
             NavigationDestination(
-              icon: Icon(Icons.abc, color: Colors.white.withOpacity(0.7)),
+              icon: Icon(Icons.abc, color: Colors.white.withValues(alpha: 0.7)),
               selectedIcon: const Icon(
                 Icons.abc,
                 color: Colors.white,
@@ -88,7 +88,7 @@ class _AlphabetViewState extends State<AlphabetView>
             NavigationDestination(
               icon: Icon(
                 Icons.fitness_center,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
               selectedIcon: const Icon(
                 Icons.fitness_center,
@@ -100,7 +100,7 @@ class _AlphabetViewState extends State<AlphabetView>
             NavigationDestination(
               icon: Icon(
                 Icons.info_outline,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
               selectedIcon: const Icon(
                 Icons.info,

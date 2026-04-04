@@ -25,6 +25,7 @@ class MathNumberActivitiesView extends StatefulWidget {
 class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
   MathProgressService? _progressService;
   bool _isLoading = true;
+  bool _hasPlayedIntro = false;
 
   /// Activity definitions.
   /// id 1 (التتبع) is the only implemented activity so far (SVG tracing).
@@ -63,11 +64,11 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
   void initState() {
     super.initState();
     _loadProgress();
+    _playIntroOnce();
   }
 
   Future<void> _loadProgress() async {
     _progressService = await MathProgressService.getInstance();
-    _initTts();
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -75,13 +76,13 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
     }
   }
 
-  Future<void> _initTts() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'الرقم ${widget.numberModel.label}. أكمل جميع الأنشطة للانتقال للرقم التالي',
-      );
-    }
+  Future<void> _playIntroOnce() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'الرقم ${widget.numberModel.label}. أكمل جميع الأنشطة للانتقال للرقم التالي',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -201,7 +202,7 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
             color: isCompleted
                 ? Colors.green
                 : isAvailable
-                ? (activity['color'] as Color).withOpacity(0.3)
+                ? (activity['color'] as Color).withValues(alpha: 0.3)
                 : Colors.transparent,
             width: 2,
           ),

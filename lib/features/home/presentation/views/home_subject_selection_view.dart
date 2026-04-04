@@ -16,6 +16,7 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  bool _hasPlayedIntro = false;
 
   @override
   void initState() {
@@ -33,17 +34,16 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     _controller.forward();
-    _initTts();
+    _playIntroOnce();
   }
 
-  Future<void> _initTts() async {
-    // Small delay to let the screen animate in first
-    await Future.delayed(const Duration(milliseconds: 600));
-    if (mounted) {
-      await AppTtsService.instance.speak(
-        'ماذا تريد أن تتعلم اليوم؟ اختر اللغة العربية أو الرياضيات',
-      );
-    }
+  Future<void> _playIntroOnce() async {
+    if (_hasPlayedIntro) return;
+    _hasPlayedIntro = true;
+    await AppTtsService.instance.speakScreenIntro(
+      'ماذا تريد أن تتعلم اليوم؟ اختر اللغة العربية أو الرياضيات',
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -101,9 +101,7 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
                           ],
                           onTap: () {
                             AppTtsService.instance.stop();
-                            context
-                                .push(AppRouter.kArabicStartRoute)
-                                .then((_) => _initTts());
+                            context.push(AppRouter.kArabicStartRoute);
                           },
                         ),
                         const SizedBox(height: 32),
@@ -117,9 +115,7 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
                           ],
                           onTap: () {
                             AppTtsService.instance.stop();
-                            context
-                                .push(AppRouter.kMathView)
-                                .then((_) => _initTts());
+                            context.push(AppRouter.kMathView);
                           },
                         ),
                       ],
@@ -157,7 +153,7 @@ class _SubjectCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: gradientColors[0].withOpacity(0.4),
+            color: gradientColors[0].withValues(alpha: 0.4),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -168,8 +164,8 @@ class _SubjectCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(32),
-          splashColor: Colors.white.withOpacity(0.3),
-          highlightColor: Colors.white.withOpacity(0.1),
+          splashColor: Colors.white.withValues(alpha: 0.3),
+          highlightColor: Colors.white.withValues(alpha: 0.1),
           child: Ink(
             padding: const EdgeInsets.symmetric(
               vertical: 40.0,
@@ -188,7 +184,7 @@ class _SubjectCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.25),
+                    color: Colors.white.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -226,7 +222,7 @@ class _SubjectCard extends StatelessWidget {
                         subtitle,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           height: 1.4,
                         ),
                       ),

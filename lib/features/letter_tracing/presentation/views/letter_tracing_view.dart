@@ -51,7 +51,10 @@ class _LetterTracingViewState extends State<LetterTracingView>
   }
 
   Future<void> _playIntro() async {
-    await AppTtsService.instance.speak("قُمْ بِتَتَبُّعِ الحَرْف");
+    await AppTtsService.instance.speakScreenIntro(
+      "قُمْ بِتَتَبُّعِ الحَرْف",
+      isMounted: () => mounted,
+    );
   }
 
   @override
@@ -385,7 +388,7 @@ class _LetterTracingViewState extends State<LetterTracingView>
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -496,8 +499,8 @@ class _LetterTracingViewState extends State<LetterTracingView>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isCompleted
-            ? Colors.green.withOpacity(0.2)
-            : Colors.blue.withOpacity(0.2),
+            ? Colors.green.withValues(alpha: 0.2)
+            : Colors.blue.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: isCompleted ? Colors.green : Colors.blue,

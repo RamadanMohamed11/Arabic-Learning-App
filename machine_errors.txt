@@ -1,0 +1,27 @@
+
+WARNING|STATIC_WARNING|UNUSED_LOCAL_VARIA
+BLE|D:\\Flutter_2025\\Arabic Alphabet\\ar
+abic_learning_app\\lib\\features\\level_t
+wo\\presentation\\views\\final_test_view.
+dart|358|11|9|The value of the local 
+variable 'isCorrect' isn't used.
+WARNING|STATIC_WARNING|UNUSED_LOCAL_VARIA
+BLE|D:\\Flutter_2025\\Arabic Alphabet\\ar
+abic_learning_app\\lib\\features\\level_t
+wo\\presentation\\views\\final_test_view.
+dart|485|11|2|The value of the local 
+variable 'ok' isn't used.
+WARNING|STATIC_WARNING|UNUSED_LOCAL_VARIA
+BLE|D:\\Flutter_2025\\Arabic Alphabet\\ar
+abic_learning_app\\lib\\features\\level_t
+wo\\presentation\\views\\final_test_view.
+dart|596|11|2|The value of the local 
+variable 'ok' isn't used.
+WARNING|STATIC_WARNING|UNUSED_ELEMENT|D:\
+\Flutter_2025\\Arabic Alphabet\\arabic_le
+arning_app\\lib\\features\\level_two\\pre
+sentation\\views\\image_name_view.dart|66
+|16|6|The declaration '_speak' isn't 
+referenced.
+
+

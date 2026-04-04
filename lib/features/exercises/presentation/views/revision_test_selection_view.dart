@@ -136,8 +136,8 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.exercise2[0].withOpacity(0.3),
-              AppColors.exercise2[1].withOpacity(0.3),
+              AppColors.exercise2[0].withValues(alpha: 0.3),
+              AppColors.exercise2[1].withValues(alpha: 0.3),
             ],
           ),
         ),
@@ -151,7 +151,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                   gradient: const LinearGradient(colors: AppColors.exercise2),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.exercise2[0].withOpacity(0.3),
+                      color: AppColors.exercise2[0].withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 5),
                     ),
@@ -326,6 +326,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                         );
                         // Check if all tests are completed to unlock next letter
                         await _checkAndUnlockNextLetter();
+                        if (!context.mounted) return;
                         Navigator.pop(context);
                       },
                     ),
@@ -348,6 +349,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                         );
                         // Check if all tests are completed to unlock next letter
                         await _checkAndUnlockNextLetter();
+                        if (!context.mounted) return;
                         Navigator.pop(context);
                       },
                     ),
@@ -366,12 +368,12 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
             end: Alignment.bottomRight,
             colors: isComingSoon
                 ? [Colors.grey.shade300, Colors.grey.shade400]
-                : [color, color.withOpacity(0.7)],
+                : [color, color.withValues(alpha: 0.7)],
           ),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -382,7 +384,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 40, color: Colors.white),
@@ -405,7 +407,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
                     description,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                   ),
                 ],
@@ -415,7 +417,7 @@ class _RevisionTestSelectionViewState extends State<RevisionTestSelectionView> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(

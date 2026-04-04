@@ -52,7 +52,7 @@ class LetterTracePainter extends CustomPainter {
 
   /// رسم المسارات الإرشادية الرمادية
   void _drawGuidePaths(Canvas canvas, Paint paint) {
-    paint.color = Colors.grey.withOpacity(0.4);
+    paint.color = Colors.grey.withValues(alpha: 0.4);
 
     for (var stroke in guideStrokes) {
       if (stroke.isEmpty) continue;
@@ -85,12 +85,12 @@ class LetterTracePainter extends CustomPainter {
     // دائرة خارجية خضراء متحركة
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 3.0;
-    paint.color = Colors.green.withOpacity(0.6);
+    paint.color = Colors.green.withValues(alpha: 0.6);
     canvas.drawCircle(startPoint, 25, paint);
 
     // دائرة داخلية خضراء
     paint.style = PaintingStyle.fill;
-    paint.color = Colors.green.withOpacity(0.8);
+    paint.color = Colors.green.withValues(alpha: 0.8);
     canvas.drawCircle(startPoint, 15, paint);
 
     paint.style = PaintingStyle.stroke;
@@ -115,7 +115,7 @@ class LetterTracePainter extends CustomPainter {
 
         // إضافة ظل للنقطة
         final shadowPaint = Paint()
-          ..color = Colors.black.withOpacity(0.3)
+          ..color = Colors.black.withValues(alpha: 0.3)
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
         canvas.drawCircle(stroke.first, 12, shadowPaint);
         canvas.drawCircle(stroke.first, 12, paint);
@@ -130,7 +130,7 @@ class LetterTracePainter extends CustomPainter {
         for (var j = 1; j < stroke.length; j++) {
           path.lineTo(stroke[j].dx, stroke[j].dy);
         }
-        canvas.drawShadow(path, Colors.black.withOpacity(0.3), 4.0, false);
+        canvas.drawShadow(path, Colors.black.withValues(alpha: 0.3), 4.0, false);
         canvas.drawPath(path, paint);
         pointIndex += stroke.length;
       }
@@ -151,7 +151,7 @@ class LetterTracePainter extends CustomPainter {
         for (var i = pointIndex + 1; i < userPath.length; i++) {
           path.lineTo(userPath[i].dx, userPath[i].dy);
         }
-        canvas.drawShadow(path, Colors.black.withOpacity(0.3), 4.0, false);
+        canvas.drawShadow(path, Colors.black.withValues(alpha: 0.3), 4.0, false);
         canvas.drawPath(path, paint);
       }
     }
@@ -160,7 +160,7 @@ class LetterTracePainter extends CustomPainter {
   /// رسم مؤشر الإصبع الحالي
   void _drawFingerIndicator(Canvas canvas, Paint paint) {
     paint.style = PaintingStyle.fill;
-    paint.color = Colors.blue.withOpacity(0.3);
+    paint.color = Colors.blue.withValues(alpha: 0.3);
     canvas.drawCircle(currentFingerPosition!, 20, paint);
 
     paint.style = PaintingStyle.stroke;
@@ -191,7 +191,7 @@ class LetterTracePainter extends CustomPainter {
           path.lineTo(stroke[i].dx, stroke[i].dy);
         }
         // إضافة ظل
-        canvas.drawShadow(path, Colors.black.withOpacity(0.3), 6.0, false);
+        canvas.drawShadow(path, Colors.black.withValues(alpha: 0.3), 6.0, false);
         canvas.drawPath(path, paint);
       }
     }
