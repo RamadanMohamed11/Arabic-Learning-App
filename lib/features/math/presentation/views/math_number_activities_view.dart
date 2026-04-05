@@ -6,6 +6,7 @@ import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_number_model.dart';
 import 'package:arabic_learning_app/features/math/data/models/math_level_model.dart';
 import 'package:arabic_learning_app/features/math/presentation/views/svg_number_tracing_view.dart';
+import 'package:arabic_learning_app/features/math/presentation/views/math_pronunciation_view.dart';
 
 class MathNumberActivitiesView extends StatefulWidget {
   final MathNumberModel numberModel;
@@ -57,6 +58,13 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
       'icon': Icons.calculate,
       'color': Colors.green,
       'implemented': false,
+    },
+    {
+      'id': 4,
+      'title': 'النطق',
+      'icon': Icons.mic,
+      'color': Colors.red,
+      'implemented': true,
     },
   ];
 
@@ -111,6 +119,22 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
         // Refresh progress after returning
         await _loadProgress();
       }
+    } else if (activityId == 4) {
+      // النطق - Pronunciation (Level 1)
+      if (widget.levelModel.level == 1) {
+        AppTtsService.instance.stop();
+        // Needs import for MathPronunciationView
+        await Navigator.push(
+          context,
+          AnimatedRoute.fadeScale(
+            MathPronunciationView(
+              numberModel: widget.numberModel,
+              levelModel: widget.levelModel,
+            ),
+          ),
+        );
+        await _loadProgress();
+      }
     }
     // Other activities not yet implemented
   }
@@ -123,6 +147,9 @@ class _MathNumberActivitiesViewState extends State<MathNumberActivitiesView> {
     if (activityId == 1) {
       // Tracing available for Level 1 and Level 2
       return widget.levelModel.level == 1 || widget.levelModel.level == 2;
+    } else if (activityId == 4) {
+      // Pronunciation available for Level 1 (e.g. for numbers 2, 6, 7, 8, 9, etc.)
+      return widget.levelModel.level == 1;
     }
     return true;
   }

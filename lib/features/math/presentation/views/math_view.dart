@@ -51,7 +51,10 @@ class _MathViewState extends State<MathView> {
     super.dispose();
   }
 
+  bool get _testMode => true; // Toggle to false when testing is over
+
   bool _isLevelUnlocked(int level) {
+    if (_testMode) return true;
     if (_progressService == null) return false;
     if (level == 1) return _progressService!.isLevel1Unlocked();
     if (level == 2) return _progressService!.isLevel2Unlocked();
