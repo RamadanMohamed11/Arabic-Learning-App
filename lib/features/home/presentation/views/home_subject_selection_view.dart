@@ -57,6 +57,60 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F8FF),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.info_outline, color: Color(0xFF4A5568), size: 28),
+            offset: const Offset(0, 48),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            onSelected: (value) {
+              AppTtsService.instance.stop();
+              if (value == 'app_info') {
+                context.push(AppRouter.kAppInfoView);
+              } else if (value == 'team') {
+                context.push(AppRouter.kAboutView);
+              } else if (value == 'contact') {
+                context.push(AppRouter.kContactUsView);
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: 'app_info',
+                child: Row(
+                  children: [
+                    Icon(Icons.menu_book_rounded, color: Color(0xFF4A5568), size: 22),
+                    SizedBox(width: 12),
+                    Text('معلومات التطبيق', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4A5568))),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'team',
+                child: Row(
+                  children: [
+                    Icon(Icons.groups_rounded, color: Color(0xFF4A5568), size: 22),
+                    SizedBox(width: 12),
+                    Text('فريق العمل', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4A5568))),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'contact',
+                child: Row(
+                  children: [
+                    Icon(Icons.contact_support_rounded, color: Color(0xFF4A5568), size: 22),
+                    SizedBox(width: 12),
+                    Text('تواصل معنا', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4A5568))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -64,8 +118,8 @@ class _HomeSubjectSelectionViewState extends State<HomeSubjectSelectionView>
             position: _slideAnimation,
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 32.0,
+                horizontal: 16.0,
+                vertical: 24.0,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -168,8 +222,8 @@ class _SubjectCard extends StatelessWidget {
           highlightColor: Colors.white.withValues(alpha: 0.1),
           child: Ink(
             padding: const EdgeInsets.symmetric(
-              vertical: 40.0,
-              horizontal: 24.0,
+              vertical: 28.0,
+              horizontal: 16.0,
             ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -182,7 +236,7 @@ class _SubjectCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(20),
@@ -190,14 +244,14 @@ class _SubjectCard extends StatelessWidget {
                   child: Text(
                     iconString,
                     style: const TextStyle(
-                      fontSize: 32,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                       locale: Locale('ar'),
                     ),
                   ),
                 ),
-                const SizedBox(width: 24),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +259,7 @@ class _SubjectCard extends StatelessWidget {
                       Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 28,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           shadows: [
@@ -221,7 +275,7 @@ class _SubjectCard extends StatelessWidget {
                       Text(
                         subtitle,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           color: Colors.white.withValues(alpha: 0.9),
                           height: 1.4,
                         ),
@@ -232,7 +286,7 @@ class _SubjectCard extends StatelessWidget {
                 const Icon(
                   Icons.arrow_forward_ios_rounded,
                   color: Colors.white,
-                  size: 28,
+                  size: 24,
                 ),
               ],
             ),
