@@ -7,7 +7,8 @@ import 'package:arabic_learning_app/features/math/data/models/math_level_model.d
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'svg_number_tracing_view.dart';
 import 'math_level_general_activities_view.dart';
-
+import 'math_level1_match_images_view.dart';
+import 'math_level1_match_images_part2_view.dart';
 class MathLevelNumbersView extends StatefulWidget {
   final MathLevelModel level;
 
@@ -81,15 +82,41 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                     mainAxisSpacing: 12,
                     childAspectRatio: 0.85,
                   ),
-                  itemCount: widget.level.numbers.length,
+                  itemCount: widget.level.numbers.length + (widget.level.level == 1 ? 2 : 0),
                   itemBuilder: (context, index) {
-                    final numberModel = widget.level.numbers[index];
-                    final isUnlocked = _testMode ? true : (_progressService?.isNumberUnlocked(
-                          widget.level.level,
-                          numberModel.number,
-                        ) ??
-                        false);
-                    return _buildNumberCard(numberModel, isUnlocked, colors);
+                    if (widget.level.level == 1) {
+                      if (index == 5) {
+                        // Insert the matching activity card after number 5
+                        final isUnlocked = _testMode ? true : (_progressService?.isNumberCompleted(1, 5) ?? false);
+                        return _buildMatchActivityCard(isUnlocked, colors, 1);
+                      } else if (index == 11) {
+                        // Insert the matching activity card after number 10
+                        final isUnlocked = _testMode ? true : (_progressService?.isNumberCompleted(1, 10) ?? false);
+                        return _buildMatchActivityCard(isUnlocked, colors, 2);
+                      }
+                      
+                      int actualIndex = index;
+                      if (index > 11) {
+                        actualIndex = index - 2;
+                      } else if (index > 5) {
+                        actualIndex = index - 1;
+                      }
+                      final numberModel = widget.level.numbers[actualIndex];
+                      final isUnlocked = _testMode ? true : (_progressService?.isNumberUnlocked(
+                            widget.level.level,
+                            numberModel.number,
+                          ) ??
+                          false);
+                      return _buildNumberCard(numberModel, isUnlocked, colors);
+                    } else {
+                      final numberModel = widget.level.numbers[index];
+                      final isUnlocked = _testMode ? true : (_progressService?.isNumberUnlocked(
+                            widget.level.level,
+                            numberModel.number,
+                          ) ??
+                          false);
+                      return _buildNumberCard(numberModel, isUnlocked, colors);
+                    }
                   },
                 ),
               ),
@@ -399,7 +426,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                   currentIdx < widget.level.numbers.length) {
                 AppTtsService.instance.stop();
                 if (!mounted) break;
-                final result = await Navigator.push(
+                var result = await Navigator.push(
                   context,
                   AnimatedRoute.slideRight(
                     SvgNumberTracingView(
@@ -414,6 +441,29 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
 
                 if (result == 'next' &&
                     currentIdx + 1 < widget.level.numbers.length) {
+                  
+                  if (widget.level.level == 1 && currentIdx == 4) {
+                    // Start MathLevel1MatchImagesView after number 5
+                    if (!mounted) break;
+                    result = await Navigator.push(
+                      context,
+                      AnimatedRoute.slideRight(const MathLevel1MatchImagesView()),
+                    );
+                    if (result != 'next') {
+                      break;
+                    }
+                  } else if (widget.level.level == 1 && currentIdx == 9) {
+                    // Start MathLevel1MatchImagesPart2View after number 10
+                    if (!mounted) break;
+                    result = await Navigator.push(
+                      context,
+                      AnimatedRoute.slideRight(const MathLevel1MatchImagesPart2View()),
+                    );
+                    if (result != 'next') {
+                      break;
+                    }
+                  }
+
                   currentIdx++;
                 } else {
                   break;
@@ -495,4 +545,74 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
     );
   }
 
+  Widget _buildMatchActivityCard(bool isUnlocked, List<Color> colors, [int part = 1]) {
+    return GestureDetector(
+      onTap: isUnlocked
+          ? () async {
+              AppTtsService.instance.stop();
+              if (part == 1) {
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const MathLevel1MatchImagesView()),
+                );
+              } else {
+                await Navigator.push(
+                  context,
+                  AnimatedRoute.slideRight(const MathLevel1MatchImagesPart2View()),
+                );
+              }
+              await _loadProgress();
+            }
+          : null,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isUnlocked
+                ? [Colors.orange.shade400, Colors.orange.shade600]
+                : [Colors.grey.shade300, Colors.grey.shade400],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: isUnlocked
+                  ? Colors.orange.withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isUnlocked) ...[
+              const Icon(Icons.extension, color: Colors.white, size: 36),
+              const SizedBox(height: 4),
+              const Text(
+                'توصيل',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ] else ...[
+              const Icon(Icons.lock, size: 30, color: Colors.white70),
+              const SizedBox(height: 4),
+              Text(
+                'توصيل',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white.withValues(alpha: 0.5),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 }

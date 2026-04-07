@@ -240,7 +240,7 @@ class _LetterShapesViewState extends State<LetterShapesView> {
   ) {
     return GestureDetector(
       onTap: () =>
-          _speak(_letterName?.nameWithDiacritics ?? letterShapes!.name),
+          _speak('${widget.letter} $title'),
       child: Container(
         height: 160,
         decoration: BoxDecoration(

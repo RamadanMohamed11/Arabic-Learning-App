@@ -19,10 +19,12 @@ class MathLevelGeneralActivitiesView extends StatefulWidget {
   const MathLevelGeneralActivitiesView({super.key, required this.level});
 
   @override
-  State<MathLevelGeneralActivitiesView> createState() => _MathLevelGeneralActivitiesViewState();
+  State<MathLevelGeneralActivitiesView> createState() =>
+      _MathLevelGeneralActivitiesViewState();
 }
 
-class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivitiesView> {
+class _MathLevelGeneralActivitiesViewState
+    extends State<MathLevelGeneralActivitiesView> {
   MathProgressService? _progressService;
   bool _isLoading = true;
   bool _hasPlayedIntro = false;
@@ -60,7 +62,7 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final colors = widget.level.level == 1
@@ -77,14 +79,35 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
 
     if (isLevel1) {
       final quizDone = _progressService!.isLevelActivityCompleted(1, 'quiz');
-      final listenWriteDone = _progressService!.isLevelActivityCompleted(1, 'listen_write');
-      final orderingDone = _progressService!.isLevelActivityCompleted(1, 'number_ordering');
-      final pronunciationDone = _progressService!.isLevelActivityCompleted(1, 'pronunciation');
+      final listenWriteDone = _progressService!.isLevelActivityCompleted(
+        1,
+        'listen_write',
+      );
+      final orderingDone = _progressService!.isLevelActivityCompleted(
+        1,
+        'number_ordering',
+      );
+      final pronunciationDone = _progressService!.isLevelActivityCompleted(
+        1,
+        'pronunciation',
+      );
 
-      allActivitiesDone = quizDone && listenWriteDone && orderingDone && pronunciationDone;
+      allActivitiesDone =
+          quizDone && listenWriteDone && orderingDone && pronunciationDone;
 
       if (allActivitiesDone) {
-        _progressService!.unlockLevel2();
+        final wasUnlocked = _progressService!.isLevel2Unlocked();
+        if (!wasUnlocked) {
+          _progressService!.unlockLevel2();
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              AppTtsService.instance.speakScreenIntro(
+                'أحسنت! تم فتح المستوى الثاني بنجاح',
+                isMounted: () => mounted,
+              );
+            }
+          });
+        }
       }
 
       bodyChildren = [
@@ -98,15 +121,10 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
             AppTtsService.instance.stop();
             final result = await Navigator.push(
               context,
-              AnimatedRoute.fadeScale(
-                const MathLevel1QuizView(),
-              ),
+              AnimatedRoute.fadeScale(const MathLevel1QuizView()),
             );
             if (result == true) {
-              await _progressService!.completeLevelActivity(
-                1,
-                'quiz',
-              );
+              await _progressService!.completeLevelActivity(1, 'quiz');
             }
             _loadProgress();
           },
@@ -117,24 +135,16 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         _buildActivityButton(
           title: 'النشاط ٢: اسمع واكتب',
           icon: Icons.hearing,
-          colors: [
-            Colors.orange.shade500,
-            Colors.deepOrange.shade500,
-          ],
+          colors: [Colors.orange.shade500, Colors.deepOrange.shade500],
           isCompleted: listenWriteDone,
           onTap: () async {
             AppTtsService.instance.stop();
             final result = await Navigator.push(
               context,
-              AnimatedRoute.fadeScale(
-                const ListenAndWriteView(),
-              ),
+              AnimatedRoute.fadeScale(const ListenAndWriteView()),
             );
             if (result == true) {
-              await _progressService!.completeLevelActivity(
-                1,
-                'listen_write',
-              );
+              await _progressService!.completeLevelActivity(1, 'listen_write');
             }
             _loadProgress();
           },
@@ -145,18 +155,13 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         _buildActivityButton(
           title: 'النشاط ٣: ترتيب الأرقام',
           icon: Icons.sort,
-          colors: [
-            Colors.teal.shade500,
-            Colors.green.shade600,
-          ],
+          colors: [Colors.teal.shade500, Colors.green.shade600],
           isCompleted: orderingDone,
           onTap: () async {
             AppTtsService.instance.stop();
             final result = await Navigator.push(
               context,
-              AnimatedRoute.fadeScale(
-                const NumberOrderingView(),
-              ),
+              AnimatedRoute.fadeScale(const NumberOrderingView()),
             );
             if (result == true) {
               await _progressService!.completeLevelActivity(
@@ -173,28 +178,30 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         _buildActivityButton(
           title: 'النشاط ٤: انطق الأرقام',
           icon: Icons.mic,
-          colors: [
-            Colors.red.shade400,
-            Colors.red.shade600,
-          ],
-          isCompleted: pronunciationDone, 
+          colors: [Colors.red.shade400, Colors.red.shade600],
+          isCompleted: pronunciationDone,
           onTap: () async {
             AppTtsService.instance.stop();
 
             // Target numbers 7, 8, 6, 2, 9 as requested by user
             final targetNumbers = [7, 8, 6, 2, 9];
-            final modelsToTest = widget.level.numbers.where((n) => targetNumbers.contains(n.number)).toList();
+            final modelsToTest = widget.level.numbers
+                .where((n) => targetNumbers.contains(n.number))
+                .toList();
 
             bool userFinishedAll = true;
-            final isOverallActivityDone = _progressService!.isLevelActivityCompleted(1, 'pronunciation');
-            
+            final isOverallActivityDone = _progressService!
+                .isLevelActivityCompleted(1, 'pronunciation');
+
             for (var model in modelsToTest) {
               if (!context.mounted) return;
               await AppTtsService.instance.stop();
-              
+
               // If overall activity is done, ignore individual completions here so they can replay
-              final alreadyDone = !isOverallActivityDone && _progressService!.isActivityCompleted(1, model.number, 4);
-              
+              final alreadyDone =
+                  !isOverallActivityDone &&
+                  _progressService!.isActivityCompleted(1, model.number, 4);
+
               if (!alreadyDone) {
                 if (!context.mounted) return;
                 await Navigator.push(
@@ -207,7 +214,11 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
                   ),
                 );
                 await _loadProgress();
-                final doneNow = _progressService!.isActivityCompleted(1, model.number, 4);
+                final doneNow = _progressService!.isActivityCompleted(
+                  1,
+                  model.number,
+                  4,
+                );
                 if (!doneNow) {
                   // User probably pressed back button, so exit sequence
                   userFinishedAll = false;
@@ -217,26 +228,47 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
             }
 
             if (userFinishedAll) {
-              await _progressService!.completeLevelActivity(
-                1,
-                'pronunciation',
-              );
+              await _progressService!.completeLevelActivity(1, 'pronunciation');
             }
             _loadProgress();
           },
         ),
       ];
     } else if (isLevel2) {
-      final greaterDone = _progressService!.isLevelActivityCompleted(2, 'greater_number');
-      final numberLineDone = _progressService!.isLevelActivityCompleted(2, 'number_line');
-      
-      final listenWriteDone = _progressService!.isLevelActivityCompleted(2, 'listen_write_tens');
-      final countByTenDone = _progressService!.isLevelActivityCompleted(2, 'count_by_ten');
-      
-      allActivitiesDone = greaterDone && numberLineDone && listenWriteDone && countByTenDone;
-      
+      final greaterDone = _progressService!.isLevelActivityCompleted(
+        2,
+        'greater_number',
+      );
+      final numberLineDone = _progressService!.isLevelActivityCompleted(
+        2,
+        'number_line',
+      );
+
+      final listenWriteDone = _progressService!.isLevelActivityCompleted(
+        2,
+        'listen_write_tens',
+      );
+      final countByTenDone = _progressService!.isLevelActivityCompleted(
+        2,
+        'count_by_ten',
+      );
+
+      allActivitiesDone =
+          greaterDone && numberLineDone && listenWriteDone && countByTenDone;
+
       if (allActivitiesDone) {
-        _progressService!.unlockLevel3();
+        final wasUnlocked = _progressService!.isLevel3Unlocked();
+        if (!wasUnlocked) {
+          _progressService!.unlockLevel3();
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              AppTtsService.instance.speakScreenIntro(
+                'أحسنت! تم فتح المستوى الثالث بنجاح',
+                isMounted: () => mounted,
+              );
+            }
+          });
+        }
       }
 
       bodyChildren = [
@@ -244,18 +276,13 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         _buildActivityButton(
           title: 'النشاط ١: أي أكبر؟',
           icon: Icons.compare_arrows,
-          colors: [
-            AppColors.level2[0],
-            AppColors.level2[1],
-          ],
+          colors: [AppColors.level2[0], AppColors.level2[1]],
           isCompleted: greaterDone,
           onTap: () async {
             AppTtsService.instance.stop();
             final result = await Navigator.push(
               context,
-              AnimatedRoute.fadeScale(
-                const MathLevel2GreaterView(),
-              ),
+              AnimatedRoute.fadeScale(const MathLevel2GreaterView()),
             );
             if (result == true) {
               await _progressService!.completeLevelActivity(
@@ -272,24 +299,16 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         _buildActivityButton(
           title: 'النشاط ٢: خط الأعداد',
           icon: Icons.timeline,
-          colors: [
-            Colors.teal.shade500,
-            Colors.teal.shade700,
-          ],
+          colors: [Colors.teal.shade500, Colors.teal.shade700],
           isCompleted: numberLineDone,
           onTap: () async {
             AppTtsService.instance.stop();
             final result = await Navigator.push(
               context,
-              AnimatedRoute.fadeScale(
-                const MathLevel2NumberLineView(),
-              ),
+              AnimatedRoute.fadeScale(const MathLevel2NumberLineView()),
             );
             if (result == true) {
-              await _progressService!.completeLevelActivity(
-                2,
-                'number_line',
-              );
+              await _progressService!.completeLevelActivity(2, 'number_line');
             }
             _loadProgress();
           },
@@ -300,18 +319,13 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         _buildActivityButton(
           title: 'النشاط ٣: اسمع الرقم واكتبه',
           icon: Icons.hearing,
-          colors: [
-            Colors.purple.shade400,
-            Colors.purple.shade700,
-          ],
+          colors: [Colors.purple.shade400, Colors.purple.shade700],
           isCompleted: listenWriteDone,
           onTap: () async {
             AppTtsService.instance.stop();
             final result = await Navigator.push(
               context,
-              AnimatedRoute.fadeScale(
-                const MathLevel2ListenWriteView(),
-              ),
+              AnimatedRoute.fadeScale(const MathLevel2ListenWriteView()),
             );
             if (result == true) {
               await _progressService!.completeLevelActivity(
@@ -328,24 +342,16 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         _buildActivityButton(
           title: 'النشاط ٥: العد بالعشرات',
           icon: Icons.bubble_chart,
-          colors: [
-            Colors.orange.shade400,
-            Colors.orange.shade700,
-          ],
+          colors: [Colors.orange.shade400, Colors.orange.shade700],
           isCompleted: countByTenDone,
           onTap: () async {
             AppTtsService.instance.stop();
             final result = await Navigator.push(
               context,
-              AnimatedRoute.fadeScale(
-                const MathLevel2CountByTenView(),
-              ),
+              AnimatedRoute.fadeScale(const MathLevel2CountByTenView()),
             );
             if (result == true) {
-              await _progressService!.completeLevelActivity(
-                2,
-                'count_by_ten',
-              );
+              await _progressService!.completeLevelActivity(2, 'count_by_ten');
             }
             _loadProgress();
           },
@@ -361,10 +367,7 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Colors.amber.shade400,
-                Colors.orange.shade500,
-              ],
+              colors: [Colors.amber.shade400, Colors.orange.shade500],
             ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
@@ -378,14 +381,12 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.lock_open,
-                color: Colors.white,
-                size: 32,
-              ),
+              const Icon(Icons.lock_open, color: Colors.white, size: 32),
               const SizedBox(width: 12),
               Text(
-                isLevel1 ? 'تم فتح المستوى الثاني! 🎉' : 'تم فتح المستوى الثالث! 🎉',
+                isLevel1
+                    ? 'تم فتح المستوى الثاني! 🎉'
+                    : 'تم فتح المستوى الثالث! 🎉',
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -410,16 +411,17 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [colors[0].withValues(alpha: 0.3), colors[1].withValues(alpha: 0.3)],
+            colors: [
+              colors[0].withValues(alpha: 0.3),
+              colors[1].withValues(alpha: 0.3),
+            ],
           ),
         ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            children: bodyChildren,
-          ),
-        )
-      )
+          child: Column(children: bodyChildren),
+        ),
+      ),
     );
   }
 
@@ -438,8 +440,8 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isCompleted
-                  ? [Colors.green.shade400, Colors.green.shade600]
-                  : colors,
+                ? [Colors.green.shade400, Colors.green.shade600]
+                : colors,
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
@@ -453,9 +455,7 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
         child: Row(
           children: [
             Icon(
-              isCompleted
-                  ? Icons.check_circle
-                  : icon,
+              isCompleted ? Icons.check_circle : icon,
               color: Colors.white,
               size: 32,
             ),
@@ -480,7 +480,11 @@ class _MathLevelGeneralActivitiesViewState extends State<MathLevelGeneralActivit
                 ),
               )
             else
-              const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 24)
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white,
+                size: 24,
+              ),
           ],
         ),
       ),

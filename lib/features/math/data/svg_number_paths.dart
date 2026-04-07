@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'dart:math' as math;
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:xml/xml.dart';
 import 'package:path_parsing/path_parsing.dart';
@@ -21,6 +23,119 @@ class SvgNumberPathConverter {
     return path;
   }
 
+  /// تحويل عنصر `line` إلى Flutter Path
+  static Path parseLineElement(XmlElement lineElement) {
+    final x1 = double.tryParse(lineElement.getAttribute('x1') ?? '') ?? 0;
+    final y1 = double.tryParse(lineElement.getAttribute('y1') ?? '') ?? 0;
+    final x2 = double.tryParse(lineElement.getAttribute('x2') ?? '') ?? 0;
+    final y2 = double.tryParse(lineElement.getAttribute('y2') ?? '') ?? 0;
+
+    final path = Path();
+    path.moveTo(x1, y1);
+    path.lineTo(x2, y2);
+    return path;
+  }
+
+  /// تحليل `transform` attribute وإرجاع مصفوفة التحويل
+  /// يدعم: rotate(angle cx cy) و rotate(angle)
+  static Float64List? parseTransformAttribute(String? transform) {
+    if (transform == null || transform.isEmpty) return null;
+
+    // Handle rotate(angle cx cy)
+    final rotateCxCy = RegExp(
+      r'rotate\(\s*([^\s,]+)[\s,]+([^\s,]+)[\s,]+([^\s,)]+)\s*\)',
+    ).firstMatch(transform);
+    if (rotateCxCy != null) {
+      final angleDeg = double.tryParse(rotateCxCy.group(1)!) ?? 0;
+      final cx = double.tryParse(rotateCxCy.group(2)!) ?? 0;
+      final cy = double.tryParse(rotateCxCy.group(3)!) ?? 0;
+      return _buildRotationMatrix(angleDeg, cx, cy);
+    }
+
+    // Handle rotate(angle) — rotation around origin
+    final rotateSimple = RegExp(
+      r'rotate\(\s*([^\s,)]+)\s*\)',
+    ).firstMatch(transform);
+    if (rotateSimple != null) {
+      final angleDeg = double.tryParse(rotateSimple.group(1)!) ?? 0;
+      return _buildRotationMatrix(angleDeg, 0, 0);
+    }
+
+    return null;
+  }
+
+  /// إنشاء مصفوفة دوران حول نقطة (cx, cy) بزاوية بالدرجات
+  static Float64List _buildRotationMatrix(double angleDeg, double cx, double cy) {
+    final angleRad = angleDeg * math.pi / 180.0;
+    final cosA = math.cos(angleRad);
+    final sinA = math.sin(angleRad);
+
+    // T(cx,cy) * R(angle) * T(-cx,-cy)
+    // Combined into a single affine matrix:
+    // | cosA  -sinA  cx - cx*cosA + cy*sinA |
+    // | sinA   cosA  cy - cx*sinA - cy*cosA |
+    // |  0      0                 1         |
+    final tx = cx - cx * cosA + cy * sinA;
+    final ty = cy - cx * sinA - cy * cosA;
+
+    // Flutter's Path.transform expects a 4x4 matrix in column-major order
+    return Float64List.fromList([
+      cosA, sinA, 0, 0,   // column 0
+      -sinA, cosA, 0, 0,  // column 1
+      0, 0, 1, 0,         // column 2
+      tx, ty, 0, 1,       // column 3
+    ]);
+  }
+
+  /// استخراج جميع المسارات من عنصر SVG (يدعم path و line والعناصر المتداخلة)
+  static void _extractPaths(XmlElement element, List<Path> paths) {
+    for (final child in element.children.whereType<XmlElement>()) {
+      final tagName = child.name.local;
+
+      if (tagName == 'g') {
+        // مجموعة — ابحث بداخلها
+        _extractPaths(child, paths);
+      } else if (tagName == 'path') {
+        final pathData = child.getAttribute('d');
+        if (pathData == null || pathData.isEmpty) continue;
+
+        try {
+          var path = parseSvgPath(pathData);
+
+          // تطبيق transform إن وُجد
+          final transformStr = child.getAttribute('transform');
+          final transformMatrix = parseTransformAttribute(transformStr);
+          if (transformMatrix != null) {
+            path = path.transform(transformMatrix);
+          }
+
+          // تصفية المسارات المنحلة (نقطة واحدة بدون رسم فعلي)
+          final bounds = path.getBounds();
+          if (bounds.width > 1 || bounds.height > 1) {
+            paths.add(path);
+          }
+        } catch (_) {}
+      } else if (tagName == 'line') {
+        try {
+          var path = parseLineElement(child);
+
+          // تطبيق transform إن وُجد
+          final transformStr = child.getAttribute('transform');
+          final transformMatrix = parseTransformAttribute(transformStr);
+          if (transformMatrix != null) {
+            path = path.transform(transformMatrix);
+          }
+
+          // تصفية المسارات المنحلة
+          final bounds = path.getBounds();
+          if (bounds.width > 1 || bounds.height > 1) {
+            paths.add(path);
+          }
+        } catch (_) {}
+      }
+    }
+  }
+
   /// قراءة ملف SVG وتحويله إلى paths مع تحويل الإحداثيات لتناسب الـ canvas
   static Future<SvgNumberPath> loadNumberFromSvg(
     int number, {
@@ -33,16 +148,10 @@ class SvgNumberPathConverter {
     );
 
     final document = XmlDocument.parse(svgString);
-    final pathElements = document.findAllElements('path');
+
+    // استخراج جميع المسارات (path + line مع دعم transform)
     final rawPaths = <Path>[];
-    for (final pathElement in pathElements) {
-      final pathData = pathElement.getAttribute('d');
-      if (pathData != null && pathData.isNotEmpty) {
-        try {
-          rawPaths.add(parseSvgPath(pathData));
-        } catch (_) {}
-      }
-    }
+    _extractPaths(document.rootElement, rawPaths);
 
     if (rawPaths.isEmpty) {
       return SvgNumberPath(number: number, paths: []);
@@ -72,14 +181,18 @@ class SvgNumberPathConverter {
         (availableHeight - scaledHeight) / 2 -
         totalBounds.top * scale;
 
-    // إنشاء مصفوفة التحويل
-    final matrix = Matrix4.translationValues(offsetX, offsetY, 0.0)
-        * Matrix4.diagonal3Values(scale, scale, 1.0);
+    // إنشاء مصفوفة التحويل للـ canvas
+    final matrix = Float64List.fromList([
+      scale, 0, 0, 0,       // column 0
+      0, scale, 0, 0,       // column 1
+      0, 0, 1, 0,           // column 2
+      offsetX, offsetY, 0, 1, // column 3
+    ]);
 
     // تحويل جميع المسارات
     final transformedPaths = <Path>[];
     for (final path in rawPaths) {
-      transformedPaths.add(path.transform(matrix.storage));
+      transformedPaths.add(path.transform(matrix));
     }
 
     return SvgNumberPath(number: number, paths: transformedPaths);

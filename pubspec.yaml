@@ -84,6 +84,8 @@ flutter:
     - assets/svg/
     - assets/svg/numbers/
     - assets/svg/numbers/level1_Activity/Activity1/
+    - assets/images/1to5 activity/
+    - assets/images/6to10 activity/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

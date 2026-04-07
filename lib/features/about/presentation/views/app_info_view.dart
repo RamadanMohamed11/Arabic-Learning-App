@@ -30,9 +30,9 @@ class AppInfoView extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // App Card
+                // App Header Card
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -46,27 +46,41 @@ class AppInfoView extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const Icon(
-                        Icons.menu_book_rounded,
-                        size: 72,
-                        color: AppColors.primary,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.menu_book_rounded, size: 48, color: AppColors.primary),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.calculate_rounded, size: 48, color: Color(0xFF6A3DE8)),
+                        ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       const Text(
-                        'تطبيق تعلم الحروف العربية',
+                        'تطبيق البداية',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'تطبيق “البداية ” هو منصة تعليمية تفاعلية لمحو الأمية، مخصصة لأي شخص يرغب في تعلّم القراءة والكتابة من البداية — بخطوات بسيطة وصوت وصورة وتكرار تدريجي.',
+                      const SizedBox(height: 6),
+                      const Text(
+                        'تعلّم الحروف والأرقام العربية',
                         style: TextStyle(
                           fontSize: 16,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        'تطبيق "البداية" هو منصة تعليمية تفاعلية متكاملة تجمع بين تعلّم الحروف العربية والأرقام في رحلة واحدة ممتعة — بخطوات بسيطة، وصوت وصورة، وأنشطة تفاعلية متنوعة تناسب جميع المستويات.',
+                        style: TextStyle(
+                          fontSize: 15,
                           color: Colors.grey.shade700,
+                          height: 1.6,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -76,34 +90,71 @@ class AppInfoView extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // Key Features
+                // Arabic Section
                 _buildSection(
-                  title: 'الميزات الرئيسية',
+                  title: 'قسم الحروف العربية',
+                  icon: Icons.menu_book_rounded,
+                  iconColor: AppColors.primary,
                   child: Column(
                     children: const [
                       _FeatureRow(
                         icon: Icons.record_voice_over,
-                        text: 'نطق الحروف والكلمات بالصوت',
+                        text: 'نطق الحروف في أشكالها الثلاثة (أول، وسط، آخر الكلمة)',
+                        color: AppColors.primary,
                       ),
                       SizedBox(height: 10),
                       _FeatureRow(
                         icon: Icons.draw_rounded,
-                        text: 'تتبع الحروف ورسمها تلقائياً',
+                        text: 'تتبع الحروف ورسمها تفاعلياً',
+                        color: AppColors.primary,
                       ),
                       SizedBox(height: 10),
                       _FeatureRow(
                         icon: Icons.quiz_outlined,
-                        text: 'اختبارات مراجعة بعد كل مجموعة',
+                        text: 'اختبارات مراجعة بعد كل مجموعة حروف',
+                        color: AppColors.primary,
                       ),
                       SizedBox(height: 10),
                       _FeatureRow(
                         icon: Icons.lock_open,
-                        text: 'نظام فتح تدريجي للحروف',
+                        text: 'نظام فتح تدريجي للحروف مع متابعة التقدم',
+                        color: AppColors.primary,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Math Section
+                _buildSection(
+                  title: 'قسم الأرقام والرياضيات',
+                  icon: Icons.calculate_rounded,
+                  iconColor: const Color(0xFF6A3DE8),
+                  child: Column(
+                    children: const [
+                      _FeatureRow(
+                        icon: Icons.gesture,
+                        text: 'تتبع الأرقام العربية (١–١٠) برسم تفاعلي',
+                        color: Color(0xFF6A3DE8),
                       ),
                       SizedBox(height: 10),
                       _FeatureRow(
-                        icon: Icons.bar_chart_rounded,
-                        text: 'شريط تقدم يعكس إنجازك',
+                        icon: Icons.extension,
+                        text: 'نشاط توصيل الأرقام بالصور',
+                        color: Color(0xFF6A3DE8),
+                      ),
+                      SizedBox(height: 10),
+                      _FeatureRow(
+                        icon: Icons.trending_up,
+                        text: 'مستويات متعددة: أرقام ١–٩، مضاعفات العشرة، وأرقام مركبة',
+                        color: Color(0xFF6A3DE8),
+                      ),
+                      SizedBox(height: 10),
+                      _FeatureRow(
+                        icon: Icons.compare_arrows,
+                        text: 'أنشطة مقارنة وترتيب وكتابة الأرقام',
+                        color: Color(0xFF6A3DE8),
                       ),
                     ],
                   ),
@@ -114,14 +165,18 @@ class AppInfoView extends StatelessWidget {
                 // Version and Tech
                 _buildSection(
                   title: 'النسخة والتقنيات',
+                  icon: Icons.settings_rounded,
+                  iconColor: Colors.grey.shade600,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
-                      _Bullet(text: 'إصدار التطبيق: 1.0.0'),
+                      _Bullet(text: 'إصدار التطبيق: 1.0.7'),
                       SizedBox(height: 8),
                       _Bullet(text: 'إطار العمل: Flutter'),
                       SizedBox(height: 8),
-                      _Bullet(text: 'دعم Android و iOS'),
+                      _Bullet(text: 'يدعم Android و iOS'),
+                      SizedBox(height: 8),
+                      _Bullet(text: 'يشمل ميزة تحويل النص إلى كلام بالعربية'),
                     ],
                   ),
                 ),
@@ -131,15 +186,20 @@ class AppInfoView extends StatelessWidget {
                 // Mission
                 _buildSection(
                   title: 'رسالتنا',
+                  icon: Icons.favorite_rounded,
+                  iconColor: Colors.redAccent,
                   child: const Text(
-                    'الهدف هو بناء الثقة في النفس قبل المهارة، وتقديم تجربة تعلم تكرّم مجهود المتعلم  💪❤',
+                    'نؤمن بأن كل طفل يستحق بداية تعليمية قوية. هدفنا تقديم تجربة ممتعة وبسيطة تُعلّم الحروف والأرقام العربية بطريقة تكرّم مجهود المتعلم وتبني ثقته بنفسه 💪❤',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       color: AppColors.textPrimary,
+                      height: 1.7,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
+
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -148,7 +208,12 @@ class AppInfoView extends StatelessWidget {
     );
   }
 
-  Widget _buildSection({required String title, required Widget child}) {
+  Widget _buildSection({
+    required String title,
+    required Widget child,
+    IconData icon = Icons.star_rounded,
+    Color iconColor = AppColors.primary,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -168,7 +233,7 @@ class AppInfoView extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.star_rounded, color: AppColors.primary),
+              Icon(icon, color: iconColor),
               const SizedBox(width: 8),
               Text(
                 title,
@@ -180,7 +245,7 @@ class AppInfoView extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const Divider(height: 20),
           child,
         ],
       ),
@@ -191,18 +256,20 @@ class AppInfoView extends StatelessWidget {
 class _FeatureRow extends StatelessWidget {
   final IconData icon;
   final String text;
-  const _FeatureRow({required this.icon, required this.text});
+  final Color color;
+  const _FeatureRow({required this.icon, required this.text, this.color = AppColors.primary});
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppColors.primary),
+        Icon(icon, color: color, size: 22),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+            style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, height: 1.5),
           ),
         ),
       ],
@@ -217,15 +284,16 @@ class _Bullet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           '• ',
-          style: TextStyle(fontSize: 18, color: AppColors.textPrimary),
+          style: TextStyle(fontSize: 18, color: AppColors.primary),
         ),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+            style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, height: 1.5),
           ),
         ),
       ],
