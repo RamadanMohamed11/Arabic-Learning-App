@@ -1,0 +1,19 @@
+# Release Notes - v1.0.10+15
+
+## English
+* Removed unnecessary recognized text display during the reading comprehension quiz.
+* Improved Speech-to-Text correctness feedback to guide users better without causing confusion among previous sentences.
+* Added support for missing numbers (such as 9 and 5) in Level 3 Math Activity correctly rendering specific paths (fixed in recent sequence).
+* Adjusted level 3 activities descriptions in Arabic cleanly to support the expected progression logic:
+    * Activity 1: Listen and Read (Integrated Story 1 & Story 2)
+    * Activity 2: Self-reading (Prepare logic)
+    * Activity 3: Image-based Expression (Prepare logic)
+
+## عربي (Arabic)
+* إزالة النص المُتعرّف عليه سابقاً خلال مرحلة اختبار الفهم القرائي لمنع تشتت المستخدم.
+* تحسين دقة تقييم التعرف على الصوت وتوجيه المستخدم للإجابة الصحيحة بشكل أوضح وأدق دون خلط مع الجمل السابقة.
+* إضافة وتصحيح التتبع للأرقام التي تحتوي على 5 و 9 في نشاط الرياضيات للمستوى الثالث.
+* تقديم الهيكل الجديد لأنشطة المستوى الثالث باللغة العربية بوضوح كما يلي:
+    * النشاط الأول: استمع واقرأ (يضم القصة الأولى والثانية)
+    * النشاط الثاني: اقرأ بنفسك (قيد الإعداد)
+    * النشاط الثالث: عبّر عن الصورة (قيد الإعداد)

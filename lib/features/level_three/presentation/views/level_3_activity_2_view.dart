@@ -955,15 +955,6 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
                           ),
                         ),
                         const SizedBox(height: 12),
-                        if (_recognizedText.isNotEmpty)
-                          Text(
-                            _recognizedText,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Color(0xFF2D1B69),
-                            ),
-                          ),
                         const SizedBox(height: 12),
                         ElevatedButton.icon(
                           onPressed: _readAnswer,
