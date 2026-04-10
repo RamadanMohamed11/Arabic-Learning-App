@@ -1,0 +1,19 @@
+Release Notes v1.0.9 (Build 14)
+
+[English]
+What's New in this Version:
+• Added "Stories Hub" for Level 3 Arabic activities.
+• Combined existing stories under the unified "Listen & Read" activity.
+• Improved UI for Story Reading with sentence-by-sentence highlights.
+• Fixed image cropping issues in the reading quiz sections.
+• Updated SVG parser to correctly display numbers 5 and 9 in math tracing activities.
+• Refined activity descriptions and prepared the layout for upcoming reading and expressing activities.
+
+[Arabic]
+ما الجديد في هذا الإصدار:
+• إضافة "قسم القصص" للأنشطة في مستوى اللغة العربية الثالث.
+• دمج القصص الحالية تحت نشاط "استمع واقرأ" الموحد.
+• تحسين واجهة قراءة القصص مع عرض وتظليل النص جملة بجملة أثناء الاستماع.
+• إصلاح مشكلة اقتصاص الصور في أسئلة القراءة.
+• تحسين دقة عرض الأرقام (5 و 9) في نشاط تتبع الأرقام.
+• تحديث وصف الأنشطة وتجهيز الواجهة لأنشطة القراءة الذاتية والتعبير الحر القادمة.

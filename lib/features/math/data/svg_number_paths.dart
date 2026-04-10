@@ -36,6 +36,29 @@ class SvgNumberPathConverter {
     return path;
   }
 
+  /// تحويل عنصر `ellipse` إلى Flutter Path
+  static Path parseEllipseElement(XmlElement ellipseElement) {
+    final cx = double.tryParse(ellipseElement.getAttribute('cx') ?? '') ?? 0;
+    final cy = double.tryParse(ellipseElement.getAttribute('cy') ?? '') ?? 0;
+    final rx = double.tryParse(ellipseElement.getAttribute('rx') ?? '') ?? 0;
+    final ry = double.tryParse(ellipseElement.getAttribute('ry') ?? '') ?? 0;
+
+    final path = Path();
+    path.addOval(Rect.fromCenter(center: Offset(cx, cy), width: rx * 2, height: ry * 2));
+    return path;
+  }
+
+  /// تحويل عنصر `circle` إلى Flutter Path
+  static Path parseCircleElement(XmlElement circleElement) {
+    final cx = double.tryParse(circleElement.getAttribute('cx') ?? '') ?? 0;
+    final cy = double.tryParse(circleElement.getAttribute('cy') ?? '') ?? 0;
+    final r = double.tryParse(circleElement.getAttribute('r') ?? '') ?? 0;
+
+    final path = Path();
+    path.addOval(Rect.fromCenter(center: Offset(cx, cy), width: r * 2, height: r * 2));
+    return path;
+  }
+
   /// تحليل `transform` attribute وإرجاع مصفوفة التحويل
   /// يدعم: rotate(angle cx cy) و rotate(angle)
   static Float64List? parseTransformAttribute(String? transform) {
@@ -132,6 +155,38 @@ class SvgNumberPathConverter {
             paths.add(path);
           }
         } catch (_) {}
+      } else if (tagName == 'ellipse') {
+        try {
+          var path = parseEllipseElement(child);
+
+          // تطبيق transform إن وُجد
+          final transformStr = child.getAttribute('transform');
+          final transformMatrix = parseTransformAttribute(transformStr);
+          if (transformMatrix != null) {
+            path = path.transform(transformMatrix);
+          }
+
+          final bounds = path.getBounds();
+          if (bounds.width > 1 || bounds.height > 1) {
+            paths.add(path);
+          }
+        } catch (_) {}
+      } else if (tagName == 'circle') {
+        try {
+          var path = parseCircleElement(child);
+
+          // تطبيق transform إن وُجد
+          final transformStr = child.getAttribute('transform');
+          final transformMatrix = parseTransformAttribute(transformStr);
+          if (transformMatrix != null) {
+            path = path.transform(transformMatrix);
+          }
+
+          final bounds = path.getBounds();
+          if (bounds.width > 1 || bounds.height > 1) {
+            paths.add(path);
+          }
+        } catch (_) {}
       }
     }
   }
@@ -142,9 +197,10 @@ class SvgNumberPathConverter {
     required double canvasWidth,
     required double canvasHeight,
     double padding = 40.0,
+    String svgBasePath = 'assets/svg/numbers',
   }) async {
     final svgString = await rootBundle.loadString(
-      'assets/svg/numbers/$number.svg',
+      '$svgBasePath/$number.svg',
     );
 
     final document = XmlDocument.parse(svgString);
@@ -242,8 +298,9 @@ class SvgNumberPathManager {
     int number, {
     required double canvasWidth,
     required double canvasHeight,
+    String svgBasePath = 'assets/svg/numbers',
   }) async {
-    final key = '${number}_${canvasWidth.toInt()}x${canvasHeight.toInt()}';
+    final key = '${svgBasePath}_${number}_${canvasWidth.toInt()}x${canvasHeight.toInt()}';
     if (_cache.containsKey(key)) {
       return _cache[key];
     }
@@ -253,6 +310,7 @@ class SvgNumberPathManager {
         number,
         canvasWidth: canvasWidth,
         canvasHeight: canvasHeight,
+        svgBasePath: svgBasePath,
       );
       _cache[key] = numberPath;
       return numberPath;

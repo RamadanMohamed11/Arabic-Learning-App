@@ -37,6 +37,10 @@ class AppTtsService {
   /// delayed speech from an earlier call.
   int _generation = 0;
 
+  /// Track last-used pitch/rate so we can re-apply when they change.
+  double _lastPitch = 1.0;
+  double _lastSpeechRate = 0.4;
+
   /// Pre-configure the TTS engine so the first [speak] call is fast.
   /// Safe to call multiple times — the actual work runs only once.
   Future<void> warmUp({
@@ -88,6 +92,7 @@ class AppTtsService {
       await _tts.stop();
     } catch (_) {}
     await _ensureConfigured(speechRate: speechRate, pitch: pitch);
+    await _applyVoiceParams(speechRate: speechRate, pitch: pitch);
     try {
       await _tts.speak(text);
     } catch (e) {
@@ -128,6 +133,7 @@ class AppTtsService {
       await _tts.stop();
     } catch (_) {}
     await _ensureConfigured(speechRate: speechRate, pitch: pitch);
+    await _applyVoiceParams(speechRate: speechRate, pitch: pitch);
 
     // Double-check after async gap
     if (_generation != myGeneration) return;
@@ -148,4 +154,19 @@ class AppTtsService {
   /// Access the underlying FlutterTts instance for advanced use cases
   /// (e.g., speech-to-text coordination in the welcome screen).
   FlutterTts get rawTts => _tts;
+
+  /// Re-apply pitch/speechRate if they changed since the last call.
+  Future<void> _applyVoiceParams({
+    required double speechRate,
+    required double pitch,
+  }) async {
+    if (pitch != _lastPitch) {
+      await _tts.setPitch(pitch);
+      _lastPitch = pitch;
+    }
+    if (speechRate != _lastSpeechRate) {
+      await _tts.setSpeechRate(speechRate);
+      _lastSpeechRate = speechRate;
+    }
+  }
 }

@@ -21,8 +21,10 @@ class LevelsSelectionView extends StatefulWidget {
 class _LevelsSelectionViewState extends State<LevelsSelectionView> {
   UserProgressService? _progressService;
   bool _level2Unlocked = false;
+  bool _level3Unlocked = false;
   double _level1Progress = 0.0;
   double _level2Progress = 0.0;
+  double _level3Progress = 0.0;
   bool _level1FinalTestCompleted = false;
   bool _level2FinalTestCompleted = false;
   bool _hasPlayedIntro = false;
@@ -39,8 +41,11 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
     if (!mounted) return;
     setState(() {
       _level2Unlocked = _progressService!.isLevel2Unlocked();
+      // Level 3 is unlocked after Level 2 final test is completed (forced true for testing)
+      _level3Unlocked = true; // _progressService!.isLevel2ActivityCompleted(_level2FinalTestIndex);
       _level1Progress = _progressService!.getLevel1Progress();
       _level2Progress = _progressService!.getLevel2Progress();
+      _level3Progress = 0.0; // TODO tracking for Level 3
       _level1FinalTestCompleted = _progressService!
           .isLevel1FinalTestCompleted();
       _level2FinalTestCompleted = _progressService!.isLevel2ActivityCompleted(
@@ -175,6 +180,31 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                                             const LevelTwoView(),
                                           ),
                                         ).then((_) {
+                                          _loadProgress();
+                                        });
+                                      }
+                                    : null,
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              // Level 3
+                              _buildLevelCard(
+                                context: context,
+                                level: 3,
+                                title: 'المستوى الثالث',
+                                subtitle: 'قصص ومحادثات متقدمة',
+                                icon: '📖',
+                                progress: _level3Progress,
+                                isLocked: !_level3Unlocked,
+                                colors: const [
+                                  Color(0xFF8B5CF6),
+                                  Color(0xFFD946EF),
+                                ],
+                                onTap: _level3Unlocked
+                                    ? () {
+                                        AppTtsService.instance.stop();
+                                        context.push(AppRouter.kLevelThreeView).then((_) {
                                           _loadProgress();
                                         });
                                       }

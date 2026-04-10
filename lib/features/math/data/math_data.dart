@@ -30,10 +30,21 @@ final List<MathLevelModel> mathLevels = [
   MathLevelModel(
     level: 3,
     title: 'المستوى الثالث',
-    description: 'الأرقام المركبة (٢١-٩٩)',
-    numbers: List.generate(79, (index) {
-      final num = index + 21;
-      return MathNumberModel(number: num, label: num.toArabicDigits());
-    })..removeWhere((element) => element.number % 10 == 0),
+    description: 'الأرقام المركبة',
+    svgBasePath: 'assets/images/Math/level3/numbers',
+    numbers: [
+      for (final n in [
+        11, 13, 15, 16, 17,
+        22, 24, 25, 28, 29,
+        31, 32, 36, 38, 39,
+        42, 43, 45, 46, 47,
+        52, 53, 56, 57, 59,
+        61, 62, 65, 66, 67,
+        72, 75, 76, 78, 79,
+        81, 83, 84, 86, 88,
+        91, 93, 95, 97, 99,
+      ])
+        MathNumberModel(number: n, label: n.toArabicDigits()),
+    ],
   ),
 ];

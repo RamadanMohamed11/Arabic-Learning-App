@@ -108,6 +108,7 @@ class _SvgNumberTracingViewState extends State<SvgNumberTracingView>
       widget.numberModel.number,
       canvasWidth: _canvasWidth,
       canvasHeight: _canvasHeight,
+      svgBasePath: widget.levelModel.svgBasePath,
     );
     if (mounted) {
       setState(() {

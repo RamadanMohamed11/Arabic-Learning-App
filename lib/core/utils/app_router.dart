@@ -11,6 +11,7 @@ import 'package:arabic_learning_app/features/welcome/presentation/views/welcome_
 import 'package:arabic_learning_app/features/certificate/presentation/views/certificate_view.dart';
 import 'package:arabic_learning_app/features/home/presentation/views/home_subject_selection_view.dart';
 import 'package:arabic_learning_app/features/math/presentation/views/math_view.dart';
+import 'package:arabic_learning_app/features/level_three/presentation/views/level_three_view.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/core/utils/page_transitions.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ abstract class AppRouter {
   static const String kWelcomeScreenView = '/welcome';
   static const String kPlacementTestView = '/placement_test';
   static const String kLevelsSelectionView = '/levels_selection';
+  static const String kLevelThreeView = '/level_three';
   static const String kAlphabetView = '/alphabet_view';
   static const String kWritingPracticeView = '/writing_practice_view';
   static const String kWordTrainingView = '/word_training_view';
@@ -104,6 +106,13 @@ abstract class AppRouter {
         path: kLevelsSelectionView,
         pageBuilder: (context, state) => PageTransitions.elegantZoom(
           child: const LevelsSelectionView(),
+          state: state,
+        ),
+      ),
+      GoRoute(
+        path: kLevelThreeView,
+        pageBuilder: (context, state) => PageTransitions.slideRight(
+          child: const LevelThreeView(),
           state: state,
         ),
       ),

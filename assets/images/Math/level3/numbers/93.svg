@@ -1,0 +1,14 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <path fill="none" stroke="#000" stroke-width="10" opacity="NaN" d="m483,360" id="svg_81"/>
+  <line id="svg_33" y2="336" x2="74" y1="231" x1="73" stroke-width="10" stroke="#000" fill="none"/>
+  <ellipse stroke="#000" ry="30.5" rx="30.5" id="svg_34" cy="234.5" cx="42.5" stroke-width="10" fill="none"/>
+  <line stroke="#000" id="svg_36" y2="342" x2="131" y1="229" x1="133" stroke-width="10" fill="none"/>
+  <line id="svg_37" y2="237" x2="203" y1="231" x1="132" stroke-width="10" stroke="#000" fill="none"/>
+  <line transform="rotate(1.15023 198.5 219)" id="svg_38" y2="205" x2="198" y1="233" x1="199" stroke-width="10" stroke="#000" fill="none"/>
+  <line id="svg_39" y2="202" x2="169" y1="231" x1="167" stroke-width="10" stroke="#000" fill="none"/>
+  <line id="svg_40" y2="202" x2="133" y1="230" x1="133" stroke-width="10" stroke="#000" fill="none"/>
+ </g>
+
+</svg>
