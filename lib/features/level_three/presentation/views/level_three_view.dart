@@ -3,7 +3,8 @@ import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/services/user_progress_service.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_stories_view.dart';
-
+import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_selection_view.dart';
+import 'package:arabic_learning_app/core/utils/app_colors.dart';
 class LevelThreeView extends StatefulWidget {
   const LevelThreeView({super.key});
 
@@ -51,7 +52,7 @@ class _LevelThreeViewState extends State<LevelThreeView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('المستوى الثالث', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF8B5CF6),
+        backgroundColor: AppColors.slateBlue,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
@@ -60,8 +61,8 @@ class _LevelThreeViewState extends State<LevelThreeView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF8B5CF6).withValues(alpha: 0.2),
-              const Color(0xFFD946EF).withValues(alpha: 0.1),
+              AppColors.slateBlue.withValues(alpha: 0.2),
+              AppColors.softTeal.withValues(alpha: 0.1),
             ],
           ),
         ),
@@ -73,7 +74,7 @@ class _LevelThreeViewState extends State<LevelThreeView> {
                 title: 'النشاط الأول: استمع واقرأ',
                 subtitle: 'التطبيق يقرأ القصة أولاً، ثم تقرأها أنت جملة جملة وتجيب عن الأسئلة',
                 icon: Icons.auto_stories,
-                color: const Color(0xFF8B5CF6),
+                color: AppColors.slateBlue,
                 isLocked: false,
                 onTap: () {
                   AppTtsService.instance.stop();
@@ -87,11 +88,17 @@ class _LevelThreeViewState extends State<LevelThreeView> {
               // النشاط الثاني: القراءة الذاتية
               _buildActivityCard(
                 title: 'النشاط الثاني: اقرأ بنفسك',
-                subtitle: 'اقرأ القصص والنصوص التوعوية بنفسك وأجب عن أسئلة الفهم (قريباً)',
+                subtitle: 'اقرأ القصص والنصوص التوعوية بنفسك وأجب عن أسئلة الفهم',
                 icon: Icons.menu_book,
-                color: const Color(0xFFD946EF),
-                isLocked: true, // TODO: Unlock when activity 1 is done
-                onTap: null,
+                color: AppColors.softTeal,
+                isLocked: false,
+                onTap: () {
+                  AppTtsService.instance.stop();
+                  Navigator.push(
+                    context,
+                    AnimatedRoute.slideScale(const Level3SelfReadingSelectionView()),
+                  ).then((_) => _loadProgress());
+                },
               ),
               const SizedBox(height: 20),
               // النشاط الثالث: التعبير عن الصور
@@ -99,7 +106,7 @@ class _LevelThreeViewState extends State<LevelThreeView> {
                 title: 'النشاط الثالث: عبّر عن الصورة',
                 subtitle: 'شاهد الصور واكتب فقرة تعبر عنها بكلماتك (قريباً)',
                 icon: Icons.image_search,
-                color: const Color(0xFF3B82F6),
+                color: AppColors.mintGreen,
                 isLocked: true, // TODO: Unlock when activity 2 is done
                 onTap: null,
               ),

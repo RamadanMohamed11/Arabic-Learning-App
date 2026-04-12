@@ -197,10 +197,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
                                 icon: '📖',
                                 progress: _level3Progress,
                                 isLocked: !_level3Unlocked,
-                                colors: const [
-                                  Color(0xFF8B5CF6),
-                                  Color(0xFFD946EF),
-                                ],
+                                colors: AppColors.level3,
                                 onTap: _level3Unlocked
                                     ? () {
                                         AppTtsService.instance.stop();
@@ -532,7 +529,7 @@ class _LevelsSelectionViewState extends State<LevelsSelectionView> {
     final level2Done = _level2FinalTestCompleted;
 
     if (!level1Done && !level2Done) {
-      return '🎖️ أكمل اختباري نهاية المستويين الأول والثاني لعرض شهادتك';
+      return '🎖️ أكمل اختبارات نهاية الثلاث مستويات لعرض شهادتك';
     }
     if (!level1Done) {
       return '🎯 أكمل اختبار نهاية المستوى الأول للحصول على الشهادة';

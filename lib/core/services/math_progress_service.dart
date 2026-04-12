@@ -58,6 +58,14 @@ class MathProgressService {
     return prefs.getBool(_keyMathLevel3Unlocked) ?? false;
   }
 
+  bool isLevel3IntroPlayed() {
+    return prefs.getBool('math_level3_intro_played') ?? false;
+  }
+
+  Future<void> setLevel3IntroPlayed(bool played) async {
+    await prefs.setBool('math_level3_intro_played', played);
+  }
+
   Future<void> unlockLevel3() async {
     await prefs.setBool(_keyMathLevel3Unlocked, true);
   }

@@ -26,21 +26,48 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
   void initState() {
     super.initState();
     _loadProgress();
-    _playIntroOnce();
   }
 
   Future<void> _loadProgress() async {
     _progressService = await MathProgressService.getInstance();
     if (!mounted) return;
     setState(() {});
+    
+    if (!_hasPlayedIntro) {
+      _playIntroOnce();
+    }
   }
 
   Future<void> _playIntroOnce() async {
     if (_hasPlayedIntro) return;
     _hasPlayedIntro = true;
-    await AppTtsService.instance.speakScreenIntro(
-      '${widget.level.title}. اختر الرقم الذي تريد تعلمه',
-      isMounted: () => mounted,
+    
+    if (widget.level.level == 3 && _progressService != null && !_progressService!.isLevel3IntroPlayed()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showLevel3Intro();
+      });
+    } else {
+      await AppTtsService.instance.speakScreenIntro(
+        '${widget.level.title}. اختر الرقم الذي تريد تعلمه',
+        isMounted: () => mounted,
+      );
+    }
+  }
+
+  void _showLevel3Intro() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _Level3IntroDialog(
+        onComplete: () {
+          Navigator.pop(context);
+          _progressService?.setLevel3IntroPlayed(true);
+          AppTtsService.instance.speakScreenIntro(
+            '${widget.level.title}. اختر الرقم الذي تريد تعلمه',
+            isMounted: () => mounted,
+          );
+        },
+      ),
     );
   }
 
@@ -616,3 +643,233 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
     );
   }
 }
+
+class _Level3IntroDialog extends StatefulWidget {
+  final VoidCallback onComplete;
+
+  const _Level3IntroDialog({Key? key, required this.onComplete}) : super(key: key);
+
+  @override
+  State<_Level3IntroDialog> createState() => _Level3IntroDialogState();
+}
+
+class _Level3IntroDialogState extends State<_Level3IntroDialog> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: const ElasticOutCurve(0.9)),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    _controller.forward();
+    
+    _playAudioIntro();
+  }
+
+  Future<void> _playAudioIntro() async {
+    await AppTtsService.instance.speak(
+      "العدد المركب هو أي رقم من رقمين يتكوّن من جزئين : عشرات، وآحاد. كمثال: ثلاثة وعشرون تساوي عشرون زائد ثلاثة. وخمسة وأربعون تساوي أربعون زائد خمسة."
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _fadeAnimation.value,
+            child: Transform.scale(
+              scale: _scaleAnimation.value,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppColors.slateBlue, AppColors.darkSlateBlue],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.slateBlue.withValues(alpha: 0.4),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.lightbulb_outline, size: 52, color: Colors.orangeAccent),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'العدد المركب',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'هو أي رقم من رقمين يتكوّن من جزئين:\nعشرات وآحاد',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            '💡 مثال:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.mintGreen,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: const [
+                              _MathEquation(result: '23', val1: '20', val2: '3'),
+                              _MathEquation(result: '45', val1: '40', val2: '5'),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          AppTtsService.instance.stop();
+                          widget.onComplete();
+                        },
+                        icon: const Icon(Icons.check_circle_outline, size: 28),
+                        label: const Text(
+                          'هيا نبدأ',
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.mintGreen,
+                          foregroundColor: AppColors.darkSlateBlue,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MathEquation extends StatelessWidget {
+  final String result;
+  final String val1;
+  final String val2;
+
+  const _MathEquation({
+    required this.result,
+    required this.val1,
+    required this.val2,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            result,
+            style: const TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w900,
+              color: AppColors.darkSlateBlue,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.25),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                val1,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6.0),
+                child: Text('+', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.mintGreen)),
+              ),
+              Text(
+                val2,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+

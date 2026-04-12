@@ -49,6 +49,7 @@ class AppColors {
   // Level gradients
   static const List<Color> level1 = [mintGreen, softTeal];
   static const List<Color> level2 = [softTeal, slateBlue];
+  static const List<Color> level3 = [slateBlue, darkSlateBlue];
 
   // UI Element colors
   static const Color cardBackground = surface;

@@ -4,76 +4,75 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 
-class Level3Activity2View extends StatefulWidget {
-  const Level3Activity2View({super.key});
+class Level3Activity3View extends StatefulWidget {
+  const Level3Activity3View({super.key});
 
   @override
-  State<Level3Activity2View> createState() => _Level3Activity2ViewState();
+  State<Level3Activity3View> createState() => _Level3Activity3ViewState();
 }
 
-class _Level3Activity2ViewState extends State<Level3Activity2View>
+class _Level3Activity3ViewState extends State<Level3Activity3View>
     with SingleTickerProviderStateMixin {
   // ─── بيانات القصة ───────────────────────────────────────────────
 
   /// عنوان القصة
-  static const String _storyTitle = 'كوب ماء يغيّر يومك 💧';
+  static const String _storyTitle = 'أمنيه والنظافة 🧹';
 
-  /// جمل القصة للعرض (بدون تشكيل)
+  /// جمل القصة للعرض
   final List<String> _displayLines = [
-    'في الصباح، خرجت سارة من منزلها مسرعة ونسيت أن تشرب الماء.',
-    'بعد قليل شعرت بالتعب والصداع، ولم تستطع التركيز في عملها.',
-    'تذكّرت أن جسدها يحتاج إلى الماء، فشربت كوبين.',
-    'فعادت إليها طاقتها وأصبحت أكثر تركيزًا.',
-    'ومنذ ذلك اليوم، قررت أن تبدأ يومها بكوب ماء.',
+    'أُمْنِيَةُ طِفْلَةٌ صَغِيرَةٌ تُحِبُّ تَنَاوُلَ الْحَلْوَى.',
+    'فِي يَوْمٍ مِنَ الْأَيَّامِ، أَكَلَتْ أُمْنِيَةُ حَلْوَى،',
+    'ثُمَّ رَمَتِ الْغِلَافَ عَلَى الْأَرْضِ.',
+    'قَالَتْ لَهَا أُمُّهَا: يَا أُمْنِيَةُ، هَذَا خَطَأٌ،',
+    'يَجِبُ أَنْ تَكُونَ الْأَرْضُ نَظِيفَةً.',
+    'فَكَّرَتْ أُمْنِيَةُ قَلِيلًا،',
+    'ثُمَّ فَهِمَتِ الصَّوَابَ.',
+    'ذَهَبَتْ وَأَحْضَرَتِ الْغِلَافَ،',
+    'وَرَمَتْهُ فِي سَلَّةِ الْقُمَامَةِ.',
+    'وَقَالَتْ: سَأُحَافِظُ عَلَى نَظَافَةِ الْمَكَانِ.',
   ];
 
-  /// جمل القصة للنطق (بالتشكيل)
+  /// جمل القصة للنطق
   final List<String> _ttsLines = [
-    'فِي الصَّبَاحِ، خَرَجَتْ سَارَةُ مِنْ مَنْزِلِهَا مُسْرِعَةً وَنَسِيَتْ أَنْ تَشْرَبَ الْمَاءَ.',
-    'بَعْدَ قَلِيلٍ شَعَرَتْ بِالتَّعَبِ وَالصُّدَاعِ، وَلَمْ تَسْتَطِعِ التَّرْكِيزَ فِي عَمَلِهَا.',
-    'تَذَكَّرَتْ أَنَّ جَسَدَهَا يَحْتَاجُ إِلَى الْمَاءِ، فَشَرِبَتْ كُوبَيْنِ.',
-    'فَعَادَتْ إِلَيْهَا طَاقَتُهَا وَأَصْبَحَتْ أَكْثَرَ تَرْكِيزًا.',
-    'وَمُنْذُ ذَلِكَ الْيَوْمِ، قَرَّرَتْ أَنْ تَبْدَأَ يَوْمَهَا بِكُوبِ مَاءٍ.',
+    'أُمْنِيَةُ طِفْلَةٌ صَغِيرَةٌ تُحِبُّ تَنَاوُلَ الْحَلْوَى.',
+    'فِي يَوْمٍ مِنَ الْأَيَّامِ، أَكَلَتْ أُمْنِيَةُ حَلْوَى،',
+    'ثُمَّ رَمَتِ الْغِلَافَ عَلَى الْأَرْضِ.',
+    'قَالَتْ لَهَا أُمُّهَا: يَا أُمْنِيَةُ، هَذَا خَطَأٌ،',
+    'يَجِبُ أَنْ تَكُونَ الْأَرْضُ نَظِيفَةً.',
+    'فَكَّرَتْ أُمْنِيَةُ قَلِيلًا،',
+    'ثُمَّ فَهِمَتِ الصَّوَابَ.',
+    'ذَهَبَتْ وَأَحْضَرَتِ الْغِلَافَ،',
+    'وَرَمَتْهُ فِي سَلَّةِ الْقُمَامَةِ.',
+    'وَقَالَتْ: سَأُحَافِظُ عَلَى نَظَافَةِ الْمَكَانِ.',
   ];
 
   // ─── بيانات الأسئلة ─────────────────────────────────────────────
 
   final List<_QuizQuestion> _questions = [
     _QuizQuestion(
-      imagePath: 'assets/images/Arabic/Level3/Activity1/story2/1.jpeg',
-      options: [
-        'خرجت سارة من منزلها بهدوء.',
-        'خرجت سارة من منزلها مسرعة.',
-        'جلست سارة في منزلها.',
-      ],
+      questionText: '1. هل تصرّف أمنية في رمي الغلاف على الأرض صحيح أم خطأ؟',
+      options: ['أ) صحيح', 'ب) خطأ'],
       correctIndex: 1,
     ),
     _QuizQuestion(
-      imagePath: 'assets/images/Arabic/Level3/Activity1/story2/2.jpeg',
-      options: [
-        'شعرت سارة بالسعادة والنشاط.',
-        'شعرت سارة بالجوع فقط.',
-        'شعرت سارة بالتعب والصداع.',
-      ],
-      correctIndex: 2,
-    ),
-    _QuizQuestion(
-      imagePath: 'assets/images/Arabic/Level3/Activity1/story2/3.jpeg',
-      options: [
-        'شربت سارة العصير.',
-        'شربت سارة كوبين من الماء.',
-        'تجاهلت سارة شرب الماء.',
-      ],
+      questionText: '2. ماذا قالت الأم؟',
+      options: ['أ) هذا صحيح', 'ب) هذا خطأ ويجب أن نحافظ على النظافة', 'ج) لا تهتمي'],
       correctIndex: 1,
     ),
     _QuizQuestion(
-      imagePath: 'assets/images/Arabic/Level3/Activity1/story2/4.jpeg',
-      options: [
-        'أصبحت سارة أكثر تعبًا.',
-        'نامت سارة فورًا.',
-        'أصبحت سارة أكثر نشاطًا وتركيزًا.',
-      ],
+      questionText: '3. أين يجب أن نرمي القمامة؟',
+      options: ['أ) في الأرض', 'ب) في الشارع', 'ج) في سلة القمامة'],
       correctIndex: 2,
+    ),
+    _QuizQuestion(
+      questionText: '4. ماذا فعلت أمنية في النهاية؟',
+      options: ['أ) تركت الغلاف', 'ب) رمت الغلاف في سلة القمامة', 'ج) لعبت بالغلاف'],
+      correctIndex: 1,
+    ),
+    _QuizQuestion(
+      questionText: '5. ماذا تعلمت من قصة أمنية؟',
+      options: ['أ) نرمي القمامة في أي مكان', 'ب) نحافظ على نظافة المكان', 'ج) نترك المكان متسخًا'],
+      correctIndex: 1,
     ),
   ];
 
@@ -95,11 +94,8 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
   bool _isPlayingFullStory = false;
 
   // حالة الأسئلة
-  int _currentQuestionIndex = 0;
-  int? _selectedOption;
-  bool _isAnswerCorrect = false;
-  bool _hasAnswered = false;
-  bool _hasReadAnswer = false;
+  final Map<int, int> _selectedAnswers = {};
+  bool _isQuizCompleted = false;
   int _score = 0;
 
   late AnimationController _pulseController;
@@ -295,124 +291,47 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
       // انتقل للأسئلة
       setState(() {
         _currentPhase = 2;
-        _currentQuestionIndex = 0;
-        _selectedOption = null;
-        _hasAnswered = false;
-        _hasReadAnswer = false;
+        _selectedAnswers.clear();
+        _isQuizCompleted = false;
         _score = 0;
       });
       AppTtsService.instance.speak(
-        'ممتاز! الآن أجب عن الأسئلة واقرأ الإجابة الصحيحة',
+        'ممتاز! الآن قم بحل الأسئلة الممتعة',
       );
     }
   }
 
   // ─── الأسئلة ────────────────────────────────────────────────────
 
-  void _selectOption(int index) {
-    if (_hasAnswered) return;
-
-    final question = _questions[_currentQuestionIndex];
-    final isCorrect = index == question.correctIndex;
-
-    setState(() {
-      _selectedOption = index;
-      _hasAnswered = true;
-      _isAnswerCorrect = isCorrect;
-      if (isCorrect) _score++;
-    });
-
-    if (isCorrect) {
-      AppTtsService.instance.speak('إجابة صحيحة! الآن اقرأ الإجابة بصوتك');
-    } else {
-      AppTtsService.instance.speak(
-        'إجابة خاطئة. الإجابة الصحيحة هي: ${question.options[question.correctIndex]}',
+  void _checkAnswers() {
+    if (_selectedAnswers.length < _questions.length) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('الرجاء الإجابة على جميع الأسئلة'), backgroundColor: Colors.orange),
       );
-      // auto-set to read after wrong answer
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted && !_hasReadAnswer) {
-          setState(() => _hasReadAnswer = true);
-        }
-      });
+      return;
     }
-  }
 
-  Future<void> _readAnswer() async {
-    if (!_speechEnabled) {
-      await _initSpeechToText();
-      if (!_speechEnabled) {
-        AppTtsService.instance.speak('خاصية التعرف على الصوت غير مفعلة');
-        return;
+    int correct = 0;
+    for (int i = 0; i < _questions.length; i++) {
+      if (_selectedAnswers[i] == _questions[i].correctIndex) {
+        correct++;
       }
     }
-    await _speechToText.stop();
-    await AppTtsService.instance.stop();
+
     setState(() {
-      _recognizedText = '';
-      _isListening = true;
+      _score = correct;
+      _isQuizCompleted = true;
     });
 
-    await _speechToText.listen(
-      onResult: _onAnswerSpeechResult,
-      localeId: 'ar-SA',
-      listenFor: const Duration(seconds: 15),
-      pauseFor: const Duration(seconds: 3),
-    );
-  }
-
-  void _onAnswerSpeechResult(SpeechRecognitionResult result) {
-    if (!mounted) return;
-    setState(() => _recognizedText = result.recognizedWords.trim());
-    if (result.finalResult) {
-      _checkAnswerRead(result.recognizedWords.trim());
-    }
-  }
-
-  void _checkAnswerRead(String spokenText) async {
-    final question = _questions[_currentQuestionIndex];
-    final correctText = question.options[question.correctIndex];
-    final expected = _cleanArabicText(correctText);
-    final actual = _cleanArabicText(spokenText);
-
-    bool match = false;
-    if (actual.contains(expected) ||
-        expected.contains(actual) && actual.length > expected.length ~/ 3) {
-      match = true;
-    } else {
-      final expectedWords =
-          expected.split(' ').where((w) => w.isNotEmpty).toList();
-      final actualWords = actual.split(' ').where((w) => w.isNotEmpty).toList();
-      int matchCount = 0;
-      for (var w in expectedWords) {
-        if (actualWords.contains(w)) matchCount++;
-      }
-      if (matchCount >= (expectedWords.length / 2).ceil()) {
-        match = true;
-      }
-    }
-
-    if (match) {
-      setState(() => _hasReadAnswer = true);
-      await AppTtsService.instance.speak('أحسنت! قراءة رائعة');
-    } else {
-      await AppTtsService.instance.speak('حاول مرة أخرى');
-    }
-  }
-
-  void _nextQuestion() {
-    if (_currentQuestionIndex < _questions.length - 1) {
-      setState(() {
-        _currentQuestionIndex++;
-        _selectedOption = null;
-        _hasAnswered = false;
-        _hasReadAnswer = false;
-        _isAnswerCorrect = false;
-        _recognizedText = '';
-      });
-    } else {
+    if (correct == _questions.length) {
+      AppTtsService.instance.speak('ممتاز! لقد أنهيت القصة والأسئلة بنجاح! أحسنت!');
       setState(() => _currentPhase = 3);
-      AppTtsService.instance.speak(
-        'ممتاز! لقد أنهيت القصة والأسئلة بنجاح! أحسنت!',
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('حصلت على $_score من ${_questions.length}. بعض الإجابات تحتاج مراجعة!'),
+          backgroundColor: AppColors.error,
+        ),
       );
     }
   }
@@ -506,7 +425,7 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
                   child: Container(
                     color: Colors.white,
                     child: Image.asset(
-                      'assets/images/Arabic/Level3/Activity1/story2/1.jpeg',
+                      'assets/images/Arabic/Level3/Activity1/story3/1.jpeg',
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.contain,
@@ -816,28 +735,26 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
 
   // ── المرحلة الثالثة: الأسئلة ────────────────────────────────────
   Widget _buildQuizPhase() {
-    final question = _questions[_currentQuestionIndex];
-
     return Column(
       children: [
-        // شريط تقدم الأسئلة
+        // Questions Header
         Container(
-          margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+          margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
           child: Row(
             children: [
-              Text(
-                'سؤال ${_currentQuestionIndex + 1} / ${_questions.length}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.softTeal,
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.slateBlue.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
                 ),
+                child: const Icon(Icons.help_outline, color: AppColors.slateBlue),
               ),
-              const Spacer(),
-              Text(
-                'النقاط: $_score',
-                style: const TextStyle(
-                  fontSize: 16,
+              const SizedBox(width: 12),
+              const Text(
+                'الأسئلة:',
+                style: TextStyle(
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: AppColors.slateBlue,
                 ),
@@ -845,197 +762,139 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
             ],
           ),
         ),
-
+        const SizedBox(height: 16),
+        
         Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // صورة السؤال
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    question.imagePath,
-                    width: double.infinity,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // الخيارات
-                ...List.generate(question.options.length, (i) {
-                  final isSelected = _selectedOption == i;
-                  final isCorrectOption = i == question.correctIndex;
-
-                  Color bgColor = Colors.white;
-                  Color borderColor = Colors.grey.shade300;
-                  Color textColor = AppColors.textPrimary;
-
-                  if (_hasAnswered) {
-                    if (isCorrectOption) {
-                      bgColor = Colors.green.withValues(alpha: 0.15);
-                      borderColor = Colors.green;
-                      textColor = Colors.green.shade800;
-                    } else if (isSelected && !_isAnswerCorrect) {
-                      bgColor = Colors.red.withValues(alpha: 0.15);
-                      borderColor = Colors.red;
-                      textColor = Colors.red.shade800;
-                    }
-                  } else if (isSelected) {
-                    bgColor =
-                        AppColors.softTeal.withValues(alpha: 0.1);
-                    borderColor = AppColors.softTeal;
-                  }
-
-                  return GestureDetector(
-                    onTap: () => _selectOption(i),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: bgColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: borderColor, width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: borderColor.withValues(alpha: 0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            itemCount: _questions.length + 1,
+            itemBuilder: (context, index) {
+              if (index == _questions.length) {
+                // Submit Button
+                return Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 40),
+                  child: ElevatedButton(
+                    onPressed: _isQuizCompleted && _score == _questions.length ? () {
+                      setState(() => _currentPhase = 3);
+                    } : _checkAnswers,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.softTeal,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Row(
-                        children: [
-                          // حرف الخيار
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: borderColor.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
+                      elevation: 4,
+                    ),
+                    child: Text(
+                      _isQuizCompleted && _score == _questions.length ? 'التالي' : 'التأكد من الإجابات',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              }
+              
+              final q = _questions[index];
+              int correctIndex = q.correctIndex;
+              int? selectedIndex = _selectedAnswers[index];
+              bool showStatus = _isQuizCompleted;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.softTeal.withValues(alpha: 0.3),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      q.questionText ?? '',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ...List.generate(q.options.length, (optIndex) {
+                      bool isSelected = selectedIndex == optIndex;
+                      bool isCorrectOption = correctIndex == optIndex;
+                      
+                      Color getStatusColor() {
+                        if (!showStatus) {
+                          return isSelected ? AppColors.softTeal : Colors.grey.shade300;
+                        }
+                        if (isCorrectOption) return AppColors.success;
+                        if (isSelected && !isCorrectOption) return AppColors.error;
+                        return Colors.grey.shade300;
+                      }
+
+                      return GestureDetector(
+                        onTap: () {
+                          if (!_isQuizCompleted) {
+                            setState(() {
+                              _selectedAnswers[index] = optIndex;
+                            });
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: isSelected ? getStatusColor().withValues(alpha: 0.1) : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: getStatusColor(),
+                              width: isSelected || (showStatus && isCorrectOption) ? 2 : 1,
                             ),
-                            child: Center(
-                              child: Text(
-                                ['أ', 'ب', 'ج'][i],
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: textColor,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isSelected 
+                                    ? (showStatus 
+                                          ? (isCorrectOption ? Icons.check_circle : Icons.cancel)
+                                          : Icons.radio_button_checked)
+                                    : (showStatus && isCorrectOption
+                                          ? Icons.check_circle_outline
+                                          : Icons.radio_button_unchecked),
+                                color: getStatusColor(),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  q.options[optIndex],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: isSelected ? AppColors.textPrimary : Colors.grey.shade800,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              question.options[i],
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: textColor,
-                                height: 1.5,
-                              ),
-                            ),
-                          ),
-                          if (_hasAnswered && isCorrectOption)
-                            const Icon(Icons.check_circle,
-                                color: Colors.green, size: 28),
-                          if (_hasAnswered &&
-                              isSelected &&
-                              !isCorrectOption)
-                            const Icon(Icons.cancel,
-                                color: Colors.red, size: 28),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-
-                // نتيجة قراءة الإجابة
-                if (_hasAnswered && _isAnswerCorrect && !_hasReadAnswer) ...[
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.softTeal.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppColors.softTeal,
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        const Text(
-                          '🎤 اقرأ الإجابة الصحيحة بصوتك',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.softTeal,
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        const SizedBox(height: 12),
-                        ElevatedButton.icon(
-                          onPressed: _readAnswer,
-                          icon: Icon(
-                            _isListening ? Icons.hearing : Icons.mic,
-                            size: 24,
-                          ),
-                          label: Text(
-                            _isListening ? 'جارٍ الاستماع...' : 'اضغط واقرأ',
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _isListening
-                                ? Colors.red
-                                : AppColors.softTeal,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
+                      );
+                    }),
+                  ],
+                ),
+              );
+            },
           ),
         ),
-
-        // زر التالي (يظهر بعد الإجابة والقراءة)
-        if (_hasAnswered && (_hasReadAnswer || !_isAnswerCorrect))
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _nextQuestion,
-                icon: const Icon(Icons.arrow_back, size: 24),
-                label: Text(
-                  _currentQuestionIndex < _questions.length - 1
-                      ? 'السؤال التالي'
-                      : 'إنهاء',
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  elevation: 6,
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }
@@ -1094,13 +953,11 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
                     setState(() {
                       _currentPhase = 0;
                       _currentLineIndex = 0;
-                      _currentQuestionIndex = 0;
                       _score = 0;
                       _recognizedText = '';
                       _isLineSuccess = false;
-                      _hasAnswered = false;
-                      _hasReadAnswer = false;
-                      _selectedOption = null;
+                      _selectedAnswers.clear();
+                      _isQuizCompleted = false;
                     });
                     _playFullStory();
                   },
@@ -1141,12 +998,14 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
 
 // ─── نموذج السؤال ─────────────────────────────────────────────────
 class _QuizQuestion {
-  final String imagePath;
+  final String? imagePath;
+  final String? questionText;
   final List<String> options;
   final int correctIndex;
 
   const _QuizQuestion({
-    required this.imagePath,
+    this.imagePath,
+    this.questionText,
     required this.options,
     required this.correctIndex,
   });

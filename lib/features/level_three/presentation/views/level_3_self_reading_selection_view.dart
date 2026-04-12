@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
-import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_activity_1_view.dart';
-import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_activity_2_view.dart';
-import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_activity_3_view.dart';
-import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_activity_4_view.dart';
-import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_activity_5_view.dart';
+import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_1_view.dart';
+import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_2_view.dart';
+import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_3_view.dart';
 
-/// شاشة اختيار القصة — تحت النشاط الأول في المستوى الثالث
-class Level3StoriesView extends StatefulWidget {
-  const Level3StoriesView({super.key});
+/// شاشة اختيار القصة — تحت النشاط الثاني في المستوى الثالث
+class Level3SelfReadingSelectionView extends StatefulWidget {
+  const Level3SelfReadingSelectionView({super.key});
 
   @override
-  State<Level3StoriesView> createState() => _Level3StoriesViewState();
+  State<Level3SelfReadingSelectionView> createState() => _Level3SelfReadingSelectionViewState();
 }
 
-class _Level3StoriesViewState extends State<Level3StoriesView> {
+class _Level3SelfReadingSelectionViewState extends State<Level3SelfReadingSelectionView> {
   bool _hasPlayedIntro = false;
 
   @override
@@ -29,7 +27,7 @@ class _Level3StoriesViewState extends State<Level3StoriesView> {
     if (_hasPlayedIntro) return;
     _hasPlayedIntro = true;
     await AppTtsService.instance.speakScreenIntro(
-      'النشاط الأول: استمع واقرأ. اختر قصة للبدء.',
+      'النشاط الثاني: اقرأ بنفسك. اختر قصة للبدء.',
       isMounted: () => mounted,
     );
   }
@@ -45,10 +43,10 @@ class _Level3StoriesViewState extends State<Level3StoriesView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'القصص',
+          'اقرأ بنفسك',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.slateBlue,
+        backgroundColor: AppColors.softTeal,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
@@ -57,8 +55,8 @@ class _Level3StoriesViewState extends State<Level3StoriesView> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.slateBlue.withValues(alpha: 0.15),
-              AppColors.softTeal.withValues(alpha: 0.08),
+              AppColors.softTeal.withValues(alpha: 0.15),
+              AppColors.slateBlue.withValues(alpha: 0.08),
             ],
           ),
         ),
@@ -69,19 +67,17 @@ class _Level3StoriesViewState extends State<Level3StoriesView> {
               // ── القصة الأولى ──
               _StoryCard(
                 storyNumber: 1,
-                title: 'ابني والواجب',
-                subtitle: 'استمع واقرأ قصة ابني والواجب',
+                title: 'قرار أحمد',
+                subtitle: 'اقرأ القصة وأجب عن الأسئلة',
                 emoji: '📖',
-                color: AppColors.slateBlue,
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story1.jpeg',
-                // TODO: Gate story 2 behind story 1 completion
-                // isLocked: false,
-                isLocked: false, // مفتوحة للاختبار
+                color: AppColors.softTeal,
+                imagePath: 'assets/images/Arabic/Level3/Activity2/1.jpeg',
+                isLocked: false,
                 onTap: () {
                   AppTtsService.instance.stop();
                   Navigator.push(
                     context,
-                    AnimatedRoute.slideScale(const Level3Activity1View()),
+                    AnimatedRoute.slideScale(const Level3SelfReading1View()),
                   );
                 },
               ),
@@ -91,75 +87,36 @@ class _Level3StoriesViewState extends State<Level3StoriesView> {
               // ── القصة الثانية ──
               _StoryCard(
                 storyNumber: 2,
-                title: 'كوب ماء يغيّر يومك',
+                title: 'الكلمة الطيبة',
                 subtitle: 'اقرأ القصة وأجب عن الأسئلة',
-                emoji: '💧',
-                color: AppColors.softTeal,
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story2/1.jpeg',
+                emoji: '🗣️',
+                color: AppColors.slateBlue,
+                imagePath: 'assets/images/Arabic/Level3/Activity2/2.jpeg', 
                 // TODO: Gate behind story 1 completion
                 // isLocked: !story1Completed,
-                isLocked: false, // مفتوحة للاختبار
+                isLocked: false, // مفتوحة للاختبار للمستخدم
                 onTap: () {
                   AppTtsService.instance.stop();
                   Navigator.push(
                     context,
-                    AnimatedRoute.slideScale(const Level3Activity2View()),
+                    AnimatedRoute.slideScale(const Level3SelfReading2View()),
                   );
                 },
               ),
-
-              const SizedBox(height: 20),
-
               // ── القصة الثالثة ──
               _StoryCard(
                 storyNumber: 3,
-                title: 'أمنيه والنظافة',
+                title: 'سر النظافة',
                 subtitle: 'اقرأ القصة وأجب عن الأسئلة',
                 emoji: '🧹',
-                color: AppColors.mintGreen, // لون من ألوان المشروع
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story3/1.jpeg', // TODO: تغيير مسار الصورة إذا لزم الأمر
-                isLocked: false, // مفتوحة للاختبار
-                onTap: () {
-                  AppTtsService.instance.stop();
-                  Navigator.push(
-                    context,
-                    AnimatedRoute.slideScale(const Level3Activity3View()),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              // القصة الرابعة: الاستخدام الخاطئ
-              _StoryCard(
-                storyNumber: 4,
-                title: 'الاستخدام الخاطئ',
-                subtitle: 'قصة عن تنظيم الوقت والنوم المبكر',
-                emoji: '📱',
-                color: AppColors.slateBlue,
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story4/1.jpeg',
-                isLocked: false, // مفتوحة للاختبار
-                onTap: () {
-                  AppTtsService.instance.stop();
-                  Navigator.push(
-                    context,
-                    AnimatedRoute.slideScale(const Level3Activity4View()),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              // القصة الخامسة: الصدق
-              _StoryCard(
-                storyNumber: 5,
-                title: 'الصدق',
-                subtitle: 'قصة حوارية عن الأمانة وإرجاع الأمانات',
-                emoji: '💎',
                 color: AppColors.softTeal,
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story5/1.jpeg',
-                isLocked: false, // مفتوحة للاختبار
+                imagePath: 'assets/images/Arabic/Level3/Activity2/3.jpeg',
+                isLocked: false,
                 onTap: () {
                   AppTtsService.instance.stop();
                   Navigator.push(
                     context,
-                    AnimatedRoute.slideScale(const Level3Activity5View()),
+                    AnimatedRoute.slideScale(const Level3SelfReading3View()),
                   );
                 },
               ),
@@ -218,59 +175,79 @@ class _StoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // صورة القصة
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
-              child: Stack(
-                children: [
-                  Container(
-                    color: Colors.white,
-                    child: Image.asset(
-                      imagePath,
-                      width: double.infinity,
-                      height: 180,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  // طبقة رقم القصة
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isLocked ? Colors.grey : color,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        'القصة $storyNumber $emoji',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
+            if (imagePath.isNotEmpty)
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(24)),
+                child: Stack(
+                  children: [
+                    Container(
+                      color: Colors.white,
+                      child: Image.asset(
+                        imagePath,
+                        width: double.infinity,
+                        height: 180,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ),
-                  // طبقة القفل
-                  if (isLocked)
-                    Positioned.fill(
+                    // طبقة رقم القصة
+                    Positioned(
+                      top: 12,
+                      right: 12,
                       child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.4),
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(24)),
+                          color: isLocked ? Colors.grey : color,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Center(
-                          child: Icon(Icons.lock,
-                              color: Colors.white, size: 48),
+                        child: Text(
+                          'القصة $storyNumber $emoji',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),
-                ],
+                    // طبقة القفل
+                    if (isLocked)
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.4),
+                            borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(24)),
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.lock,
+                                color: Colors.white, size: 48),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              )
+            else
+              // Fallback if no image is provided
+              Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  color: isLocked ? Colors.grey.shade300 : color.withValues(alpha: 0.2),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                child: Center(
+                  child: Text(
+                    'القصة $storyNumber $emoji',
+                    style: TextStyle(
+                      color: isLocked ? Colors.grey : color,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
-            ),
 
             // معلومات القصة
             Padding(
