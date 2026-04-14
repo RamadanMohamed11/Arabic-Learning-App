@@ -7,8 +7,7 @@ import 'package:arabic_learning_app/features/math/data/models/math_level_model.d
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'svg_number_tracing_view.dart';
 import 'math_level_general_activities_view.dart';
-import 'math_level1_match_images_view.dart';
-import 'math_level1_match_images_part2_view.dart';
+import 'math_level1_test_selection_view.dart';
 class MathLevelNumbersView extends StatefulWidget {
   final MathLevelModel level;
 
@@ -470,21 +469,21 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                     currentIdx + 1 < widget.level.numbers.length) {
                   
                   if (widget.level.level == 1 && currentIdx == 4) {
-                    // Start MathLevel1MatchImagesView after number 5
+                    // Start MathLevel1TestSelectionView after number 5
                     if (!mounted) break;
                     result = await Navigator.push(
                       context,
-                      AnimatedRoute.slideRight(const MathLevel1MatchImagesView()),
+                      AnimatedRoute.slideRight(const MathLevel1TestSelectionView(part: 1)),
                     );
                     if (result != 'next') {
                       break;
                     }
                   } else if (widget.level.level == 1 && currentIdx == 9) {
-                    // Start MathLevel1MatchImagesPart2View after number 10
+                    // Start MathLevel1TestSelectionView after number 10
                     if (!mounted) break;
                     result = await Navigator.push(
                       context,
-                      AnimatedRoute.slideRight(const MathLevel1MatchImagesPart2View()),
+                      AnimatedRoute.slideRight(const MathLevel1TestSelectionView(part: 2)),
                     );
                     if (result != 'next') {
                       break;
@@ -577,17 +576,10 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
       onTap: isUnlocked
           ? () async {
               AppTtsService.instance.stop();
-              if (part == 1) {
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const MathLevel1MatchImagesView()),
-                );
-              } else {
-                await Navigator.push(
-                  context,
-                  AnimatedRoute.slideRight(const MathLevel1MatchImagesPart2View()),
-                );
-              }
+              await Navigator.push(
+                context,
+                AnimatedRoute.slideRight(MathLevel1TestSelectionView(part: part)),
+              );
               await _loadProgress();
             }
           : null,

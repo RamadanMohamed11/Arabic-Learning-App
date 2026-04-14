@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_1_view.dart';
@@ -15,26 +14,8 @@ class Level3SelfReadingSelectionView extends StatefulWidget {
 }
 
 class _Level3SelfReadingSelectionViewState extends State<Level3SelfReadingSelectionView> {
-  bool _hasPlayedIntro = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _playIntroOnce();
-  }
-
-  Future<void> _playIntroOnce() async {
-    if (_hasPlayedIntro) return;
-    _hasPlayedIntro = true;
-    await AppTtsService.instance.speakScreenIntro(
-      'النشاط الثاني: اقرأ بنفسك. اختر قصة للبدء.',
-      isMounted: () => mounted,
-    );
-  }
-
   @override
   void dispose() {
-    AppTtsService.instance.stop();
     super.dispose();
   }
 
@@ -74,7 +55,6 @@ class _Level3SelfReadingSelectionViewState extends State<Level3SelfReadingSelect
                 imagePath: 'assets/images/Arabic/Level3/Activity2/1.jpeg',
                 isLocked: false,
                 onTap: () {
-                  AppTtsService.instance.stop();
                   Navigator.push(
                     context,
                     AnimatedRoute.slideScale(const Level3SelfReading1View()),
@@ -96,7 +76,6 @@ class _Level3SelfReadingSelectionViewState extends State<Level3SelfReadingSelect
                 // isLocked: !story1Completed,
                 isLocked: false, // مفتوحة للاختبار للمستخدم
                 onTap: () {
-                  AppTtsService.instance.stop();
                   Navigator.push(
                     context,
                     AnimatedRoute.slideScale(const Level3SelfReading2View()),
@@ -113,7 +92,6 @@ class _Level3SelfReadingSelectionViewState extends State<Level3SelfReadingSelect
                 imagePath: 'assets/images/Arabic/Level3/Activity2/3.jpeg',
                 isLocked: false,
                 onTap: () {
-                  AppTtsService.instance.stop();
                   Navigator.push(
                     context,
                     AnimatedRoute.slideScale(const Level3SelfReading3View()),

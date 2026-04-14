@@ -251,6 +251,73 @@ class SvgNumberPathConverter {
       transformedPaths.add(path.transform(matrix));
     }
 
+    // ── ترتيب المسارات حسب الأرقام (تجميع حسب الموقع الأفقي) ──
+    // للأرقام المتعددة الخانات مثل ٢٠ و٥٣ و٦٠، المسارات في SVG
+    // قد تكون متداخلة بين الخانات. نستخدم نقطة بداية كل مسار
+    // لتحديد الخانة التي ينتمي إليها، ثم نرتب من اليسار لليمين.
+    final digitCount = number.toString().length;
+    if (digitCount > 1 && transformedPaths.length > 1) {
+      // حساب نقطة البداية لكل مسار (أول نقطة على المسار)
+      final pathStartX = <int, double>{};
+      for (int i = 0; i < transformedPaths.length; i++) {
+        final metrics = transformedPaths[i].computeMetrics();
+        if (metrics.isNotEmpty) {
+          final tangent = metrics.first.getTangentForOffset(0);
+          if (tangent != null) {
+            pathStartX[i] = tangent.position.dx;
+          } else {
+            pathStartX[i] = transformedPaths[i].getBounds().center.dx;
+          }
+        } else {
+          pathStartX[i] = transformedPaths[i].getBounds().center.dx;
+        }
+      }
+
+      // ترتيب فهارس المسارات حسب نقطة بدايتها الأفقية
+      final sortedIndices = List<int>.generate(transformedPaths.length, (i) => i);
+      sortedIndices.sort((a, b) => pathStartX[a]!.compareTo(pathStartX[b]!));
+
+      // تجميع المسارات في خانات بناءً على تقارب نقاط البداية
+      final groups = <List<int>>[];
+      var currentGroup = <int>[sortedIndices.first];
+
+      for (int i = 1; i < sortedIndices.length; i++) {
+        final prevX = pathStartX[sortedIndices[i - 1]]!;
+        final currX = pathStartX[sortedIndices[i]]!;
+
+        // إذا كانت الفجوة بين نقاط البداية كبيرة بالنسبة لعرض الـ canvas
+        // فالمسارات تنتمي لخانات مختلفة
+        // نستخدم عتبة ديناميكية: العرض الكلي / (عدد الخانات * 2)
+        final threshold = canvasWidth / (digitCount * 2.5);
+        final gap = (currX - prevX).abs();
+        if (gap > threshold) {
+          groups.add(currentGroup);
+          currentGroup = <int>[sortedIndices[i]];
+        } else {
+          currentGroup.add(sortedIndices[i]);
+        }
+      }
+      groups.add(currentGroup);
+
+      // ترتيب المجموعات حسب متوسط نقطة بداية مساراتها
+      groups.sort((a, b) {
+        final aAvg = a.map((i) => pathStartX[i]!).reduce((v, e) => v + e) / a.length;
+        final bAvg = b.map((i) => pathStartX[i]!).reduce((v, e) => v + e) / b.length;
+        return aAvg.compareTo(bAvg);
+      });
+
+      // إعادة ترتيب المسارات: كل المسارات في المجموعة الأولى (يسار)
+      // ثم المجموعة الثانية وهكذا
+      final reorderedPaths = <Path>[];
+      for (final group in groups) {
+        for (final idx in group) {
+          reorderedPaths.add(transformedPaths[idx]);
+        }
+      }
+
+      return SvgNumberPath(number: number, paths: reorderedPaths);
+    }
+
     return SvgNumberPath(number: number, paths: transformedPaths);
   }
 }
