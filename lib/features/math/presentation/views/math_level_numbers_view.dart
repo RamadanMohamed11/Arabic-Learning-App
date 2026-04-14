@@ -76,7 +76,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
     super.dispose();
   }
 
-  bool get _testMode => true; // Toggle to false when testing is over
+  bool get _testMode => false; // Toggle to false when testing is over
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +146,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                   },
                 ),
               ),
-              if ((widget.level.level == 1 || widget.level.level == 2) && _progressService != null)
+              if ((widget.level.level == 1 || widget.level.level == 2 || widget.level.level == 3) && _progressService != null)
                 Builder(
                   builder: (context) {
                     int completedCount = widget.level.numbers
@@ -211,6 +211,9 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                       if (allActivitiesDone) {
                         _progressService!.unlockLevel3();
                       }
+                    } else if (widget.level.level == 3) {
+                      // Custom conditions for Level 3 activities
+                      allActivitiesDone = allTracingDone;
                     }
 
                     return Padding(
@@ -639,7 +642,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
 class _Level3IntroDialog extends StatefulWidget {
   final VoidCallback onComplete;
 
-  const _Level3IntroDialog({Key? key, required this.onComplete}) : super(key: key);
+  const _Level3IntroDialog({super.key, required this.onComplete});
 
   @override
   State<_Level3IntroDialog> createState() => _Level3IntroDialogState();

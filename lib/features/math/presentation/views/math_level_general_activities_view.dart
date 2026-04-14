@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:confetti/confetti.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/services/math_progress_service.dart';
@@ -13,6 +14,14 @@ import 'math_level2_number_line_view.dart';
 import 'math_level2_listen_write_view.dart';
 import 'math_level2_count_by_ten_view.dart';
 
+import 'math_level3_decompose_view.dart';
+import 'math_level3_listen_choose_view.dart';
+import 'math_level3_listen_write_view.dart';
+import 'math_level3_complete_number_view.dart';
+import 'math_level3_true_false_view.dart';
+import 'math_level3_ordering_view.dart';
+import 'math_level3_greater_view.dart';
+
 class MathLevelGeneralActivitiesView extends StatefulWidget {
   final MathLevelModel level;
 
@@ -26,36 +35,62 @@ class MathLevelGeneralActivitiesView extends StatefulWidget {
 class _MathLevelGeneralActivitiesViewState
     extends State<MathLevelGeneralActivitiesView> {
   MathProgressService? _progressService;
+  late final ConfettiController _confettiController;
   bool _isLoading = true;
   bool _hasPlayedIntro = false;
 
   @override
   void initState() {
     super.initState();
-    _loadProgress();
-    _playIntroOnce();
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 3),
+    );
+    _initService();
   }
 
-  Future<void> _loadProgress() async {
+  Future<void> _initService() async {
     _progressService = await MathProgressService.getInstance();
-    if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-    });
+    _loadProgress();
   }
 
-  Future<void> _playIntroOnce() async {
+  void _loadProgress() {
+    if (_progressService != null && mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      _playIntro();
+    }
+  }
+
+  Future<void> _playIntro() async {
     if (_hasPlayedIntro) return;
     _hasPlayedIntro = true;
     await AppTtsService.instance.speakScreenIntro(
-      'الأنشطة العامة. اختر النشاط الذي تريد البدء به',
+      'أنشطة عامة. اختر النشاط لنبدأ',
       isMounted: () => mounted,
     );
+  }
+
+  Future<void> _handleActivityCompletion(String activityId) async {
+    if (_progressService == null) return;
+
+    if (!_progressService!.isLevelActivityCompleted(
+      widget.level.level,
+      activityId,
+    )) {
+      await _progressService!.completeLevelActivity(
+        widget.level.level,
+        activityId,
+      );
+      _confettiController.play();
+      _loadProgress();
+    }
   }
 
   @override
   void dispose() {
     AppTtsService.instance.stop();
+    _confettiController.dispose();
     super.dispose();
   }
 
@@ -65,19 +100,151 @@ class _MathLevelGeneralActivitiesViewState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final colors = widget.level.level == 1
-        ? AppColors.level1
-        : widget.level.level == 2
-        ? AppColors.level2
-        : AppColors.primaryGradient;
-
     final bool isLevel1 = widget.level.level == 1;
     final bool isLevel2 = widget.level.level == 2;
+    final bool isLevel3 = widget.level.level == 3;
+
+    final colors = isLevel1
+        ? [AppColors.level1[0], AppColors.level1[1]]
+        : isLevel2
+            ? [AppColors.level2[0], AppColors.level2[1]]
+            : [AppColors.level3[0], AppColors.level3[1]];
 
     bool allActivitiesDone = false;
     List<Widget> bodyChildren = [];
 
-    if (isLevel1) {
+    if (isLevel3) {
+      final act1Done = _progressService!.isLevelActivityCompleted(3, 'decompose');
+      final act2Done = _progressService!.isLevelActivityCompleted(3, 'listen_choose');
+      final act3Done = _progressService!.isLevelActivityCompleted(3, 'listen_write');
+      final act4Done = _progressService!.isLevelActivityCompleted(3, 'complete_number');
+      final act5Done = _progressService!.isLevelActivityCompleted(3, 'true_false');
+      final act6Done = _progressService!.isLevelActivityCompleted(3, 'ordering');
+      final act7Done = _progressService!.isLevelActivityCompleted(3, 'greater');
+
+      allActivitiesDone = act1Done && act2Done && act3Done && act4Done && act5Done && act6Done && act7Done;
+
+      bodyChildren = [
+        _buildActivityButton(
+          title: 'النشاط ١: فك الأعداد',
+          icon: Icons.call_split,
+          colors: [Colors.blue.shade400, Colors.blue.shade700],
+          isCompleted: act1Done,
+          onTap: () async {
+            AppTtsService.instance.stop();
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MathLevel3DecomposeView()),
+            );
+            if (result == true) {
+              _handleActivityCompletion('decompose');
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildActivityButton(
+          title: 'النشاط ٢: اسمع واختار',
+          icon: Icons.hearing,
+          colors: [Colors.green.shade400, Colors.green.shade700],
+          isCompleted: act2Done,
+          onTap: () async {
+            AppTtsService.instance.stop();
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MathLevel3ListenChooseView()),
+            );
+            if (result == true) {
+              _handleActivityCompletion('listen_choose');
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildActivityButton(
+          title: 'النشاط ٣: ده كام؟ (اسمع واكتب)',
+          icon: Icons.edit,
+          colors: [Colors.purple.shade400, Colors.purple.shade700],
+          isCompleted: act3Done,
+          onTap: () async {
+            AppTtsService.instance.stop();
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MathLevel3ListenWriteView()),
+            );
+            if (result == true) {
+              _handleActivityCompletion('listen_write');
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildActivityButton(
+          title: 'النشاط ٤: كمل الرقم',
+          icon: Icons.add_box,
+          colors: [Colors.orange.shade400, Colors.orange.shade700],
+          isCompleted: act4Done,
+          onTap: () async {
+            AppTtsService.instance.stop();
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MathLevel3CompleteNumberView()),
+            );
+            if (result == true) {
+              _handleActivityCompletion('complete_number');
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildActivityButton(
+          title: 'النشاط ٥: صح ولا غلط',
+          icon: Icons.check_circle_outline,
+          colors: [Colors.teal.shade400, Colors.teal.shade700],
+          isCompleted: act5Done,
+          onTap: () async {
+            AppTtsService.instance.stop();
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MathLevel3TrueFalseView()),
+            );
+            if (result == true) {
+              _handleActivityCompletion('true_false');
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildActivityButton(
+          title: 'النشاط ٦: ترتيب الأرقام',
+          icon: Icons.sort_by_alpha,
+          colors: [Colors.pink.shade400, Colors.pink.shade700],
+          isCompleted: act6Done,
+          onTap: () async {
+            AppTtsService.instance.stop();
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MathLevel3OrderingView()),
+            );
+            if (result == true) {
+              _handleActivityCompletion('ordering');
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildActivityButton(
+          title: 'النشاط ٧: اختار الأكبر',
+          icon: Icons.compare,
+          colors: [Colors.indigo.shade400, Colors.indigo.shade700],
+          isCompleted: act7Done,
+          onTap: () async {
+            AppTtsService.instance.stop();
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MathLevel3GreaterView()),
+            );
+            if (result == true) {
+              _handleActivityCompletion('greater');
+            }
+          },
+        ),
+      ];
+    } else if (isLevel1) {
       final quizDone = _progressService!.isLevelActivityCompleted(1, 'quiz');
       final listenWriteDone = _progressService!.isLevelActivityCompleted(
         1,
@@ -213,7 +380,7 @@ class _MathLevelGeneralActivitiesViewState
                     ),
                   ),
                 );
-                await _loadProgress();
+                _loadProgress();
                 final doneNow = _progressService!.isActivityCompleted(
                   1,
                   model.number,
