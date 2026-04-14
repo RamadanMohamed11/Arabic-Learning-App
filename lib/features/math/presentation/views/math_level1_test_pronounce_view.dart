@@ -254,18 +254,20 @@ class _MathLevel1TestPronounceViewState
               )
             : Padding(
                 padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'الرقم ${_currentIndex + 1} من ${_numbersToTest.length}',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'الرقم ${_currentIndex + 1} من ${_numbersToTest.length}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
                       ),
-                    ),
                     const Spacer(),
                     ScaleTransition(
                       scale: _scaleAnimation,
@@ -375,6 +377,7 @@ class _MathLevel1TestPronounceViewState
                       ),
                     const Spacer(),
                   ],
+                ),
                 ),
               ),
       ),
