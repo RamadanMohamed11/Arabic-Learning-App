@@ -144,7 +144,7 @@ class _MathLevel3TrueFalseViewState extends State<MathLevel3TrueFalseView> {
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                textDirection: TextDirection.ltr,
+                textDirection: TextDirection.rtl,
                 children: [
                   Text(
                     _toArabic(q['result']),

@@ -161,7 +161,7 @@ class _MathLevel3CompleteNumberViewState extends State<MathLevel3CompleteNumberV
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                textDirection: TextDirection.ltr,
+                textDirection: TextDirection.rtl,
                 children: [
                   Text(
                     _toArabic(q['total']),
@@ -172,8 +172,12 @@ class _MathLevel3CompleteNumberViewState extends State<MathLevel3CompleteNumberV
                     style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
                   ),
                   Text(
-                    '___',
-                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                    _showSuccess ? _toArabic(q['correct']) : '___',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: _showSuccess ? AppColors.softTeal : colors[0],
+                    ),
                   ),
                   Text(
                     ' + ',

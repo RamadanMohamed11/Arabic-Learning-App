@@ -169,7 +169,7 @@ class _MathLevel3DecomposeViewState extends State<MathLevel3DecomposeView> {
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                textDirection: TextDirection.ltr,
+                textDirection: TextDirection.rtl,
                 children: [
                   Text(
                     _toArabic(q['number']),
@@ -180,11 +180,35 @@ class _MathLevel3DecomposeViewState extends State<MathLevel3DecomposeView> {
                     ),
                   ),
                   Text(
-                    ' = ___ + ___',
+                    ' = ',
                     style: TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
                       color: colors[0],
+                    ),
+                  ),
+                  Text(
+                    _showSuccess ? _toArabic(q['tens']) : '___',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: _showSuccess ? AppColors.softTeal : colors[0],
+                    ),
+                  ),
+                  Text(
+                    ' + ',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: colors[0],
+                    ),
+                  ),
+                  Text(
+                    _showSuccess ? _toArabic(q['ones']) : '___',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: _showSuccess ? AppColors.mintGreen : colors[0],
                     ),
                   ),
                 ],
@@ -227,7 +251,7 @@ class _MathLevel3DecomposeViewState extends State<MathLevel3DecomposeView> {
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                textDirection: TextDirection.ltr,
+                                textDirection: TextDirection.rtl,
                                 children: [
                                   Text(
                                     _toArabic(opt['tens']!),

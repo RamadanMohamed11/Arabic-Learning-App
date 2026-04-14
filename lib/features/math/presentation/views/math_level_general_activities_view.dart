@@ -128,7 +128,7 @@ class _MathLevelGeneralActivitiesViewState
         _buildActivityButton(
           title: 'النشاط ١: فك الأعداد',
           icon: Icons.call_split,
-          colors: [Colors.blue.shade400, Colors.blue.shade700],
+          colors: [AppColors.slateBlue, AppColors.darkSlateBlue],
           isCompleted: act1Done,
           onTap: () async {
             AppTtsService.instance.stop();
@@ -145,7 +145,7 @@ class _MathLevelGeneralActivitiesViewState
         _buildActivityButton(
           title: 'النشاط ٢: اسمع واختار',
           icon: Icons.hearing,
-          colors: [Colors.green.shade400, Colors.green.shade700],
+          colors: [AppColors.softTeal, AppColors.darkTeal],
           isCompleted: act2Done,
           onTap: () async {
             AppTtsService.instance.stop();
@@ -162,7 +162,7 @@ class _MathLevelGeneralActivitiesViewState
         _buildActivityButton(
           title: 'النشاط ٣: ده كام؟ (اسمع واكتب)',
           icon: Icons.edit,
-          colors: [Colors.purple.shade400, Colors.purple.shade700],
+          colors: [AppColors.mintGreen, AppColors.softTeal],
           isCompleted: act3Done,
           onTap: () async {
             AppTtsService.instance.stop();
@@ -179,7 +179,7 @@ class _MathLevelGeneralActivitiesViewState
         _buildActivityButton(
           title: 'النشاط ٤: كمل الرقم',
           icon: Icons.add_box,
-          colors: [Colors.orange.shade400, Colors.orange.shade700],
+          colors: [AppColors.darkSlateBlue, const Color(0xFF5A7A8A)],
           isCompleted: act4Done,
           onTap: () async {
             AppTtsService.instance.stop();
@@ -196,7 +196,7 @@ class _MathLevelGeneralActivitiesViewState
         _buildActivityButton(
           title: 'النشاط ٥: صح ولا غلط',
           icon: Icons.check_circle_outline,
-          colors: [Colors.teal.shade400, Colors.teal.shade700],
+          colors: [AppColors.darkTeal, const Color(0xFF6BA0A0)],
           isCompleted: act5Done,
           onTap: () async {
             AppTtsService.instance.stop();
@@ -213,7 +213,7 @@ class _MathLevelGeneralActivitiesViewState
         _buildActivityButton(
           title: 'النشاط ٦: ترتيب الأرقام',
           icon: Icons.sort_by_alpha,
-          colors: [Colors.pink.shade400, Colors.pink.shade700],
+          colors: [AppColors.lightSlateBlue, AppColors.slateBlue],
           isCompleted: act6Done,
           onTap: () async {
             AppTtsService.instance.stop();
@@ -230,7 +230,7 @@ class _MathLevelGeneralActivitiesViewState
         _buildActivityButton(
           title: 'النشاط ٧: اختار الأكبر',
           icon: Icons.compare,
-          colors: [Colors.indigo.shade400, Colors.indigo.shade700],
+          colors: [const Color(0xFF8AB5C7), AppColors.darkSlateBlue],
           isCompleted: act7Done,
           onTap: () async {
             AppTtsService.instance.stop();

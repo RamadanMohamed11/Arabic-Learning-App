@@ -167,14 +167,8 @@ class _MathLevel3OrderingViewState extends State<MathLevel3OrderingView>
           ),
         ),
         child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    children: [
+          child: Column(
+            children: [
               const SizedBox(height: 20),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -241,10 +235,6 @@ class _MathLevel3OrderingViewState extends State<MathLevel3OrderingView>
               const Spacer(),
               _buildProgressIndicator(),
               const SizedBox(height: 20),
-            ],
-                  ),
-                ),
-              ),
             ],
           ),
         ),
