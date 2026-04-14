@@ -142,10 +142,31 @@ class _MathLevel3TrueFalseViewState extends State<MathLevel3TrueFalseView> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colors[0]),
               ),
               const SizedBox(height: 40),
-              Text(
-                '${_toArabic(q['result'])} = ${_toArabic(q['tens'])} + ${_toArabic(q['ones'])}',
-                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 textDirection: TextDirection.ltr,
+                children: [
+                  Text(
+                    _toArabic(q['result']),
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                  Text(
+                    ' = ',
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                  Text(
+                    _toArabic(q['tens']),
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                  Text(
+                    ' + ',
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                  Text(
+                    _toArabic(q['ones']),
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                ],
               ),
               const SizedBox(height: 60),
               if (_showSuccess) ...[

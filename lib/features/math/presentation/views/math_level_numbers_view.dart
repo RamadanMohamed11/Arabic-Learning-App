@@ -76,7 +76,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
     super.dispose();
   }
 
-  bool get _testMode => false; // Toggle to false when testing is over
+  bool get _testMode => true; // Toggle to false when testing is over
 
   @override
   Widget build(BuildContext context) {
@@ -212,8 +212,9 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                         _progressService!.unlockLevel3();
                       }
                     } else if (widget.level.level == 3) {
-                      // Custom conditions for Level 3 activities
-                      allActivitiesDone = allTracingDone;
+                      // Level 3 is the final level — no next level to unlock
+                      // so we never show the "level unlocked" banner here
+                      allActivitiesDone = false;
                     }
 
                     return Padding(
@@ -303,7 +304,9 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    widget.level.level == 1 ? 'تم فتح المستوى الثاني! 🎉' : 'تم فتح المستوى الثالث! 🎉',
+                                    widget.level.level == 1 ? 'تم فتح المستوى الثاني! 🎉' 
+                                    : widget.level.level == 2 ? 'تم فتح المستوى الثالث! 🎉' 
+                                    : 'تهانينا! أكملت كل الأنشطة! 🎉',
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,

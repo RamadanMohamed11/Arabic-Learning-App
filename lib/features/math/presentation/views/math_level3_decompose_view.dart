@@ -167,14 +167,27 @@ class _MathLevel3DecomposeViewState extends State<MathLevel3DecomposeView> {
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
-                '${_toArabic(q['number'])} = ___ + ___',
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: colors[0],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 textDirection: TextDirection.ltr,
+                children: [
+                  Text(
+                    _toArabic(q['number']),
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: colors[0],
+                    ),
+                  ),
+                  Text(
+                    ' = ___ + ___',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: colors[0],
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               if (_showSuccess) ...[
@@ -212,11 +225,23 @@ class _MathLevel3DecomposeViewState extends State<MathLevel3DecomposeView> {
                                   BoxShadow(color: colors[0].withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 4)),
                                 ],
                               ),
-                              child: Text(
-                                '${_toArabic(opt['tens']!)} + ${_toArabic(opt['ones']!)}',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colors[0]),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 textDirection: TextDirection.ltr,
+                                children: [
+                                  Text(
+                                    _toArabic(opt['tens']!),
+                                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colors[0]),
+                                  ),
+                                  Text(
+                                    ' + ',
+                                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colors[0]),
+                                  ),
+                                  Text(
+                                    _toArabic(opt['ones']!),
+                                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colors[0]),
+                                  ),
+                                ],
                               ),
                             ),
                           ),

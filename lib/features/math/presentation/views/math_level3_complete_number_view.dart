@@ -159,10 +159,31 @@ class _MathLevel3CompleteNumberViewState extends State<MathLevel3CompleteNumberV
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colors[0]),
               ),
               const SizedBox(height: 40),
-              Text(
-                '___ + ${_toArabic(q['ones'])} = ${_toArabic(q['total'])}',
-                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 textDirection: TextDirection.ltr,
+                children: [
+                  Text(
+                    _toArabic(q['total']),
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                  Text(
+                    ' = ',
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                  Text(
+                    '___',
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                  Text(
+                    ' + ',
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                  Text(
+                    _toArabic(q['ones']),
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: colors[0]),
+                  ),
+                ],
               ),
               const SizedBox(height: 40),
               if (_showSuccess) ...[

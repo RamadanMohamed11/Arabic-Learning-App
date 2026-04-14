@@ -55,21 +55,29 @@ class _MathLevel3ListenWriteViewState extends State<MathLevel3ListenWriteView> {
     await AppTtsService.instance.speak(_questions[_currentIndex]['text']);
   }
 
+  bool _isChecking = false;
+
   void _onDigitPressed(int digit) {
-    if (_showSuccess || _showFailure || _isFinished) return;
+    if (_showSuccess || _showFailure || _isFinished || _isChecking) return;
 
     setState(() {
       if (_currentInput.length < 2) {
         _currentInput += digit.toString();
         if (_currentInput.length == 2) {
-          _checkAnswer();
+          _isChecking = true;
+          Future.delayed(const Duration(seconds: 1), () {
+            if (mounted) {
+              _isChecking = false;
+              _checkAnswer();
+            }
+          });
         }
       }
     });
   }
 
   void _onBackspacePressed() {
-    if (_showSuccess || _showFailure || _isFinished) return;
+    if (_showSuccess || _showFailure || _isFinished || _isChecking) return;
     if (_currentInput.isNotEmpty) {
       setState(() {
         _currentInput = _currentInput.substring(0, _currentInput.length - 1);

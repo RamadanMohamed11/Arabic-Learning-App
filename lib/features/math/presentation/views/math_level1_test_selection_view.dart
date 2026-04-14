@@ -19,7 +19,7 @@ class MathLevel1TestSelectionView extends StatefulWidget {
 class _MathLevel1TestSelectionViewState extends State<MathLevel1TestSelectionView> {
   // Activity unlock logic. For testing, all are unlocked.
   // In the future, unlocking logic (act 1 done unlocks act 2, etc.) can be placed here.
-  bool get _testMode => false;
+  bool get _testMode => true;
 
   bool _isActivity1Done = false;
   bool _isActivity2Done = false;

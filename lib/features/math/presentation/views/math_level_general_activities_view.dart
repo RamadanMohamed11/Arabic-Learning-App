@@ -553,7 +553,7 @@ class _MathLevelGeneralActivitiesViewState
               Text(
                 isLevel1
                     ? 'تم فتح المستوى الثاني! 🎉'
-                    : 'تم فتح المستوى الثالث! 🎉',
+                    : (widget.level.level == 2 ? 'تم فتح المستوى الثالث! 🎉' : 'تهانينا! أكملت كل الأنشطة! 🎉'),
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
