@@ -607,10 +607,10 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (isUnlocked) ...[
-              const Icon(Icons.extension, color: Colors.white, size: 36),
+              const Icon(Icons.quiz, color: Colors.white, size: 36),
               const SizedBox(height: 4),
               const Text(
-                'توصيل',
+                'اختبار',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -621,7 +621,7 @@ class _MathLevelNumbersViewState extends State<MathLevelNumbersView> {
               const Icon(Icons.lock, size: 30, color: Colors.white70),
               const SizedBox(height: 4),
               Text(
-                'توصيل',
+                'اختبار',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

@@ -80,12 +80,14 @@ flutter:
   assets:
     - assets/images/
     - assets/images/team/
-    - assets/audios/
+
     - assets/svg/
     - assets/svg/numbers/
     - assets/svg/numbers/level1_Activity/Activity1/
     - assets/images/1to5 activity/
+    - assets/images/1to5 activity/2/
     - assets/images/6to10 activity/
+    - assets/images/6to10 activity/2/
     - assets/images/Arabic/Level3/Activity1/
     - assets/images/Arabic/Level3/Activity1/story2/
     - assets/images/Arabic/Level3/Activity1/story3/
