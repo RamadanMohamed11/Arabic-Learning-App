@@ -22,6 +22,11 @@ class _MathLevel1TestWriteNumbersViewState
   bool _isFinished = false;
   String _currentInput = "";
 
+  final Map<int, String> arabicNumbers = {
+    1: '١', 2: '٢', 3: '٣', 4: '٤', 5: '٥',
+    6: '٦', 7: '٧', 8: '٨', 9: '٩', 10: '١٠'
+  };
+
   @override
   void initState() {
     super.initState();
@@ -67,7 +72,7 @@ class _MathLevel1TestWriteNumbersViewState
   Future<void> _handleCorrectAnswer() async {
     setState(() {
       _showSuccess = true;
-      _currentInput = _questions[_currentIndex]['answer'].toString();
+      _currentInput = arabicNumbers[_questions[_currentIndex]['answer']] ?? _questions[_currentIndex]['answer'].toString();
     });
 
     await AppTtsService.instance.speak('أحسنت إجابة صحيحة');
@@ -249,10 +254,6 @@ class _MathLevel1TestWriteNumbersViewState
   }
 
   Widget _buildKeypadButton(int number, Color baseColor) {
-    final Map<int, String> arabicNumbers = {
-      1: '١', 2: '٢', 3: '٣', 4: '٤', 5: '٥',
-      6: '٦', 7: '٧', 8: '٨', 9: '٩', 10: '١٠'
-    };
     
     return GestureDetector(
       onTap: () => _onNumberPressed(number),
