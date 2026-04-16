@@ -251,19 +251,40 @@ class _Level3Activity2ViewState extends State<Level3Activity2View>
     String actual = _cleanArabicText(spokenText);
 
     bool match = false;
-    // مطابقة مرنة قليلاً للنتيجة النهائية أو الجزئية
+    // مطابقة صارمة: يجب أن يتطابق النص بشكل كبير
     if (actual.contains(expected) ||
-        (expected.contains(actual) && actual.length >= expected.length * 0.7)) {
+        (expected.contains(actual) && actual.length >= expected.length * 0.85)) {
       match = true;
     } else {
+      // Word-by-word matching with order awareness
       final expectedWords =
           expected.split(' ').where((w) => w.isNotEmpty).toList();
       final actualWords = actual.split(' ').where((w) => w.isNotEmpty).toList();
+
+      // Count matching words (exact match)
       int matchCount = 0;
       for (var w in expectedWords) {
         if (actualWords.contains(w)) matchCount++;
       }
-      if (matchCount >= (expectedWords.length / 1.5).ceil()) {
+
+      // Also check sequential/ordered matching
+      int orderedMatchCount = 0;
+      int searchFrom = 0;
+      for (var w in expectedWords) {
+        for (int j = searchFrom; j < actualWords.length; j++) {
+          if (actualWords[j] == w) {
+            orderedMatchCount++;
+            searchFrom = j + 1;
+            break;
+          }
+        }
+      }
+
+      // Require at least 90% of expected words to match
+      // AND at least 80% to be in correct order
+      final threshold = (expectedWords.length * 0.9).ceil();
+      final orderThreshold = (expectedWords.length * 0.8).ceil();
+      if (matchCount >= threshold && orderedMatchCount >= orderThreshold) {
         match = true;
       }
     }

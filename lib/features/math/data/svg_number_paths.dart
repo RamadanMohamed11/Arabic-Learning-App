@@ -260,7 +260,7 @@ class SvgNumberPathConverter {
       // حساب نقطة البداية لكل مسار (أول نقطة على المسار)
       final pathStartX = <int, double>{};
       for (int i = 0; i < transformedPaths.length; i++) {
-        final metrics = transformedPaths[i].computeMetrics();
+        final metrics = transformedPaths[i].computeMetrics().toList();
         if (metrics.isNotEmpty) {
           final tangent = metrics.first.getTangentForOffset(0);
           if (tangent != null) {

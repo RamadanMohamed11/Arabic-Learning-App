@@ -152,7 +152,7 @@ class _Level3SelfReading1ViewState extends State<Level3SelfReading1View> {
 
     // حساب نسبة التطابق
     final similarity = _calculateSimilarity(expected, spoken);
-    final isCorrect = similarity >= 0.5; // 50% تطابق كافٍ
+    final isCorrect = similarity >= 0.75; // 75% تطابق مطلوب
 
     setState(() {
       _sentenceResults[_currentSentenceIndex] = isCorrect;
@@ -220,7 +220,7 @@ class _Level3SelfReading1ViewState extends State<Level3SelfReading1View> {
     // Levenshtein distance بسيط
     final maxLen = a.length > b.length ? a.length : b.length;
     final dist = _levenshteinDistance(a, b);
-    return dist / maxLen <= 0.4; // تسامح 40%
+    return dist / maxLen <= 0.25; // تسامح 25%
   }
 
   int _levenshteinDistance(String s, String t) {

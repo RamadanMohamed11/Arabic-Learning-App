@@ -129,7 +129,7 @@ class _Level3SelfReading3ViewState extends State<Level3SelfReading3View> {
     final expected = _normalizeSentence(_sentences[_currentSentenceIndex]);
     final spoken = _normalizeSentence(_recognizedText);
     final similarity = _calculateSimilarity(expected, spoken);
-    final isCorrect = similarity >= 0.5;
+    final isCorrect = similarity >= 0.75;
 
     setState(() => _sentenceResults[_currentSentenceIndex] = isCorrect);
 
@@ -173,7 +173,7 @@ class _Level3SelfReading3ViewState extends State<Level3SelfReading3View> {
     if (a.contains(b) || b.contains(a)) return true;
     final maxLen = a.length > b.length ? a.length : b.length;
     final dist = _levenshteinDistance(a, b);
-    return dist / maxLen <= 0.4;
+    return dist / maxLen <= 0.25;
   }
 
   int _levenshteinDistance(String s, String t) {

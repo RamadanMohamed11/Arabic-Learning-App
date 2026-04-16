@@ -25,11 +25,11 @@ class AboutView extends StatelessWidget {
   static const List<TeamMember> _teamMembers = [
     TeamMember(
       name: 'أسماء فرغلي عبد المنعم',
-      role: 'كاتب المحتوى',
-      roleEn: 'Content Writer',
+      role: 'مسؤولة قسم الرياضيات',
+      roleEn: 'Math Subject Lead',
       description:
-          'كتابة المحتوى التعليمي لبعض التمارين للمستوي الثاني داخل التطبيق، موضحة ما يتعلمه الطالب في كل تمرين.',
-      icon: Icons.edit_note,
+          'كتابة المحتوى التعليمي وإعداد وتجميع التمارين الخاصة بقسم الرياضيات.',
+      icon: Icons.calculate,
       imagePath: 'assets/images/team/أسماء.jpg',
     ),
     TeamMember(
