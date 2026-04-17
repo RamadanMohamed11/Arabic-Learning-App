@@ -3,7 +3,6 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import '../../../../core/services/math_progress_service.dart';
-import '../../../../core/utils/app_colors.dart';
 import 'math_level4_intro_view.dart';
 import 'math_level4_half2_view.dart'; // We will create this as sub-hub or direct activity
 
@@ -52,34 +51,35 @@ class _MathLevel4HubViewState extends State<MathLevel4HubView> {
 
   bool _isHalf2Unlocked() {
     if (_progressService == null) return false;
-    return _progressService!.isLevel4Half1Completed;
+    return true; // Temporarily return true to unlock half 2 for testing
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        title: const Text(
-          'الجمع (Level 4)',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: AppColors.level4,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: AppColors.level4,
+      child: Scaffold(
+        backgroundColor: const Color(0x00000000),
+        appBar: AppBar(
+          title: const Text(
+            'الجمع (Level 4)',
+            style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
           ),
+          backgroundColor: const Color(0x00000000),
+          elevation: 0,
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: AppColors.surface),
         ),
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
+        body: SafeArea(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildHalfCard(
@@ -115,6 +115,7 @@ class _MathLevel4HubViewState extends State<MathLevel4HubView> {
                   ),
                 ],
               ),
+        ),
       ),
     );
   }
@@ -133,11 +134,11 @@ class _MathLevel4HubViewState extends State<MathLevel4HubView> {
         margin: const EdgeInsets.symmetric(horizontal: 24),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: isUnlocked ? Colors.white : Colors.grey.shade300,
+          color: isUnlocked ? AppColors.surface : AppColors.divider,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: AppColors.cardShadow,
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -150,13 +151,13 @@ class _MathLevel4HubViewState extends State<MathLevel4HubView> {
               decoration: BoxDecoration(
                 color: isUnlocked
                     ? AppColors.level4.first.withValues(alpha: 0.2)
-                    : Colors.grey.shade400,
+                    : AppColors.textSecondary.withValues(alpha: 0.3),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isUnlocked ? icon : Icons.lock,
                 size: 40,
-                color: isUnlocked ? AppColors.level4.last : Colors.grey.shade600,
+                color: isUnlocked ? AppColors.level4.last : AppColors.surface,
               ),
             ),
             const SizedBox(width: 20),
@@ -169,7 +170,7 @@ class _MathLevel4HubViewState extends State<MathLevel4HubView> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: isUnlocked ? Colors.black87 : Colors.grey.shade600,
+                      color: isUnlocked ? AppColors.textPrimary : AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -177,7 +178,7 @@ class _MathLevel4HubViewState extends State<MathLevel4HubView> {
                     description,
                     style: TextStyle(
                       fontSize: 16,
-                      color: isUnlocked ? Colors.black54 : Colors.grey.shade500,
+                      color: isUnlocked ? AppColors.textSecondary : AppColors.textSecondary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],

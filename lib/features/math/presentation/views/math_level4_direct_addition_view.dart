@@ -24,7 +24,7 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
   @override
   void initState() {
     super.initState();
-    _questions = widget.isHalf2 ? kDirectAdditionH2 : kDirectAdditionH1;
+    _questions = List<Map<String, int>>.from(widget.isHalf2 ? kDirectAdditionH2 : kDirectAdditionH1);
     _questions.shuffle();
     _generateOptions();
     
@@ -100,7 +100,7 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('أحسنت!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.primary)),
+        title: Text('أحسنت!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.level4.last)),
         content: const Text(
           'لقد أنهيت التدريب بنجاح!',
           textAlign: TextAlign.center,
@@ -110,14 +110,14 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.level4.last,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             ),
             onPressed: () {
               Navigator.pop(context); // close dialog
               Navigator.pop(context); // back to activities menu
             },
-            child: const Text('موافق', style: TextStyle(color: Colors.white)),
+            child: const Text('موافق', style: TextStyle(color: AppColors.surface)),
           ),
         ],
       ),
@@ -136,27 +136,27 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
     
     final q = _questions[_currentQuestionIndex];
     
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        title: const Text(
-          'الجمع المباشر',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: AppColors.level4,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: AppColors.level4,
+      child: Scaffold(
+        backgroundColor: const Color(0x00000000),
+        appBar: AppBar(
+          title: const Text(
+            'الجمع المباشر',
+            style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
           ),
+          backgroundColor: const Color(0x00000000),
+          elevation: 0,
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: AppColors.surface),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Column(
             children: [
               // Progress
@@ -167,7 +167,7 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
                   children: [
                     Text(
                       '${(_currentQuestionIndex + 1).toArabicDigits()} / ${_questions.length.toArabicDigits()}',
-                      style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 24, color: AppColors.surface, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -180,11 +180,11 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
                     margin: const EdgeInsets.all(24),
                     padding: const EdgeInsets.all(40),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: AppColors.cardShadow,
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -192,39 +192,41 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
                     ),
                     child: Directionality(
                       textDirection: TextDirection.ltr,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                           Text(
                             q['a'].toString().toArabicDigits(),
-                            style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.blue),
+                            style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             child: Text(
                               '+',
-                              style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.red),
+                              style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: AppColors.level4.last),
                             ),
                           ),
                           Text(
                             q['b'].toString().toArabicDigits(),
-                            style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.orange),
+                            style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                           ),
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20.0),
                             child: Text(
                               '=',
-                              style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.black87),
+                              style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                             ),
                           ),
                           Container(
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: _isAnswered ? Colors.green.shade100 : Colors.grey.shade100,
+                              color: _isAnswered ? AppColors.success.withValues(alpha: 0.1) : AppColors.background,
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: _isAnswered ? Colors.green : Colors.grey.shade400,
+                                color: _isAnswered ? AppColors.success : AppColors.divider,
                                 width: 3,
                                 style: _isAnswered ? BorderStyle.solid : BorderStyle.none,
                               ),
@@ -235,13 +237,14 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
                                 style: TextStyle(
                                   fontSize: 60,
                                   fontWeight: FontWeight.bold,
-                                  color: _isAnswered ? Colors.green : Colors.grey,
+                                  color: _isAnswered ? AppColors.success : AppColors.textSecondary,
                                 ),
                               ),
                             ),
                           ),
                         ],
                       ),
+                    ),
                     ),
                   ),
                 ),
@@ -264,11 +267,11 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
                             duration: const Duration(milliseconds: 300),
                             height: 80,
                             decoration: BoxDecoration(
-                              color: _isAnswered && isCorrect ? Colors.green : Colors.white,
+                              color: _isAnswered && isCorrect ? AppColors.success : AppColors.surface,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
+                                  color: AppColors.cardShadow,
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
                                 ),
@@ -280,7 +283,7 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
                                 style: TextStyle(
                                   fontSize: 36,
                                   fontWeight: FontWeight.bold,
-                                  color: _isAnswered && isCorrect ? Colors.white : AppColors.level4.last,
+                                  color: _isAnswered && isCorrect ? AppColors.surface : AppColors.level4.last,
                                 ),
                               ),
                             ),

@@ -3,7 +3,7 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import '../../../../core/audio/app_tts_service.dart';
 import '../../../../core/services/math_progress_service.dart';
 import '../../../../core/utils/animated_route.dart';
-import '../../../../core/utils/app_colors.dart';
+
 import '../../data/math_level4_data.dart';
 import 'math_level4_direct_addition_view.dart';
 import 'math_level4_matching_view.dart';
@@ -55,24 +55,7 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
 
   bool _isActivityUnlocked(int activityIndex) {
     if (_progressService == null) return false;
-    
-    // H2 Activity 1 is always unlocked
-    if (activityIndex == 1) return true;
-    
-    // 2 requires 1, etc. using number=2 to represent Half 2 in progress service
-    if (activityIndex == 2) {
-      return _progressService!.isActivityCompleted(4, 2, 1);
-    }
-    if (activityIndex == 3) {
-      return _progressService!.isActivityCompleted(4, 2, 1) && 
-             _progressService!.isActivityCompleted(4, 2, 2);
-    }
-    if (activityIndex == 4) {
-      return _progressService!.isActivityCompleted(4, 2, 1) && 
-             _progressService!.isActivityCompleted(4, 2, 2) &&
-             _progressService!.isActivityCompleted(4, 2, 3);
-    }
-    return false;
+    return true; // Temporarily return true to unlock all activities for testing
   }
 
   bool _isActivityCompleted(int activityIndex) {
@@ -125,17 +108,17 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('عمل رائع!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.primary)),
+        title: Text('عمل رائع!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.level4.last)),
         content: const Text(
           'ألف مبروك! لقد أتممت المستوى الرابع كاملاً وأصبحت بطلاً في الجمع!',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 18),
+          style: TextStyle(fontSize: 18, color: AppColors.textPrimary),
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.level4.last,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             ),
             onPressed: () {
@@ -143,7 +126,7 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
               Navigator.pop(context); // exit to hub
               Navigator.pop(context); // exit hub to levels menu
             },
-            child: const Text('العودة للقائمة', style: TextStyle(color: Colors.white)),
+            child: const Text('العودة للقائمة', style: TextStyle(color: AppColors.surface)),
           ),
         ],
       ),
@@ -152,59 +135,76 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        title: const Text(
-          'جمع الأعداد الكبيرة',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: AppColors.level4,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: AppColors.level4,
+      child: Scaffold(
+        backgroundColor: const Color(0x00000000),
+        appBar: AppBar(
+          title: const Text(
+            'جمع الأعداد الكبيرة',
+            style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
           ),
+          backgroundColor: const Color(0x00000000),
+          elevation: 0,
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: AppColors.surface),
         ),
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                child: Column(
+        body: SafeArea(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  child: Column(
                   children: [
-                    // Introduction Script Card
                     Container(
                       padding: const EdgeInsets.all(20),
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: AppColors.surface.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(color: AppColors.surface, width: 2),
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.info_outline, size: 40, color: Color(0xFFD4803C)),
+                          Icon(Icons.info_outline, size: 40, color: AppColors.level4.last),
                           const SizedBox(height: 10),
-                          const Text(
+                          Text(
                             'طريقة الحل السهلة',
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFFD4803C)
+                              color: AppColors.level4.last
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            kPlaceValueScriptText,
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(fontSize: 16, height: 1.5),
-                          ),
+                          ...kPlaceValueIntroSteps.map((step) => Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  step['icon']!,
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    step['text']!,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      height: 1.5,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
                         ],
                       ),
                     ),
@@ -244,6 +244,7 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
                   ],
                 ),
               ),
+        ),
       ),
     );
   }
@@ -260,17 +261,17 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
       child: Container(
         height: 100,
         decoration: BoxDecoration(
-          color: isUnlocked ? Colors.white : Colors.grey.shade300,
+          color: isUnlocked ? AppColors.surface : AppColors.divider,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: AppColors.cardShadow,
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
           ],
           border: isCompleted
-              ? Border.all(color: Colors.green, width: 3)
+              ? Border.all(color: AppColors.success, width: 3)
               : null,
         ),
         child: Row(
@@ -280,7 +281,7 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
               decoration: BoxDecoration(
                 color: isUnlocked
                     ? AppColors.level4.first.withValues(alpha: 0.2)
-                    : Colors.grey.shade400,
+                    : AppColors.textSecondary.withValues(alpha: 0.3),
                 borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(20),
                   bottomRight: Radius.circular(20),
@@ -290,7 +291,7 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
                 child: Icon(
                   isUnlocked ? icon : Icons.lock,
                   size: 40,
-                  color: isUnlocked ? AppColors.level4.last : Colors.white,
+                  color: isUnlocked ? AppColors.level4.last : AppColors.surface,
                 ),
               ),
             ),
@@ -301,14 +302,14 @@ class _MathLevel4Half2ViewState extends State<MathLevel4Half2View> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: isUnlocked ? Colors.black87 : Colors.grey.shade600,
+                  color: isUnlocked ? AppColors.textPrimary : AppColors.textSecondary,
                 ),
               ),
             ),
             if (isCompleted)
               const Padding(
                 padding: EdgeInsets.only(left: 20),
-                child: Icon(Icons.check_circle, color: Colors.green, size: 30),
+                child: Icon(Icons.check_circle, color: AppColors.success, size: 30),
               )
             else if (isUnlocked)
               Padding(

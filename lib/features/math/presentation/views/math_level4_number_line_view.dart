@@ -86,7 +86,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('أحسنت!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.primary)),
+        title: Text('أحسنت!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.level4.last)),
         content: const Text(
           'لقد أنهيت التدريب بنجاح!',
           textAlign: TextAlign.center,
@@ -96,14 +96,14 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.level4.last,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             ),
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text('موافق', style: TextStyle(color: Colors.white)),
+            child: const Text('موافق', style: TextStyle(color: AppColors.surface)),
           ),
         ],
       ),
@@ -121,27 +121,27 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
     if (kNumberLineRounds.isEmpty) return const SizedBox();
     final round = kNumberLineRounds[_currentQuestionIndex];
     
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        title: const Text(
-          'خط الأعداد',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: AppColors.level4,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: AppColors.level4,
+      child: Scaffold(
+        backgroundColor: const Color(0x00000000),
+        appBar: AppBar(
+          title: const Text(
+            'خط الأعداد',
+            style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
           ),
+          backgroundColor: const Color(0x00000000),
+          elevation: 0,
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: AppColors.surface),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Column(
             children: [
               // Progress
@@ -152,7 +152,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                   children: [
                     Text(
                       '${(_currentQuestionIndex + 1).toArabicDigits()} / ${kNumberLineRounds.length.toArabicDigits()}',
-                      style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 24, color: AppColors.surface, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -166,7 +166,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                   style: const TextStyle(
                     fontSize: 48,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: AppColors.surface,
                   ),
                 ),
               ),
@@ -177,7 +177,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                     margin: const EdgeInsets.all(24),
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -188,10 +188,10 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                           padding: const EdgeInsets.only(bottom: 20.0),
                           child: Text(
                             'قفز ${round.move.toString().toArabicDigits()} خطوات من ${round.start.toString().toArabicDigits()}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                              color: AppColors.level4.last,
                             ),
                           ),
                         ),
@@ -209,7 +209,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                                 right: 20,
                                 child: Container(
                                   height: 4,
-                                  color: Colors.black87,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               // The ticks and numbers
@@ -227,7 +227,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                                         Container(
                                           width: 4,
                                           height: 20,
-                                          color: isStart ? Colors.blue : (isAnswer ? Colors.green : Colors.black87),
+                                          color: isStart ? AppColors.level4.first : (isAnswer ? AppColors.success : AppColors.textPrimary),
                                         ),
                                         const SizedBox(height: 5),
                                         Text(
@@ -235,7 +235,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: isStart || isAnswer ? FontWeight.bold : FontWeight.normal,
-                                            color: isStart ? Colors.blue : (isAnswer ? Colors.green : Colors.black87),
+                                            color: isStart ? AppColors.level4.first : (isAnswer ? AppColors.success : AppColors.textPrimary),
                                           ),
                                         ),
                                       ],
@@ -247,7 +247,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                               if (_isAnswered)
                                 Positioned(
                                   top: 10,
-                                  child: Icon(Icons.check_circle_outline, color: Colors.green, size: 60),
+                                  child: const Icon(Icons.check_circle_outline, color: AppColors.success, size: 60),
                                 )
                             ],
                           ),
@@ -275,11 +275,11 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                             duration: const Duration(milliseconds: 300),
                             height: 80,
                             decoration: BoxDecoration(
-                              color: _isAnswered && isCorrect ? Colors.green : Colors.white,
+                              color: _isAnswered && isCorrect ? AppColors.success : AppColors.surface,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
+                                  color: AppColors.cardShadow,
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
                                 ),
@@ -291,7 +291,7 @@ class _MathLevel4NumberLineViewState extends State<MathLevel4NumberLineView> {
                                 style: TextStyle(
                                   fontSize: 36,
                                   fontWeight: FontWeight.bold,
-                                  color: _isAnswered && isCorrect ? Colors.white : AppColors.level4.last,
+                                  color: _isAnswered && isCorrect ? AppColors.surface : AppColors.level4.last,
                                 ),
                               ),
                             ),

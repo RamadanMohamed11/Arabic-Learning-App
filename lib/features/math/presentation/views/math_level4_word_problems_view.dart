@@ -86,7 +86,7 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('رائع جداً!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.primary)),
+        title: Text('رائع جداً!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.level4.last)),
         content: const Text(
           'أنت بطل حقيقي في حل المسائل الحياتية!',
           textAlign: TextAlign.center,
@@ -96,14 +96,14 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.level4.last,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             ),
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text('موافق', style: TextStyle(color: Colors.white)),
+            child: const Text('موافق', style: TextStyle(color: AppColors.surface)),
           ),
         ],
       ),
@@ -122,27 +122,27 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
     
     final problem = kWordProblems[_currentQuestionIndex];
     
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        title: const Text(
-          'المسائل الحياتية',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: AppColors.level4,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: AppColors.level4,
+      child: Scaffold(
+        backgroundColor: const Color(0x00000000),
+        appBar: AppBar(
+          title: const Text(
+            'المسائل الحياتية',
+            style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
           ),
+          backgroundColor: const Color(0x00000000),
+          elevation: 0,
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: AppColors.surface),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Column(
             children: [
               // Progress
@@ -153,7 +153,7 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
                   children: [
                     Text(
                       '${(_currentQuestionIndex + 1).toArabicDigits()} / ${kWordProblems.length.toArabicDigits()}',
-                      style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 24, color: AppColors.surface, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -166,11 +166,11 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
                     margin: const EdgeInsets.symmetric(horizontal: 24),
                     padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: AppColors.cardShadow,
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -191,7 +191,7 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             height: 1.5,
-                            color: Colors.black87,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         if (_isAnswered)
@@ -202,7 +202,7 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
                               style: const TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.green,
+                                color: AppColors.success,
                               ),
                             ),
                           )
@@ -229,11 +229,11 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
                             duration: const Duration(milliseconds: 300),
                             height: 80,
                             decoration: BoxDecoration(
-                              color: _isAnswered && isCorrect ? Colors.green : Colors.white,
+                              color: _isAnswered && isCorrect ? AppColors.success : AppColors.surface,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
+                                  color: AppColors.cardShadow,
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
                                 ),
@@ -245,7 +245,7 @@ class _MathLevel4WordProblemsViewState extends State<MathLevel4WordProblemsView>
                                 style: TextStyle(
                                   fontSize: 40,
                                   fontWeight: FontWeight.bold,
-                                  color: _isAnswered && isCorrect ? Colors.white : AppColors.level4.last,
+                                  color: _isAnswered && isCorrect ? AppColors.surface : AppColors.level4.last,
                                 ),
                               ),
                             ),

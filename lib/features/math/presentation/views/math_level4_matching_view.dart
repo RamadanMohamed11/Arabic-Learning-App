@@ -98,7 +98,7 @@ class _MathLevel4MatchingViewState extends State<MathLevel4MatchingView> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('أحسنت!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.primary)),
+        title: Text('أحسنت!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.level4.last)),
         content: const Text(
           'لقد أنهيت التدريب بنجاح!',
           textAlign: TextAlign.center,
@@ -108,14 +108,14 @@ class _MathLevel4MatchingViewState extends State<MathLevel4MatchingView> {
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.level4.last,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             ),
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text('موافق', style: TextStyle(color: Colors.white)),
+            child: const Text('موافق', style: TextStyle(color: AppColors.surface)),
           ),
         ],
       ),
@@ -130,34 +130,34 @@ class _MathLevel4MatchingViewState extends State<MathLevel4MatchingView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        title: const Text(
-          'وصّل الإجابة',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: AppColors.level4,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: AppColors.level4,
+      child: Scaffold(
+        backgroundColor: const Color(0x00000000),
+        appBar: AppBar(
+          title: const Text(
+            'وصّل الإجابة',
+            style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
           ),
+          backgroundColor: const Color(0x00000000),
+          elevation: 0,
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: AppColors.surface),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Text(
                   '${(_completedPages + 1).toString().toArabicDigits()} / ${_totalPages.toString().toArabicDigits()}',
-                  style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 24, color: AppColors.surface, fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
@@ -181,18 +181,18 @@ class _MathLevel4MatchingViewState extends State<MathLevel4MatchingView> {
                                 height: 80,
                                 decoration: BoxDecoration(
                                   color: isMatched 
-                                      ? Colors.grey.shade400 
+                                      ? AppColors.lightSlateBlue 
                                       : isSelected 
-                                          ? Colors.blue.shade100 
-                                          : Colors.white,
+                                          ? AppColors.level4.first.withValues(alpha: 0.2)
+                                          : AppColors.surface,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: isMatched ? Colors.transparent : (isSelected ? Colors.blue : Colors.transparent),
+                                    color: isMatched ? const Color(0x00000000) : (isSelected ? AppColors.level4.first : const Color(0x00000000)),
                                     width: 3,
                                   ),
                                   boxShadow: isMatched ? [] : [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.1),
+                                      color: AppColors.cardShadow,
                                       blurRadius: 5,
                                       offset: const Offset(0, 3),
                                     ),
@@ -205,7 +205,7 @@ class _MathLevel4MatchingViewState extends State<MathLevel4MatchingView> {
                                     style: TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.bold,
-                                      color: isMatched ? Colors.grey.shade600 : Colors.black87,
+                                      color: isMatched ? AppColors.textSecondary : AppColors.textPrimary,
                                     ),
                                   ),
                                 ),
@@ -237,11 +237,11 @@ class _MathLevel4MatchingViewState extends State<MathLevel4MatchingView> {
                                 duration: const Duration(milliseconds: 300),
                                 height: 80,
                                 decoration: BoxDecoration(
-                                  color: isAnswerMatched ? Colors.green.shade500 : Colors.white,
+                                  color: isAnswerMatched ? AppColors.success : AppColors.surface,
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: isAnswerMatched ? [] : [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.1),
+                                      color: AppColors.cardShadow,
                                       blurRadius: 5,
                                       offset: const Offset(0, 3),
                                     ),
@@ -253,7 +253,7 @@ class _MathLevel4MatchingViewState extends State<MathLevel4MatchingView> {
                                     style: TextStyle(
                                       fontSize: 32,
                                       fontWeight: FontWeight.bold,
-                                      color: isAnswerMatched ? Colors.white : AppColors.level4.last,
+                                      color: isAnswerMatched ? AppColors.surface : AppColors.level4.last,
                                     ),
                                   ),
                                 ),

@@ -50,7 +50,7 @@ class AppColors {
   static const List<Color> level1 = [mintGreen, softTeal];
   static const List<Color> level2 = [softTeal, slateBlue];
   static const List<Color> level3 = [slateBlue, darkSlateBlue];
-  static const List<Color> level4 = [Color(0xFFE8A54B), Color(0xFFD4803C)];
+  static const List<Color> level4 = [mintGreen, darkTeal];
 
   // UI Element colors
   static const Color cardBackground = surface;

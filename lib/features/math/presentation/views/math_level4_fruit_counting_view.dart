@@ -80,7 +80,7 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('أحسنت!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.primary)),
+        title: Text('أحسنت!', textAlign: TextAlign.center, style: TextStyle(color: AppColors.level4.last)),
         content: const Text(
           'لقد أنهيت التدريب بنجاح!',
           textAlign: TextAlign.center,
@@ -90,14 +90,14 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.level4.last,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             ),
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text('موافق', style: TextStyle(color: Colors.white)),
+            child: const Text('موافق', style: TextStyle(color: AppColors.surface)),
           ),
         ],
       ),
@@ -116,27 +116,27 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
     
     final round = kFruitAdditionRounds[_currentQuestionIndex];
     
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        title: const Text(
-          'عد الفواكه',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: AppColors.level4,
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: AppColors.level4,
+      child: Scaffold(
+        backgroundColor: const Color(0x00000000),
+        appBar: AppBar(
+          title: const Text(
+            'عد الفواكه',
+            style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
           ),
+          backgroundColor: const Color(0x00000000),
+          elevation: 0,
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: AppColors.surface),
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: Column(
             children: [
               // Progress
@@ -147,7 +147,7 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
                   children: [
                     Text(
                       '${(_currentQuestionIndex + 1).toArabicDigits()} / ${kFruitAdditionRounds.length.toArabicDigits()}',
-                      style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 24, color: AppColors.surface, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -160,11 +160,11 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
                     margin: const EdgeInsets.all(24),
                     padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: AppColors.cardShadow,
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -186,11 +186,11 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
                               ),
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
                             child: Text(
                               '+',
-                              style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.red),
+                              style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: AppColors.level4.last),
                             ),
                           ),
                           Expanded(
@@ -208,17 +208,17 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Text(
                               '=',
-                              style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.black87),
+                              style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                             ),
                           ),
                           Container(
                             width: 80,
                             height: 80,
                             decoration: BoxDecoration(
-                              color: _isAnswered ? Colors.green.shade100 : Colors.grey.shade100,
+                              color: _isAnswered ? AppColors.success.withValues(alpha: 0.1) : AppColors.background,
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: _isAnswered ? Colors.green : Colors.grey.shade400,
+                                color: _isAnswered ? AppColors.success : AppColors.divider,
                                 width: 3,
                                 style: _isAnswered ? BorderStyle.solid : BorderStyle.none,
                               ),
@@ -229,7 +229,7 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
                                 style: TextStyle(
                                   fontSize: 40,
                                   fontWeight: FontWeight.bold,
-                                  color: _isAnswered ? Colors.green : Colors.grey,
+                                  color: _isAnswered ? AppColors.success : AppColors.textSecondary,
                                 ),
                               ),
                             ),
@@ -258,11 +258,11 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
                             duration: const Duration(milliseconds: 300),
                             height: 80,
                             decoration: BoxDecoration(
-                              color: _isAnswered && isCorrect ? Colors.green : Colors.white,
+                              color: _isAnswered && isCorrect ? AppColors.success : AppColors.surface,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
+                                  color: AppColors.cardShadow,
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
                                 ),
@@ -274,7 +274,7 @@ class _MathLevel4FruitCountingViewState extends State<MathLevel4FruitCountingVie
                                 style: TextStyle(
                                   fontSize: 36,
                                   fontWeight: FontWeight.bold,
-                                  color: _isAnswered && isCorrect ? Colors.white : AppColors.level4.last,
+                                  color: _isAnswered && isCorrect ? AppColors.surface : AppColors.level4.last,
                                 ),
                               ),
                             ),

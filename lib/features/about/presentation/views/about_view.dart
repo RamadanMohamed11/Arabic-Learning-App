@@ -73,7 +73,7 @@ class AboutView extends StatelessWidget {
       role: 'مصمم المحتوى',
       roleEn: 'Content Designer',
       description:
-          'تصميم ورسم الحروف بالطريقة المناسبة التي تساعد المستخدم على تعلم الحروف وممارستها.',
+          'تصميم ورسم الحروف والأرقام بالطريقة المناسبة التي تساعد المستخدم على تعلمها وممارستها.',
       icon: Icons.brush,
       imagePath: 'assets/images/team/مريم.jpg',
     ),
