@@ -4,10 +4,15 @@ class MathProgressService {
   static const String _keyMathLevel1Unlocked = 'math_level1_unlocked';
   static const String _keyMathLevel2Unlocked = 'math_level2_unlocked';
   static const String _keyMathLevel3Unlocked = 'math_level3_unlocked';
+  
 
   static const String _keyMathLevel1Completed = 'math_level1_completed';
   static const String _keyMathLevel2Completed = 'math_level2_completed';
   static const String _keyMathLevel3Completed = 'math_level3_completed';
+  static const String _keyMathLevel4Completed = 'math_level4_completed';
+
+  static const String _level4Half1CompletedKey = 'math_level4_half1_completed';
+  static const String _level4Half2CompletedKey = 'math_level4_half2_completed';
 
   static const String _keyMathUnlockedNumbers = 'math_unlocked_numbers_v2';
   static const String _keyMathCompletedActivities =
@@ -98,16 +103,35 @@ class MathProgressService {
   }
 
   bool isLevel3Completed() {
-    return prefs.getBool(_keyMathLevel3Completed) ?? false;
+    return _prefs?.getBool(_keyMathLevel3Completed) ?? false;
   }
 
   Future<void> setLevel3Completed(bool completed) async {
-    await prefs.setBool(_keyMathLevel3Completed, completed);
+    await _prefs?.setBool(_keyMathLevel3Completed, completed);
+  }
+
+  bool get isLevel4Half1Completed {
+    return _prefs?.getBool(_level4Half1CompletedKey) ?? false;
+  }
+
+  Future<void> setLevel4Half1Completed(bool completed) async {
+    await _prefs?.setBool(_level4Half1CompletedKey, completed);
+  }
+
+  bool get isLevel4Half2Completed {
+    return _prefs?.getBool(_level4Half2CompletedKey) ?? false;
+  }
+
+  Future<void> setLevel4Half2Completed(bool completed) async {
+    await _prefs?.setBool(_level4Half2CompletedKey, completed);
+    if (completed) {
+      await _prefs?.setBool(_keyMathLevel4Completed, true);
+    }
   }
 
   // --- Numbers Unlocked ---
   List<String> getUnlockedNumbers() {
-    return prefs.getStringList(_keyMathUnlockedNumbers) ?? [];
+    return _prefs?.getStringList(_keyMathUnlockedNumbers) ?? [];
   }
 
   Future<void> unlockNumber(int level, int number) async {

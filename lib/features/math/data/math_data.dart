@@ -47,4 +47,11 @@ final List<MathLevelModel> mathLevels = [
         MathNumberModel(number: n, label: n.toArabicDigits()),
     ],
   ),
+  MathLevelModel(
+    level: 4,
+    title: 'المستوى الرابع',
+    description: 'الجمع',
+    numbers: [], // Level 4 uses activities only
+  ),
 ];
+

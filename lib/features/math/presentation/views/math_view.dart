@@ -7,6 +7,7 @@ import 'package:arabic_learning_app/core/services/math_progress_service.dart';
 import 'package:arabic_learning_app/features/math/data/math_data.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'math_level_numbers_view.dart';
+import 'math_level4_hub_view.dart';
 
 class MathView extends StatefulWidget {
   const MathView({super.key});
@@ -59,6 +60,10 @@ class _MathViewState extends State<MathView> {
     if (level == 1) return _progressService!.isLevel1Unlocked();
     if (level == 2) return _progressService!.isLevel2Unlocked();
     if (level == 3) return _progressService!.isLevel3Unlocked();
+    
+    if (level == 4) {
+      return _progressService!.isLevel3Completed();
+    }
     return false;
   }
 
@@ -104,21 +109,34 @@ class _MathViewState extends State<MathView> {
                                           ? AppColors.level1
                                           : item.level == 2
                                           ? AppColors.level2
-                                          : AppColors.primaryGradient,
+                                          : item.level == 3
+                                          ? AppColors.level3
+                                          : AppColors.level4,
                                       isUnlocked: _isLevelUnlocked(item.level),
                                       icon: item.level == 1
                                           ? Icons.looks_one
                                           : item.level == 2
                                           ? Icons.looks_two
-                                          : Icons.looks_3,
+                                          : item.level == 3
+                                          ? Icons.looks_3
+                                          : Icons.looks_4,
                                       onTap: () async {
                                         AppTtsService.instance.stop();
-                                        await Navigator.push(
-                                          context,
-                                          AnimatedRoute.fadeScale(
-                                            MathLevelNumbersView(level: item),
-                                          ),
-                                        );
+                                        if (item.level == 4) {
+                                          await Navigator.push(
+                                            context,
+                                            AnimatedRoute.fadeScale(
+                                              const MathLevel4HubView(),
+                                            ),
+                                          );
+                                        } else {
+                                          await Navigator.push(
+                                            context,
+                                            AnimatedRoute.fadeScale(
+                                              MathLevelNumbersView(level: item),
+                                            ),
+                                          );
+                                        }
                                         _loadProgress();
                                       },
                                     ),
