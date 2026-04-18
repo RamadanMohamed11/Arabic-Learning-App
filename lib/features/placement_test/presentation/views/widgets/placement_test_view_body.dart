@@ -43,6 +43,8 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
   bool _testStarted = false;
   bool _showingResults = false;
   bool _isPlayingAudio = false;
+  int _currentAttempt = 0; // 0 = first attempt, 1 = second attempt
+  bool _showRetryMessage = false;
 
   final List<PlacementTestQuestion> _questions = [
     // أسئلة الكتابة (3 أسئلة)
@@ -225,13 +227,40 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
     String normalizedAnswer = _normalizeText(userAnswer);
     String normalizedCorrect = _normalizeText(currentQuestion.correctAnswer);
 
-    if (normalizedAnswer == normalizedCorrect ||
+    bool isCorrect = normalizedAnswer == normalizedCorrect ||
         normalizedAnswer.contains(normalizedCorrect) ||
-        normalizedCorrect.contains(normalizedAnswer)) {
-      _score++;
-    }
+        normalizedCorrect.contains(normalizedAnswer);
 
-    _nextQuestion();
+    if (isCorrect) {
+      _score++;
+      setState(() {
+        _showRetryMessage = false;
+        _currentAttempt = 0;
+      });
+      _nextQuestion();
+    } else {
+      // أسئلة الكتابة والنطق فقط لها محاولتان
+      bool supportsRetry = currentQuestion.type == 'writing' ||
+          currentQuestion.type == 'pronunciation';
+
+      if (supportsRetry && _currentAttempt == 0) {
+        // المحاولة الأولى خاطئة — أعطِ فرصة ثانية
+        setState(() {
+          _currentAttempt = 1;
+          _showRetryMessage = true;
+          _answerController.clear();
+          _isListening = false;
+        });
+        AppTtsService.instance.speak('إجابة خاطئة! لديك محاولة أخيرة');
+      } else {
+        // المحاولة الثانية خاطئة أو سؤال استماع — انتقل للسؤال التالي
+        setState(() {
+          _showRetryMessage = false;
+          _currentAttempt = 0;
+        });
+        _nextQuestion();
+      }
+    }
   }
 
   String _normalizeText(String text) {
@@ -266,6 +295,8 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
         _selectedOption = '';
         _isListening = false;
         _isPlayingAudio = false;
+        _currentAttempt = 0;
+        _showRetryMessage = false;
       });
       _playQuestionInstruction();
     } else {
@@ -540,6 +571,40 @@ class _PlacementTestViewBodyState extends State<PlacementTestViewBody> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
+
+                    // رسالة المحاولة الأخيرة
+                    if (_showRetryMessage)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: AppColors.warning.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppColors.warning,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.warning_amber_rounded,
+                                color: AppColors.warning, size: 28),
+                            const SizedBox(width: 10),
+                            const Flexible(
+                              child: Text(
+                                'إجابة خاطئة! لديك محاولة أخيرة ⚡',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.warning,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
                     // Question-specific content
                     if (currentQuestion.type == 'writing')
