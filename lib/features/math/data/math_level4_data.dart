@@ -205,3 +205,149 @@ const List<Map<String, int>> kSpeedChallengeQuestions = [
 
 const int kSpeedChallengeDurationSeconds = 300; // 5 minutes
 const double kSpeedChallengePassThreshold = 0.80; // 80%
+
+/// ═══════════════════════════════════════════════════
+/// FINAL TEST: اختبار الجمع والطرح
+/// ═══════════════════════════════════════════════════
+
+/// Question types for the final test
+enum FinalTestQuestionType { multipleChoice, writeAnswer, findMissing }
+
+class FinalTestQuestion {
+  final String questionText;
+  final FinalTestQuestionType type;
+  final int correctAnswer;
+  /// Only used for multipleChoice
+  final List<int>? choices;
+  /// Only used for findMissing — shows the equation with a blank
+  final String? equationDisplay;
+
+  const FinalTestQuestion({
+    required this.questionText,
+    required this.type,
+    required this.correctAnswer,
+    this.choices,
+    this.equationDisplay,
+  });
+}
+
+const List<FinalTestQuestion> kLevel4FinalTestQuestions = [
+  // ١. أكمل: ٧٠ + __ = ١٠٠
+  FinalTestQuestion(
+    questionText: 'أكمل المعادلة',
+    type: FinalTestQuestionType.findMissing,
+    correctAnswer: 30,
+    equationDisplay: '٧٠  +  ؟  =  ١٠٠',
+  ),
+
+  // ٢. ٩٥ + ٣٨ = ؟ (اختيارات)
+  FinalTestQuestion(
+    questionText: '٩٥ + ٣٨ = ؟',
+    type: FinalTestQuestionType.multipleChoice,
+    correctAnswer: 133,
+    choices: [122, 133, 123],
+  ),
+
+  // ٣. ١٢٤ + ٦٩ = ؟ (اكتب الناتج)
+  FinalTestQuestion(
+    questionText: '١٢٤ + ٦٩ = ؟',
+    type: FinalTestQuestionType.writeAnswer,
+    correctAnswer: 193,
+  ),
+
+  // ٤. ٨٧ + ٥٨ = ؟ (اختيارات)
+  FinalTestQuestion(
+    questionText: '٨٧ + ٥٨ = ؟',
+    type: FinalTestQuestionType.multipleChoice,
+    correctAnswer: 145,
+    choices: [145, 146, 135],
+  ),
+
+  // ٥. أكمل: ١٣٥ + __ = ٢١٠
+  FinalTestQuestion(
+    questionText: 'أكمل المعادلة',
+    type: FinalTestQuestionType.findMissing,
+    correctAnswer: 75,
+    equationDisplay: '١٣٥  +  ؟  =  ٢١٠',
+  ),
+
+  // ٦. ١٥٠ − ٦٧ = ؟ (اختيارات)
+  FinalTestQuestion(
+    questionText: '١٥٠ − ٦٧ = ؟',
+    type: FinalTestQuestionType.multipleChoice,
+    correctAnswer: 83,
+    choices: [82, 83, 84],
+  ),
+
+  // ٧. أكمل: ١٢٠ - __ = ٧٠
+  FinalTestQuestion(
+    questionText: 'أكمل المعادلة',
+    type: FinalTestQuestionType.findMissing,
+    correctAnswer: 50,
+    equationDisplay: '١٢٠  −  ؟  =  ٧٠',
+  ),
+
+  // ٨. ١٠٥ − ٤٩ = ؟ (اكتب الناتج)
+  FinalTestQuestion(
+    questionText: '١٠٥ − ٤٩ = ؟',
+    type: FinalTestQuestionType.writeAnswer,
+    correctAnswer: 56,
+  ),
+
+  // ٩. ١٨٤ − ٩٧ = ؟ (اختيارات)
+  FinalTestQuestion(
+    questionText: '١٨٤ − ٩٧ = ؟',
+    type: FinalTestQuestionType.multipleChoice,
+    correctAnswer: 87,
+    choices: [86, 87, 88],
+  ),
+
+  // ١٠. أكمل: ٥٠ - __ = ٥٠
+  FinalTestQuestion(
+    questionText: 'أكمل المعادلة',
+    type: FinalTestQuestionType.findMissing,
+    correctAnswer: 0,
+    equationDisplay: '٥٠  −  ؟  =  ٥٠',
+  ),
+
+  // ١١. مسألة حياتية (اختيارات)
+  FinalTestQuestion(
+    questionText: 'مع عبدالله ١٢ كرة، أعطى صديقه ٥ ثم أخذ ٣\nكم أصبح معه؟',
+    type: FinalTestQuestionType.multipleChoice,
+    correctAnswer: 10,
+    choices: [10, 11, 12],
+  ),
+
+  // ١٢. مسألة حياتية (اختيارات)
+  FinalTestQuestion(
+    questionText: 'في الفصل ١٥ طالب، دخل ٦ طلاب ثم خرج ٤\nكم أصبح العدد؟',
+    type: FinalTestQuestionType.multipleChoice,
+    correctAnswer: 17,
+    choices: [16, 17, 18],
+  ),
+
+  // ١٣. مسألة حياتية (اكتب الناتج)
+  FinalTestQuestion(
+    questionText: 'مع مريم ٢٠ جنيهًا، اشترت شيئًا بـ ٧ جنيهات ثم أخذت ٤\nكم أصبح معها؟',
+    type: FinalTestQuestionType.writeAnswer,
+    correctAnswer: 17,
+  ),
+
+  // ١٤. مسألة حياتية (اختيارات)
+  FinalTestQuestion(
+    questionText: 'في الصندوق ٢٢ لعبة، أضيف ٨ ألعاب ثم أُخذت ٥\nكم أصبح العدد؟',
+    type: FinalTestQuestionType.multipleChoice,
+    correctAnswer: 25,
+    choices: [25, 24, 26],
+  ),
+
+  // ١٥. مسألة حياتية (اختيارات)
+  FinalTestQuestion(
+    questionText: 'كان في الحقيبة ١٤ قلمًا، أخذت ٦ ثم أعطاك صديقك ٥\nكم أصبح معك؟',
+    type: FinalTestQuestionType.multipleChoice,
+    correctAnswer: 13,
+    choices: [13, 14, 15],
+  ),
+];
+
+const double kFinalTestPassThreshold = 0.60; // 60% to pass

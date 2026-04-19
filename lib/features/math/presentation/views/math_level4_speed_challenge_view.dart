@@ -23,6 +23,7 @@ class _MathLevel4SpeedChallengeViewState
   Timer? _timer;
   int _secondsRemaining = kSpeedChallengeDurationSeconds;
   bool _isChallengeComplete = false;
+  bool? _passed;
 
   // Track results
   int _correctAnswers = 0;
@@ -75,10 +76,7 @@ class _MathLevel4SpeedChallengeViewState
 
     if (isCorrect) {
       _correctAnswers++;
-      AppTtsService.instance.speak('ممتاز');
-    } else {
-      AppTtsService.instance.speak('حاول مرة أخرى');
-    } // Record answers silently without interrupting flow too much
+    }
 
     _userAnswers.add({
       'question': q,
@@ -98,13 +96,15 @@ class _MathLevel4SpeedChallengeViewState
 
   void _endChallenge() async {
     _timer?.cancel();
-    setState(() {
-      _isChallengeComplete = true;
-    });
 
     final targetScore =
         (kSpeedChallengeQuestions.length * kSpeedChallengePassThreshold).ceil();
     final isPassed = _correctAnswers >= targetScore;
+
+    setState(() {
+      _isChallengeComplete = true;
+      _passed = isPassed;
+    });
 
     if (isPassed) {
       final progressService = await MathProgressService.getInstance();
@@ -148,23 +148,24 @@ class _MathLevel4SpeedChallengeViewState
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.level4.last,
-            ),
-            onPressed: () {
-              Navigator.pop(context); // close dialog
-              // We stay on the page to view corrections, or user can press system back.
-            },
-            child: const Text(
-              'عرض الإجابات',
-              style: TextStyle(color: AppColors.surface),
-            ),
-          ),
           if (passed)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.success,
+                backgroundColor: AppColors.level4.last,
+              ),
+              onPressed: () {
+                Navigator.pop(context); // close dialog
+                // We stay on the page to view corrections, or user can press system back.
+              },
+              child: const Text(
+                'عرض الإجابات',
+                style: TextStyle(color: AppColors.surface),
+              ),
+            )
+          else
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.level4.last,
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -273,7 +274,7 @@ class _MathLevel4SpeedChallengeViewState
         ),
         body: SafeArea(
           child: _isChallengeComplete
-              ? _buildCorrectionScreen()
+              ? (_passed == true ? _buildCorrectionScreen() : const SizedBox.shrink())
               : Column(
                   children: [
                     // Top Bar with Timer and Progress

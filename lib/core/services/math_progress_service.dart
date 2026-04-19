@@ -218,6 +218,10 @@ class MathProgressService {
     return _getLevelActivities().contains('${level}_$activityName');
   }
 
+  /// Whether the gateway test (after levels 1–3) has been passed.
+  bool get isGatewayTestCompleted =>
+      isLevelActivityCompleted(0, 'gateway_test');
+
   // --- Reset ---
   Future<void> resetAllMathProgress() async {
     await prefs.remove(_keyMathLevel1Unlocked);
@@ -226,6 +230,9 @@ class MathProgressService {
     await prefs.remove(_keyMathLevel1Completed);
     await prefs.remove(_keyMathLevel2Completed);
     await prefs.remove(_keyMathLevel3Completed);
+    await prefs.remove(_keyMathLevel4Completed);
+    await prefs.remove(_level4Half1CompletedKey);
+    await prefs.remove(_level4Half2CompletedKey);
     await prefs.remove(_keyMathUnlockedNumbers);
     await prefs.remove(_keyMathCompletedActivities);
     await prefs.remove(_keyMathLevelActivities);

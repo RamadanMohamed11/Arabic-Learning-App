@@ -69,19 +69,17 @@ class _Level3StoriesViewState extends State<Level3StoriesView> {
               // ── القصة الأولى ──
               _StoryCard(
                 storyNumber: 1,
-                title: 'ابني والواجب',
-                subtitle: 'استمع واقرأ قصة ابني والواجب',
-                emoji: '📖',
+                title: 'الاستخدام الخاطئ',
+                subtitle: 'قصة عن تنظيم الوقت والنوم المبكر',
+                emoji: '📱',
                 color: AppColors.slateBlue,
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story1.jpeg',
-                // TODO: Gate story 2 behind story 1 completion
-                // isLocked: false,
-                isLocked: false, // مفتوحة للاختبار
+                imagePath: 'assets/images/Arabic/Level3/Activity1/story4/1.jpeg',
+                isLocked: false,
                 onTap: () {
                   AppTtsService.instance.stop();
                   Navigator.push(
                     context,
-                    AnimatedRoute.slideScale(const Level3Activity1View()),
+                    AnimatedRoute.slideScale(const Level3Activity4View()),
                   );
                 },
               ),
@@ -91,14 +89,52 @@ class _Level3StoriesViewState extends State<Level3StoriesView> {
               // ── القصة الثانية ──
               _StoryCard(
                 storyNumber: 2,
+                title: 'أمنية والنظافة',
+                subtitle: 'اقرأ القصة وأجب عن الأسئلة',
+                emoji: '🧹',
+                color: AppColors.mintGreen,
+                imagePath: 'assets/images/Arabic/Level3/Activity1/story3/1.jpeg',
+                isLocked: false,
+                onTap: () {
+                  AppTtsService.instance.stop();
+                  Navigator.push(
+                    context,
+                    AnimatedRoute.slideScale(const Level3Activity3View()),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── القصة الثالثة ──
+              _StoryCard(
+                storyNumber: 3,
+                title: 'الصدق',
+                subtitle: 'قصة حوارية عن الأمانة وإرجاع الأمانات',
+                emoji: '💎',
+                color: AppColors.softTeal,
+                imagePath: 'assets/images/Arabic/Level3/Activity1/story5/1.jpeg',
+                isLocked: false,
+                onTap: () {
+                  AppTtsService.instance.stop();
+                  Navigator.push(
+                    context,
+                    AnimatedRoute.slideScale(const Level3Activity5View()),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── القصة الرابعة ──
+              _StoryCard(
+                storyNumber: 4,
                 title: 'كوب ماء يغيّر يومك',
                 subtitle: 'اقرأ القصة وأجب عن الأسئلة',
                 emoji: '💧',
                 color: AppColors.softTeal,
                 imagePath: 'assets/images/Arabic/Level3/Activity1/story2/1.jpeg',
-                // TODO: Gate behind story 1 completion
-                // isLocked: !story1Completed,
-                isLocked: false, // مفتوحة للاختبار
+                isLocked: false,
                 onTap: () {
                   AppTtsService.instance.stop();
                   Navigator.push(
@@ -110,56 +146,20 @@ class _Level3StoriesViewState extends State<Level3StoriesView> {
 
               const SizedBox(height: 20),
 
-              // ── القصة الثالثة ──
-              _StoryCard(
-                storyNumber: 3,
-                title: 'أمنيه والنظافة',
-                subtitle: 'اقرأ القصة وأجب عن الأسئلة',
-                emoji: '🧹',
-                color: AppColors.mintGreen, // لون من ألوان المشروع
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story3/1.jpeg', // TODO: تغيير مسار الصورة إذا لزم الأمر
-                isLocked: false, // مفتوحة للاختبار
-                onTap: () {
-                  AppTtsService.instance.stop();
-                  Navigator.push(
-                    context,
-                    AnimatedRoute.slideScale(const Level3Activity3View()),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              // القصة الرابعة: الاستخدام الخاطئ
-              _StoryCard(
-                storyNumber: 4,
-                title: 'الاستخدام الخاطئ',
-                subtitle: 'قصة عن تنظيم الوقت والنوم المبكر',
-                emoji: '📱',
-                color: AppColors.slateBlue,
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story4/1.jpeg',
-                isLocked: false, // مفتوحة للاختبار
-                onTap: () {
-                  AppTtsService.instance.stop();
-                  Navigator.push(
-                    context,
-                    AnimatedRoute.slideScale(const Level3Activity4View()),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              // القصة الخامسة: الصدق
+              // ── القصة الخامسة ──
               _StoryCard(
                 storyNumber: 5,
-                title: 'الصدق',
-                subtitle: 'قصة حوارية عن الأمانة وإرجاع الأمانات',
-                emoji: '💎',
-                color: AppColors.softTeal,
-                imagePath: 'assets/images/Arabic/Level3/Activity1/story5/1.jpeg',
-                isLocked: false, // مفتوحة للاختبار
+                title: 'ابني والواجب',
+                subtitle: 'استمع واقرأ قصة ابني والواجب',
+                emoji: '📖',
+                color: AppColors.slateBlue,
+                imagePath: 'assets/images/Arabic/Level3/Activity1/story1.jpeg',
+                isLocked: false,
                 onTap: () {
                   AppTtsService.instance.stop();
                   Navigator.push(
                     context,
-                    AnimatedRoute.slideScale(const Level3Activity5View()),
+                    AnimatedRoute.slideScale(const Level3Activity1View()),
                   );
                 },
               ),

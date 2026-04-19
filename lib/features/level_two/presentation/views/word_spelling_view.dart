@@ -19,10 +19,12 @@ class _WordSpellingViewState extends State<WordSpellingView> {
 
   bool _hasPlayedIntro = false;
 
+  Future<void>? _introFuture;
+
   @override
   void initState() {
     super.initState();
-    _playIntro();
+    _introFuture = _playIntro();
   }
 
   Future<void> _playIntro() async {
@@ -157,6 +159,7 @@ class _WordSpellingViewState extends State<WordSpellingView> {
                   question: question,
                   onCorrect: _onCorrect,
                   onNext: _nextQuestion,
+                  introFuture: _currentQuestionIndex == 0 ? _introFuture : null,
                 ),
               ),
             ],

@@ -4,6 +4,8 @@ import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_1_view.dart';
 import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_2_view.dart';
 import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_3_view.dart';
+import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_4_view.dart';
+import 'package:arabic_learning_app/features/level_three/presentation/views/level_3_self_reading_5_view.dart';
 
 /// شاشة اختيار القصة — تحت النشاط الثاني في المستوى الثالث
 class Level3SelfReadingSelectionView extends StatefulWidget {
@@ -85,9 +87,9 @@ class _Level3SelfReadingSelectionViewState extends State<Level3SelfReadingSelect
               // ── القصة الثالثة ──
               _StoryCard(
                 storyNumber: 3,
-                title: 'سر النظافة',
+                title: 'الغريب اللطيف',
                 subtitle: 'اقرأ القصة وأجب عن الأسئلة',
-                emoji: '🧹',
+                emoji: '🍬',
                 color: AppColors.softTeal,
                 imagePath: 'assets/images/Arabic/Level3/Activity2/3.jpeg',
                 isLocked: false,
@@ -95,6 +97,44 @@ class _Level3SelfReadingSelectionViewState extends State<Level3SelfReadingSelect
                   Navigator.push(
                     context,
                     AnimatedRoute.slideScale(const Level3SelfReading3View()),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── القصة الرابعة ──
+              _StoryCard(
+                storyNumber: 4,
+                title: 'نورٌ لا يُهدر',
+                subtitle: 'اقرأ القصة وأجب عن الأسئلة',
+                emoji: '💡',
+                color: AppColors.slateBlue,
+                imagePath: 'assets/images/Arabic/Level3/Activity2/4.jpeg',
+                isLocked: false,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    AnimatedRoute.slideScale(const Level3SelfReading4View()),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── القصة الخامسة ──
+              _StoryCard(
+                storyNumber: 5,
+                title: 'بستان الحروف',
+                subtitle: 'اقرأ القصة وأجب عن الأسئلة',
+                emoji: '📚',
+                color: AppColors.softTeal,
+                imagePath: 'assets/images/Arabic/Level3/Activity2/5.jpeg',
+                isLocked: false,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    AnimatedRoute.slideScale(const Level3SelfReading5View()),
                   );
                 },
               ),

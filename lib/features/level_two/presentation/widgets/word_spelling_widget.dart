@@ -8,12 +8,14 @@ class WordSpellingWidget extends StatefulWidget {
   final WordSpellingQuestion question;
   final VoidCallback onCorrect;
   final VoidCallback onNext;
+  final Future<void>? introFuture;
 
   const WordSpellingWidget({
     super.key,
     required this.question,
     required this.onCorrect,
     required this.onNext,
+    this.introFuture,
   });
 
   @override
@@ -31,9 +33,18 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
   void initState() {
     super.initState();
     _initializeLetters();
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      if (mounted) _speakLetters();
-    });
+    _startAudioSequence();
+  }
+
+  Future<void> _startAudioSequence() async {
+    if (widget.introFuture != null) {
+      await widget.introFuture;
+    } else {
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
+    if (mounted) {
+      _speakLetters();
+    }
   }
 
   void _initializeLetters() {

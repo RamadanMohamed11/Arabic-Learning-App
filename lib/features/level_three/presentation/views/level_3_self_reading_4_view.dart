@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-class Level3SelfReading3View extends StatefulWidget {
-  const Level3SelfReading3View({super.key});
+class Level3SelfReading4View extends StatefulWidget {
+  const Level3SelfReading4View({super.key});
 
   @override
-  State<Level3SelfReading3View> createState() => _Level3SelfReading3ViewState();
+  State<Level3SelfReading4View> createState() => _Level3SelfReading4ViewState();
 }
 
-class _Level3SelfReading3ViewState extends State<Level3SelfReading3View> {
+class _Level3SelfReading4ViewState extends State<Level3SelfReading4View> {
   int _score = 0;
   bool _isCompleted = false;
 
@@ -25,40 +25,41 @@ class _Level3SelfReading3ViewState extends State<Level3SelfReading3View> {
   // ─── بيانات القصة ─────────────────────────────────────────────
   final Map<int, int> _selectedAnswers = {};
 
-  final String title = 'الغريب اللطيف';
+  final String title = 'نورٌ لا يُهدر';
   final String storyText =
-      '''في أحد الأيام، كان محمد يلعب أمام منزله، وفجأة اقترب منه رجل غريب، وابتسم له قائلًا: تعال معي، سأعطيك حلوى لذيذة.
-شعر محمد بالتردد والخوف، لكنه تذكّر نصيحة أمه التي كانت ترددها دائمًا: لا تذهب مع أي شخص غريب، مهما بدا لطيفًا.
-ابتعد محمد بسرعة، ودخل إلى المنزل، وأخبر أمه بما حدث.
-فرحت أمه كثيرًا، واحتضنته قائلة: أحسنت يا محمد، لقد تصرّفت بشكل صحيح.''';
+      '''في منزلٍ صغير، كان مروان يترك المصابيح والأجهزة الكهربائية تعمل دون حاجة.
+وفي أحد الأيام، سمع في الأخبار أن البلاد تمر بأزمة في الطاقة، وأن ترشيد استهلاك الكهرباء أصبح ضرورة.
+سأل مروان والدته: ما معنى ترشيد الاستهلاك؟ فقالت له: أي أن نستخدم الكهرباء عند الحاجة فقط، ونغلق ما لا نستخدمه.
+فكر مروان فيما سمع، وقرر أن يغيّر عادته. فأصبح يغلق الأضواء عند مغادرة الغرف، ويفصل الأجهزة غير المستخدمة.
+وقال في نفسه: بترشيد الكهرباء نحافظ على مواردنا ونساعد وطننا.''';
 
   late final List<String> _sentences;
-  final String imagePath = 'assets/images/Arabic/Level3/Activity2/3.jpeg';
+  final String imagePath = 'assets/images/Arabic/Level3/Activity2/4.jpeg';
 
   final List<Map<String, dynamic>> questions = [
     {
-      'question': '1. ماذا عرض الرجل على محمد؟',
-      'options': ['(أ) لعبة جديدة', '(ب) حلوى لذيذة', '(ج) كتابًا مفيدًا'],
+      'question': '1. ماذا كان يفعل مروان قبل التوعية؟',
+      'options': ['(أ) كان يوفر الكهرباء', '(ب) كان يترك الأجهزة تعمل دون حاجة', '(ج) كان يصلح الكهرباء'],
       'correctIndex': 1,
     },
     {
-      'question': '2. ماذا تذكّر محمد قبل أن يتصرف؟',
-      'options': ['(أ) لا تذهب مع أي شخص غريب مهما بدا لطيفًا', '(ب) لا تلعب بعيدًا عن المنزل', '(ج) احترس من السيارات'],
-      'correctIndex': 0,
+      'question': '2. ما معنى ترشيد الاستهلاك؟',
+      'options': ['(أ) إهدار الكهرباء', '(ب) استخدام الكهرباء عند الحاجة فقط', '(ج) زيادة استخدام الكهرباء'],
+      'correctIndex': 1,
     },
     {
-      'question': '3. ماذا فعل محمد عندما اقترب منه الرجل؟',
+      'question': '3. ماذا قرر مروان بعد التوعية؟',
       'options': [
-        '(أ) ذهب معه',
-        '(ب) بكى ونادى على أمه',
-        '(ج) ابتعد بسرعة ودخل المنزل',
+        '(أ) ترك الأنوار تعمل',
+        '(ب) توفير الكهرباء وإطفاء الأجهزة غير المستخدمة',
+        '(ج) شراء أجهزة جديدة',
       ],
-      'correctIndex': 2,
+      'correctIndex': 1,
     },
     {
-      'question': '4. ماذا كان رد فعل الأم عندما أخبرها محمد؟',
-      'options': ['(أ) غضبت منه وعاقبته', '(ب) فرحت واحتضنته وقالت أحسنت', '(ج) لم تهتم بكلامه'],
-      'correctIndex': 1,
+      'question': '4. ما الفائدة التي ذكرها مروان لترشيد الكهرباء في النهاية؟',
+      'options': ['(أ) نحافظ على مواردنا ونساعد وطننا', '(ب) نحصل على الأموال من الدولة', '(ج) تتوقف الأجهزة عن العمل بسرعة'],
+      'correctIndex': 0,
     },
   ];
 

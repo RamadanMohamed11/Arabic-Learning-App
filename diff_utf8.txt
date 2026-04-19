@@ -1,0 +1,311 @@
+﻿diff --git a/lib/features/level_two/presentation/views/word_spelling_view.dart b/lib/features/level_two/presentation/views/word_spelling_view.dart
+index 21dfd2a..d92020a 100644
+--- a/lib/features/level_two/presentation/views/word_spelling_view.dart
++++ b/lib/features/level_two/presentation/views/word_spelling_view.dart
+@@ -155,6 +155,7 @@ class _WordSpellingViewState extends State<WordSpellingView> {
+                 child: WordSpellingWidget(
+                   key: ValueKey(_currentQuestionIndex),
+                   question: question,
++                  isFirstQuestion: _currentQuestionIndex == 0,
+                   onCorrect: _onCorrect,
+                   onNext: _nextQuestion,
+                 ),
+diff --git a/lib/features/level_two/presentation/widgets/word_spelling_widget.dart b/lib/features/level_two/presentation/widgets/word_spelling_widget.dart
+index cb5581a..fbef9ae 100644
+--- a/lib/features/level_two/presentation/widgets/word_spelling_widget.dart
++++ b/lib/features/level_two/presentation/widgets/word_spelling_widget.dart
+@@ -1,4 +1,5 @@
+ import 'package:flutter/material.dart';
++import 'package:speech_to_text/speech_to_text.dart';
+ import 'package:arabic_learning_app/core/audio/app_tts_service.dart';
+ import 'package:arabic_learning_app/core/utils/app_colors.dart';
+ import 'package:arabic_learning_app/features/level_two/data/models/word_spelling_model.dart';
+@@ -8,12 +9,14 @@ class WordSpellingWidget extends StatefulWidget {
+   final WordSpellingQuestion question;
+   final VoidCallback onCorrect;
+   final VoidCallback onNext;
++  final bool isFirstQuestion;
+ 
+   const WordSpellingWidget({
+     super.key,
+     required this.question,
+     required this.onCorrect,
+     required this.onNext,
++    this.isFirstQuestion = false,
+   });
+ 
+   @override
+@@ -26,16 +29,33 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
+   bool _isCorrect = false;
+   bool _showFeedback = false;
+   bool _isSpeaking = false;
++  
++  // Pronunciation phase state
++  final SpeechToText _speechToText = SpeechToText();
++  bool _isPronunciationPhase = false;
++  bool _isListening = false;
++  bool _isPronunciationCorrect = false;
++  String _recognizedSpeech = '';
+ 
+   @override
+   void initState() {
+     super.initState();
++    _initializeSpeech();
+     _initializeLetters();
+-    Future.delayed(const Duration(milliseconds: 3000), () {
++    int delay = widget.isFirstQuestion ? 5500 : 1000;
++    Future.delayed(Duration(milliseconds: delay), () {
+       if (mounted) _speakLetters();
+     });
+   }
+ 
++  Future<void> _initializeSpeech() async {
++    try {
++      await _speechToText.initialize();
++    } catch (e) {
++      debugPrint('Error initializing Speech to Text: $e');
++    }
++  }
++
+   void _initializeLetters() {
+     _shuffledLetters = List.from(widget.question.letters)..shuffle();
+     _arrangedLetters = List.filled(widget.question.letters.length, null);
+@@ -62,15 +82,18 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
+     await AppTtsService.instance.speak(widget.question.word, speechRate: 0.5);
+   }
+ 
+-  void _checkAnswer() {
++  void _checkAnswer() async {
+     final userWord = _arrangedLetters.join('');
+     if (userWord == widget.question.word) {
+       setState(() {
+         _isCorrect = true;
++        _isPronunciationPhase = true;
+         _showFeedback = true;
+       });
+-      _speakWord();
+-      widget.onCorrect();
++      await _speakWord();
++      if (mounted) {
++        await AppTtsService.instance.speak('والآن، اقرأ الكلمة!', speechRate: 0.5);
++      }
+     } else {
+       setState(() {
+         _isCorrect = false;
+@@ -82,16 +105,76 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
+     }
+   }
+ 
++  void _startListening() async {
++    if (!_isListening) {
++      bool available = await _speechToText.initialize();
++      if (available) {
++        setState(() => _isListening = true);
++        _speechToText.listen(
++          onResult: (result) {
++            if (mounted) {
++              setState(() {
++                _recognizedSpeech = result.recognizedWords;
++              });
++              _checkPronunciation();
++            }
++          },
++          localeId: 'ar-SA',
++        );
++      }
++    }
++  }
++
++  void _stopListening() {
++    if (_isListening) {
++      _speechToText.stop();
++      if (mounted) {
++        setState(() => _isListening = false);
++      }
++    }
++  }
++
++  void _checkPronunciation() {
++    String normalizedAnswer = _normalizeText(_recognizedSpeech);
++    String normalizedCorrect = _normalizeText(widget.question.word);
++
++    if (normalizedAnswer == normalizedCorrect ||
++        normalizedAnswer.contains(normalizedCorrect) ||
++        normalizedCorrect.contains(normalizedAnswer)) {
++      _stopListening();
++      if (mounted) {
++        setState(() {
++          _isPronunciationCorrect = true;
++        });
++        AppTtsService.instance.speak('أحسنت، قراءة صحيحة!');
++        widget.onCorrect();
++      }
++    }
++  }
++
++  String _normalizeText(String text) {
++    return text
++        .toLowerCase()
++        .trim()
++        .replaceAll(RegExp(r'[\u064b-\u065f]'), '') // إزالة التشكيل
++        .replaceAll('ة', 'ه')
++        .replaceAll(RegExp(r'[أإآ]'), 'ا');
++  }
++
+   void _resetArrangedLetters() {
+     setState(() {
+       _arrangedLetters = List.filled(widget.question.letters.length, null);
+       _showFeedback = false;
+       _isCorrect = false;
++      _isPronunciationPhase = false;
++      _isPronunciationCorrect = false;
++      _recognizedSpeech = '';
+     });
+   }
+ 
+   @override
+   void dispose() {
++    _speechToText.stop();
+     AppTtsService.instance.stop();
+     super.dispose();
+   }
+@@ -262,7 +345,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
+   }
+ 
+   Widget _buildDraggableLetters() {
+-    if (_isCorrect) {
++    if (_isPronunciationCorrect) {
+       return Container(
+         padding: const EdgeInsets.all(24),
+         decoration: BoxDecoration(
+@@ -276,7 +359,7 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
+             Icon(Icons.celebration, color: AppColors.success, size: 40),
+             SizedBox(height: 12),
+             Text(
+-              'ممتاز! الإجابة صحيحة',
++              'ممتاز! استماع وكتابة ونطق رائع',
+               textAlign: TextAlign.center,
+               style: TextStyle(
+                 fontSize: 20,
+@@ -289,6 +372,45 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
+       );
+     }
+ 
++    if (_isCorrect && _isPronunciationPhase) {
++      return Container(
++        padding: const EdgeInsets.all(24),
++        decoration: BoxDecoration(
++          color: Colors.blue.shade50,
++          borderRadius: BorderRadius.circular(16),
++          border: Border.all(color: Colors.blue.shade200, width: 2),
++        ),
++        child: Column(
++          mainAxisSize: MainAxisSize.min,
++          children: [
++            const Text(
++              'الآن جاء دورك، انطق الكلمة!',
++              textAlign: TextAlign.center,
++              style: TextStyle(
++                fontSize: 20,
++                fontWeight: FontWeight.bold,
++                color: AppColors.primary,
++              ),
++            ),
++            const SizedBox(height: 16),
++            FloatingActionButton.extended(
++              onPressed: _isListening ? _stopListening : _startListening,
++              backgroundColor: _isListening ? AppColors.error : AppColors.success,
++              icon: Icon(_isListening ? Icons.mic : Icons.mic_off),
++              label: Text(_isListening ? 'إيقاف' : 'ابدأ النطق'),
++            ),
++            if (_recognizedSpeech.isNotEmpty) ...[
++              const SizedBox(height: 16),
++              Text(
++                'سمعت: $_recognizedSpeech',
++                style: const TextStyle(fontSize: 18, color: AppColors.secondary),
++              ),
++            ],
++          ],
++        ),
++      );
++    }
++
+     if (_showFeedback && !_isCorrect) {
+       return Container(
+         padding: const EdgeInsets.all(24),
+@@ -379,6 +501,11 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
+ 
+   Widget _buildActionButtons() {
+     final allSlotsFilled = _arrangedLetters.every((l) => l != null);
++    
++    if (_isPronunciationPhase && !_isPronunciationCorrect) {
++      return const SizedBox.shrink();
++    }
++    
+     return Row(
+       mainAxisAlignment: MainAxisAlignment.center,
+       children: [
+@@ -400,20 +527,20 @@ class _WordSpellingWidgetState extends State<WordSpellingWidget> {
+         ),
+         const SizedBox(width: 16),
+         ElevatedButton.icon(
+-          onPressed: _isCorrect
++          onPressed: _isPronunciationCorrect
+               ? widget.onNext
+               : (allSlotsFilled ? _checkAnswer : null),
+           style: ElevatedButton.styleFrom(
+-            backgroundColor: _isCorrect ? AppColors.success : AppColors.primary,
++            backgroundColor: _isPronunciationCorrect ? AppColors.success : AppColors.primary,
+             foregroundColor: Colors.white,
+             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+             shape: RoundedRectangleBorder(
+               borderRadius: BorderRadius.circular(12),
+             ),
+           ),
+-          icon: Icon(_isCorrect ? Icons.arrow_forward : Icons.check),
++          icon: Icon(_isPronunciationCorrect ? Icons.arrow_forward : Icons.check),
+           label: Text(
+-            _isCorrect ? 'التالي' : 'تحقق',
++            _isPronunciationCorrect ? 'التالي' : 'تحقق',
+             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+           ),
+         ),
+diff --git a/lib/features/math/presentation/views/math_level4_direct_addition_view.dart b/lib/features/math/presentation/views/math_level4_direct_addition_view.dart
+index 88a0b81..5c9ff17 100644
+--- a/lib/features/math/presentation/views/math_level4_direct_addition_view.dart
++++ b/lib/features/math/presentation/views/math_level4_direct_addition_view.dart
+@@ -232,12 +232,15 @@ class _MathLevel4DirectAdditionViewState extends State<MathLevel4DirectAdditionV
+                               ),
+                             ),
+                             child: Center(
+-                              child: Text(
+-                                _isAnswered ? q['answer'].toString().toArabicDigits() : '؟',
+-                                style: TextStyle(
+-                                  fontSize: 60,
+-                                  fontWeight: FontWeight.bold,
+-                                  color: _isAnswered ? AppColors.success : AppColors.textSecondary,
++                              child: FittedBox(
++                                fit: BoxFit.scaleDown,
++                                child: Text(
++                                  _isAnswered ? q['answer'].toString().toArabicDigits() : '؟',
++                                  style: TextStyle(
++                                    fontSize: 60,
++                                    fontWeight: FontWeight.bold,
++                                    color: _isAnswered ? AppColors.success : AppColors.textSecondary,
++                                  ),
+                                 ),
+                               ),
+                             ),
+diff --git a/lib/features/math/presentation/views/math_level4_hub_view.dart b/lib/features/math/presentation/views/math_level4_hub_view.dart
+index 7a205d7..455b51e 100644
+--- a/lib/features/math/presentation/views/math_level4_hub_view.dart
++++ b/lib/features/math/presentation/views/math_level4_hub_view.dart
+@@ -68,7 +68,7 @@ class _MathLevel4HubViewState extends State<MathLevel4HubView> {
+         backgroundColor: const Color(0x00000000),
+         appBar: AppBar(
+           title: const Text(
+-            'الجمع (Level 4)',
++            'الجمع',
+             style: TextStyle(color: AppColors.surface, fontWeight: FontWeight.bold),
+           ),
+           backgroundColor: const Color(0x00000000),

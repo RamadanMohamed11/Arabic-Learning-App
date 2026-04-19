@@ -8,6 +8,7 @@ import 'package:arabic_learning_app/features/math/data/math_data.dart';
 import 'package:arabic_learning_app/core/utils/animated_route.dart';
 import 'math_level_numbers_view.dart';
 import 'math_level4_hub_view.dart';
+import 'math_gateway_test_view.dart';
 
 class MathView extends StatefulWidget {
   const MathView({super.key});
@@ -60,11 +61,26 @@ class _MathViewState extends State<MathView> {
     if (level == 1) return _progressService!.isLevel1Unlocked();
     if (level == 2) return _progressService!.isLevel2Unlocked();
     if (level == 3) return _progressService!.isLevel3Unlocked();
-    
-    if (level == 4) {
-      return _progressService!.isLevel3Completed();
+
+    // Levels 4+ require all 3 base levels + gateway test
+    if (level >= 4) {
+      return _progressService!.isLevel3Completed() &&
+          _progressService!.isGatewayTestCompleted;
     }
     return false;
+  }
+
+  bool _isGatewayTestUnlocked() {
+    if (_testMode) return true;
+    if (_progressService == null) return false;
+    return _progressService!.isLevel1Completed() &&
+        _progressService!.isLevel2Completed() &&
+        _progressService!.isLevel3Completed();
+  }
+
+  bool _isGatewayTestCompleted() {
+    if (_progressService == null) return false;
+    return _progressService!.isGatewayTestCompleted;
   }
 
   @override
@@ -101,6 +117,11 @@ class _MathViewState extends State<MathView> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   for (var item in mathLevels) ...[
+                                    // Insert gateway test card BEFORE level 4
+                                    if (item.level == 4) ...[
+                                      _buildGatewayTestCard(),
+                                      const SizedBox(height: 24),
+                                    ],
                                     _buildLevelCard(
                                       context,
                                       title: item.title,
@@ -290,6 +311,128 @@ class _MathViewState extends State<MathView> {
                     ),
                   ),
                   if (isUnlocked)
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGatewayTestCard() {
+    final isUnlocked = _isGatewayTestUnlocked();
+    final isCompleted = _isGatewayTestCompleted();
+    const testGradient = [AppColors.slateBlue, AppColors.softTeal];
+
+    return GestureDetector(
+      onTap: isUnlocked
+          ? () async {
+              AppTtsService.instance.stop();
+              await Navigator.push(
+                context,
+                AnimatedRoute.fadeScale(const MathGatewayTestView()),
+              );
+              _loadProgress();
+            }
+          : null,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 24),
+        constraints: const BoxConstraints(minHeight: 160),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isUnlocked
+                ? testGradient
+                : [Colors.grey.shade400, Colors.grey.shade600],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          border: isCompleted
+              ? Border.all(color: const Color(0xFFFFD700), width: 3)
+              : null,
+          boxShadow: [
+            BoxShadow(
+              color: isUnlocked
+                  ? testGradient[0].withValues(alpha: 0.4)
+                  : Colors.grey.withValues(alpha: 0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Background icon
+            Positioned(
+              right: -20,
+              bottom: -20,
+              child: Icon(
+                Icons.quiz,
+                size: 150,
+                color: Colors.white.withValues(alpha: 0.12),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isCompleted
+                          ? Icons.check_circle
+                          : isUnlocked
+                              ? Icons.quiz
+                              : Icons.lock,
+                      size: 40,
+                      color: isCompleted
+                          ? const Color(0xFFFFD700)
+                          : Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            'الاختبار الشامل ⭐',
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          isUnlocked
+                              ? 'اختبر معلوماتك في المستويات الأولى'
+                              : 'أكمل المستويات الثلاثة الأولى',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isCompleted)
+                    const Icon(Icons.emoji_events,
+                        color: Color(0xFFFFD700), size: 30)
+                  else if (isUnlocked)
                     const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 ],
               ),

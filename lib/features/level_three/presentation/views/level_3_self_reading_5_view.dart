@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:arabic_learning_app/core/utils/app_colors.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-class Level3SelfReading3View extends StatefulWidget {
-  const Level3SelfReading3View({super.key});
+class Level3SelfReading5View extends StatefulWidget {
+  const Level3SelfReading5View({super.key});
 
   @override
-  State<Level3SelfReading3View> createState() => _Level3SelfReading3ViewState();
+  State<Level3SelfReading5View> createState() => _Level3SelfReading5ViewState();
 }
 
-class _Level3SelfReading3ViewState extends State<Level3SelfReading3View> {
+class _Level3SelfReading5ViewState extends State<Level3SelfReading5View> {
   int _score = 0;
   bool _isCompleted = false;
 
@@ -25,39 +25,40 @@ class _Level3SelfReading3ViewState extends State<Level3SelfReading3View> {
   // ─── بيانات القصة ─────────────────────────────────────────────
   final Map<int, int> _selectedAnswers = {};
 
-  final String title = 'الغريب اللطيف';
+  final String title = 'بستان الحروف';
   final String storyText =
-      '''في أحد الأيام، كان محمد يلعب أمام منزله، وفجأة اقترب منه رجل غريب، وابتسم له قائلًا: تعال معي، سأعطيك حلوى لذيذة.
-شعر محمد بالتردد والخوف، لكنه تذكّر نصيحة أمه التي كانت ترددها دائمًا: لا تذهب مع أي شخص غريب، مهما بدا لطيفًا.
-ابتعد محمد بسرعة، ودخل إلى المنزل، وأخبر أمه بما حدث.
-فرحت أمه كثيرًا، واحتضنته قائلة: أحسنت يا محمد، لقد تصرّفت بشكل صحيح.''';
+      '''أنا أقرأ إذا أنا أرى بوضوح. كل حرف أتعلمه هو خطوة في طريق النور.
+بدأت بالألف فرسمت طموحي عالياً كالسماء. وبالباء بنيت جسراً من الأمل والعمل.
+الحروف ليست مجرد خطوط على الورق بل هي أصوات تحكي قصصنا وكلمات تحفظ حقوقنا وجمل تنير عقولنا.
+اليوم أتعلم الكلمة وغداً أقرأ الكتاب. لا يوجد وقت متأخر للبدء فالعمر يقاس بما ننجزه من علم.
+يدي التي تكتب الآن ترسم مستقبلاً أجمل لي ولأولادي.''';
 
   late final List<String> _sentences;
-  final String imagePath = 'assets/images/Arabic/Level3/Activity2/3.jpeg';
+  final String imagePath = 'assets/images/Arabic/Level3/Activity2/5.jpeg';
 
   final List<Map<String, dynamic>> questions = [
     {
-      'question': '1. ماذا عرض الرجل على محمد؟',
-      'options': ['(أ) لعبة جديدة', '(ب) حلوى لذيذة', '(ج) كتابًا مفيدًا'],
+      'question': '1. ما هو الشعور الذي تمنحه لنا القراءة كما جاء في النص؟',
+      'options': ['(أ) الخوف والحيرة', '(ب) النور والوضوح', '(ج) التعب والجهد'],
       'correctIndex': 1,
     },
     {
-      'question': '2. ماذا تذكّر محمد قبل أن يتصرف؟',
-      'options': ['(أ) لا تذهب مع أي شخص غريب مهما بدا لطيفًا', '(ب) لا تلعب بعيدًا عن المنزل', '(ج) احترس من السيارات'],
-      'correctIndex': 0,
-    },
-    {
-      'question': '3. ماذا فعل محمد عندما اقترب منه الرجل؟',
-      'options': [
-        '(أ) ذهب معه',
-        '(ب) بكى ونادى على أمه',
-        '(ج) ابتعد بسرعة ودخل المنزل',
-      ],
+      'question': '2. بماذا وصف النص الحروف التي نتعلمها؟',
+      'options': ['(أ) خطوط صعبة', '(ب) أصوات مزعجة', '(ج) جسور من الأمل'],
       'correctIndex': 2,
     },
     {
-      'question': '4. ماذا كان رد فعل الأم عندما أخبرها محمد؟',
-      'options': ['(أ) غضبت منه وعاقبته', '(ب) فرحت واحتضنته وقالت أحسنت', '(ج) لم تهتم بكلامه'],
+      'question': '3. متى يكون الوقت مناسباً لتعلم القراءة والكتابة؟',
+      'options': [
+        '(أ) في أي وقت',
+        '(ب) في الصغر فقط',
+        '(ج) عندما نكون غير مشغولين',
+      ],
+      'correctIndex': 0,
+    },
+    {
+      'question': '4. ماذا ترسم اليد التي تكتب في نهاية النص؟',
+      'options': ['(أ) صوراً ملونة', '(ب) مستقبلاً أجمل', '(ج) بيتاً كبيراً'],
       'correctIndex': 1,
     },
   ];
